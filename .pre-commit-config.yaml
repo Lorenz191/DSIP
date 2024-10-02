@@ -12,6 +12,6 @@ repos:
         stages: [commit-msg]
         additional_dependencies: ["@open-turo/commitlint-config-conventional"]
   - repo: https://github.com/psf/black
-    rev: 23.7.0  # Update to a more recent version
+    rev: 23.7.0
     hooks:
         - id: black
