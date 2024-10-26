@@ -17,8 +17,3 @@ class SeAn:
                 break
 
         return classes[0], probabilities
-
-
-if __name__ == "__main__":
-    model = SeAn()
-    print(model.get_sentiment(["Du bist das Kind einer HUre"]))
