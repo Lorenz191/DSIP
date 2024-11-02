@@ -1,19 +1,15 @@
-from germansentiment import SentimentModel
+from transformers import pipeline
+
+pipe = pipeline("text-classification", model="oliverguhr/german-sentiment-bert")
 
 
 class SeAn:
 
     def __init__(self):
-        self.model = SentimentModel()
+        self.model = pipe
 
     def get_sentiment(self, text):
-        classes, probabilities = self.model.predict_sentiment(
-            text, output_probabilities=True
-        )
-
-        for i in probabilities[0]:
-            if i[0] == classes[0]:
-                probabilities = i[1]
-                break
-
-        return classes[0], probabilities
+        result = self.model(text)
+        classes = [res["label"] for res in result]
+        probabilities = [res["score"] for res in result]
+        return classes, probabilities

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import django.db.backends.mysql
 
 load_dotenv("../../.env")
 
@@ -77,19 +78,16 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-"""DATABASES = {
+DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME_5.7"),
-        "USER": os.getenv("DB_USER_5.7"),
-        "PASSWORD": os.getenv("DB_PASSWORD_5.7"),
+        "NAME": "u234926db2 ",
+        "USER": "u234926db2 ",
+        "PASSWORD": ".udjhwf4ttxj",
         "HOST": "e150497-mysql.services.easyname.eu",
         "PORT": "3306",
-        "OPTIONS": {
-            "auth_plugin": "mysql_native_password",
-        },
     }
-}"""
+}
 
 
 # Password validation
