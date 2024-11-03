@@ -92,3 +92,42 @@ class DB:
                 }
                 result.append(post_entry)
         return result
+
+    def update_post_body(self, _id, heading, text, ms_number, post_id):
+        post_body_collection = self.db["Post_Body"]
+        post_body_collection.update_one(
+            {"_id": _id}, {"$set": {"heading": heading, "text": text}}
+        )
+        self.insert_into_changed_by(post_id, _id, ms_number)
+
+    def update_post_body_status(self, _id, status):
+        post_body_collection = self.db["Post_Body"]
+        post_body_collection.update_one({"_id": _id}, {"$set": {"status": status}})
+
+    def update_comment(self, _id, text):
+        comment_collection = self.db["Comment"]
+        comment_collection.update_one({"_id": _id}, {"$set": {"text": text}})
+
+    def delete_post(self, _id):
+        post_collection = self.db["Post"]
+        post_body_collection = self.db["Post_Body"]
+        comment_collection = self.db["Comment"]
+        changed_by_collection = self.db["Changed_By"]
+
+        post = post_collection.find_one({"_id": _id})
+        if post:
+            post_body_collection.delete_one({"_id": post["fk_body_id"]})
+
+            comment_collection.delete_many({"fk_post_id": _id})
+
+            changed_by_collection.delete_many({"pk_fk_post_id": _id})
+
+            post_collection.delete_one({"_id": _id})
+
+    def delete_comment(self, _id):
+        comment_collection = self.db["Comment"]
+        comment_collection.delete_one({"_id": _id})
+
+    def delete_user(self, _id):
+        user_collection = self.db["User"]
+        user_collection.delete_one({"_id": _id})
