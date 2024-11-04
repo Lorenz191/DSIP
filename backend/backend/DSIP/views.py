@@ -29,3 +29,13 @@ from ..api.users.users import register_user, get_user_profile, update_user_profi
 def sean_view(request, text):
     sentiment = SeAn().get_sentiment(text)
     return HttpResponse(sentiment[0])
+
+
+def view_delete_user_post(request, post_id):
+    status = delete_user_post(post_id=post_id)
+    return HttpResponse(status=status)
+
+
+def view_comment_as_admin(request, post_id):
+    status = comment_as_admin(post_id=post_id)
+    return HttpResponse(status=status)
