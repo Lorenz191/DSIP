@@ -1,3 +1,4 @@
 AccessTests/
 .env
 backend/backend/settings.py
+.idea
