@@ -1,3 +1,6 @@
 AccessTests/
 .env
 .idea
+.frontend/node_modules/
+.frontend/public/
+.frontend/dist/
