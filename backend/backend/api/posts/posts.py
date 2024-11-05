@@ -1,25 +1,22 @@
 from rest_framework.response import Response
 from rest_framework import status
-from ....backend.sentiment_model.SentimentAnalysis import SeAn
 
 
 def create_post(request, post_body):
-    """Erstellt einen neuen Vorschlag."""
-    model = SeAn()
-    text = post_body["text"]
-
-    if model.get_sentiment(text) == "negative":
-        return Response(
-            "Post contains negative sentiment", status=status.HTTP_400_BAD_REQUEST
-        )
-    else:
-        pass
+    """Erstellt einen neuen Vorschlag.
+    @:returns: 201 or 500
+    """
 
     pass
 
 
 def get_post(request, post_id):
     """Gibt einen bestimmten Vorschlag zurück."""
+    pass
+
+
+def get_posts(request):
+    """Gibt alle Vorschläge zurück."""
     pass
 
 
