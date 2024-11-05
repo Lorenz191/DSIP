@@ -3,12 +3,11 @@ from rest_framework import status
 from ....backend.sentiment_model.SentimentAnalysis import SeAn
 
 
-def create_post(request, post_body):
+def create_post(request, post):
     """Erstellt einen neuen Vorschlag."""
     model = SeAn()
-    text = post_body["text"]
 
-    if model.get_sentiment(text) == "negative":
+    if model.get_sentiment(post):
         return Response(
             "Post contains negative sentiment", status=status.HTTP_400_BAD_REQUEST
         )
