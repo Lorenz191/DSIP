@@ -21,5 +21,5 @@ class SeAn:
             title_sentiment["label"] == "negative"
             or content_sentiment["label"] == "negative"
         ):
-            return True
-        return False
+            return True, title_sentiment, content_sentiment
+        return False, title_sentiment, content_sentiment
