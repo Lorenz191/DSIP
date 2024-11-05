@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
@@ -22,112 +21,124 @@ class DB:
         )
         self.db = self.client["DSIP"]
 
-    def insert_into_user(self, _id, is_admin):
+    def insert_into_user(self, ms_number, is_admin):
         user_collection = self.db["User"]
-        user_document = {"_id": _id, "is_admin": is_admin}
-        user_collection.insert_one(user_document)
+        if user_collection.find_one({"ms_number": ms_number}):
+            return False
+        user_document = {"ms_number": ms_number, "is_admin": is_admin}
+        result = user_collection.insert_one(user_document)
+        return bool(result.inserted_id)
 
-    def insert_into_post(self, ms_number, is_anonym, post_body):
-        post_body_collection = self.db["Post_Body"]
-        post_body_document = post_body
-        post_body_collection.insert_one(post_body_document)
-
+    def insert_into_post(self, fk_author, title, content, is_anonym, status="draft"):
         post_collection = self.db["Post"]
         post_document = {
-            "fk_ms_number": ms_number,
-            "fk_body_id": post_body_document["_id"],
+            "fk_author": fk_author,
+            "body": {"title": title, "content": content},
             "upvotes": 0,
             "downvotes": 0,
             "is_anonym": is_anonym,
+            "status": status,
+            "created_at": datetime.now(),
         }
-        post_collection.insert_one(post_document)
-
-    def insert_into_comment(self, post_id, text, ms_number):
-        comment_collection = self.db["Comment"]
-        comment_document = {
-            "fk_post_id": post_id,
-            "fk_ms_number": ms_number,
-            "text": text,
-            "created_on": datetime.now(),
-        }
-        comment_collection.insert_one(comment_document)
-
-    def insert_into_changed_by(self, post_id, post_body_id, ms_number):
-        changed_by_collection = self.db["Changed_By"]
-        changed_by_document = {
-            "pk_fk_post_id": post_id,
-            "pk_fk_user_id": ms_number,
-            "fk_body_id": post_body_id,
-        }
-        changed_by_collection.insert_one(changed_by_document)
+        result = post_collection.insert_one(post_document)
+        return bool(result.inserted_id)
 
     def select_posts(self):
         post_collection = self.db["Post"]
-        post_body_collection = self.db["Post_Body"]
         posts = post_collection.find()
-        result = []
-        for post in posts:
-            post_body = post_body_collection.find_one({"_id": post["fk_body_id"]})
-            if post_body:
-                post["body"] = post_body
-                result.append(post)
-        return result
+        return list(posts) if posts else []
 
-    def select_comments_for_post(self, post_id):
-        comment_collection = self.db["Comment"]
-        comments = comment_collection.find({"fk_post_id": post_id})
-        return comments
-
-    def select_posts_for_user(self, ms_number):
-        post_collection = self.db["Post"]
-        post_body_collection = self.db["Post_Body"]
-        posts = post_collection.find({"fk_ms_number": ms_number})
-        result = []
-        for post in posts:
-            post_body = post_body_collection.find_one({"_id": post["fk_body_id"]})
-            if post_body:
-                post_entry = {
-                    "post": post_body["heading"],
-                    "status": post_body["status"],
+    def select_posts_for_user(self, user_id):
+        user_collection = self.db["User"]
+        user = user_collection.find_one({"_id": user_id})
+        if user:
+            post_collection = self.db["Post"]
+            posts = post_collection.find({"fk_author": user_id})
+            result = [
+                {
+                    "title": post["body"]["title"],
+                    "content": post["body"]["content"],
+                    "status": post["status"],
+                    "created_at": post["created_at"],
                 }
-                result.append(post_entry)
-        return result
+                for post in posts
+            ]
+            return result
+        return []
 
-    def update_post_body(self, _id, heading, text, ms_number, post_id):
-        post_body_collection = self.db["Post_Body"]
-        post_body_collection.update_one(
-            {"_id": _id}, {"$set": {"heading": heading, "text": text}}
-        )
-        self.insert_into_changed_by(post_id, _id, ms_number)
-
-    def update_post_body_status(self, _id, status):
-        post_body_collection = self.db["Post_Body"]
-        post_body_collection.update_one({"_id": _id}, {"$set": {"status": status}})
-
-    def update_comment(self, _id, text):
-        comment_collection = self.db["Comment"]
-        comment_collection.update_one({"_id": _id}, {"$set": {"text": text}})
-
-    def delete_post(self, _id):
+    def select_post_stati(self, user_id):
+        user_collection = self.db["User"]
+        user = user_collection.find_one({"_id": user_id})
+        if not user:
+            return []
         post_collection = self.db["Post"]
-        post_body_collection = self.db["Post_Body"]
-        comment_collection = self.db["Comment"]
-        changed_by_collection = self.db["Changed_By"]
+        posts = post_collection.find({"fk_author": user_id})
+        return [
+            {"status": post["status"], "title": post["body"]["title"]} for post in posts
+        ]
 
-        post = post_collection.find_one({"_id": _id})
-        if post:
-            post_body_collection.delete_one({"_id": post["fk_body_id"]})
+    def update_post_body(self, post_id, title, content):
+        post_collection = self.db["Post"]
+        result = post_collection.update_one(
+            {"_id": post_id}, {"$set": {"body.title": title, "body.content": content}}
+        )
+        return result.modified_count > 0
 
-            comment_collection.delete_many({"fk_post_id": _id})
+    def update_post_status(self, post_id, status):
+        post_collection = self.db["Post"]
+        result = post_collection.update_one(
+            {"_id": post_id}, {"$set": {"status": status}}
+        )
+        return result.modified_count > 0
 
-            changed_by_collection.delete_many({"pk_fk_post_id": _id})
+    def add_post_votes(self, post_id, vote_type="upvote"):
+        post_collection = self.db["Post"]
+        update_field = "upvotes" if vote_type == "upvote" else "downvotes"
+        result = post_collection.update_one(
+            {"_id": post_id}, {"$inc": {update_field: 1}}
+        )
+        return result.modified_count > 0
 
-            post_collection.delete_one({"_id": _id})
+    def add_user_vote(self, user_id, post_id, vote_type="upvote"):
+        user_collection = self.db["User"]
+        update_field = "upvotes" if vote_type == "upvote" else "downvotes"
+        if user_collection.find_one(
+            {"_id": user_id, update_field: {"$elemMatch": {"post": post_id}}}
+        ):
+            return False
+        user_result = user_collection.update_one(
+            {"_id": user_id}, {"$push": {update_field: {"post": post_id}}}
+        )
+        post_result = self.add_post_votes(post_id, vote_type)
+        return user_result.modified_count > 0 and post_result
 
-    def delete_comment(self, _id):
-        comment_collection = self.db["Comment"]
-        comment_collection.delete_one({"_id": _id})
+    def remove_post_vote(self, post_id, vote_type="upvote"):
+        post_collection = self.db["Post"]
+        update_field = "upvotes" if vote_type == "upvote" else "downvotes"
+        result = post_collection.update_one(
+            {"_id": post_id}, {"$inc": {update_field: -1}}
+        )
+        return result.modified_count > 0
+
+    def remove_user_vote(self, user_id, post_id, vote_type="upvote"):
+        user_collection = self.db["User"]
+        update_field = "upvotes" if vote_type == "upvote" else "downvotes"
+        if not user_collection.find_one(
+            {"_id": user_id, update_field: {"$elemMatch": {"post": post_id}}}
+        ):
+            return False
+        user_result = user_collection.update_one(
+            {"_id": user_id}, {"$pull": {update_field: {"post": post_id}}}
+        )
+        post_result = self.remove_post_vote(post_id, vote_type)
+        return user_result.modified_count > 0 and post_result
+
+    def delete_post(self, post_id):
+        post_collection = self.db["Post"]
+        result = post_collection.delete_one({"_id": post_id})
+        return result.deleted_count > 0
 
     def delete_user(self, _id):
         user_collection = self.db["User"]
-        user_collection.delete_one({"_id": _id})
+        result = user_collection.delete_one({"_id": _id})
+        return result.deleted_count > 0
