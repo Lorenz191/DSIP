@@ -17,5 +17,5 @@ urlpatterns = [
     path("api/user/register", views.view_register_user),
     path("api/user/login", views.view_login_user),
     path("api/user/profile/<str:user_id>", views.view_get_user_profile),
-    path("api/user/update/<str:user_id>", views.view_delete_user_profile()),
+    path("api/user/update/<str:user_id>", views.view_delete_user_profile),
 ]
