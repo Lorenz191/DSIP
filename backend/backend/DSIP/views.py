@@ -58,21 +58,29 @@ def view_authenticate_with_external_service(request):
 
 def view_get_post(request, post_id):
     """Gibt einen bestimmten Vorschlag zurück."""
+    status = get_post(post_id=post_id)
+    return HttpResponse(status=status)
     pass
 
 
 def view_delete_post(request, post_id):
     """Löscht einen Vorschlag."""
+    status = delete_post(post_id=post_id)
+    return HttpResponse(status=status)
     pass
 
 
 def view_upvote_post(request, post_id):
     """Erhöht die Bewertung eines Vorschlags."""
+    status = upvote_post(post_id=post_id)
+    return HttpResponse(status=status)
     pass
 
 
 def view_downvote_post(request, post_id):
     """Verringert die Bewertung eines Vorschlags."""
+    status = downvote_post(post_id=post_id)
+    return HttpResponse(status=status)
     pass
 
 
