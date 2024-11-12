@@ -2,12 +2,16 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-def create_post(request, post_body):
-    """Erstellt einen neuen Vorschlag.
-    @:returns: 201 or 500
-    """
+def create_post(request, post):
+    """Erstellt einen neuen Vorschlag."""
+    model = SeAn()
 
-    pass
+    if model.get_sentiment(post):
+        return Response(
+            "Post contains negative sentiment", status=status.HTTP_400_BAD_REQUEST
+        )
+    else:
+        pass
 
 
 def get_post(request, post_id):

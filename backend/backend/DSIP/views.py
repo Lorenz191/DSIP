@@ -32,6 +32,9 @@ def sean_view(request, text):
     return HttpResponse(sentiment[0])
 
 
+# ADMIN
+
+
 def view_delete_user_post(request, post_id):
     status = delete_user_post(post_id=post_id)
     return HttpResponse(status=status)
@@ -40,6 +43,60 @@ def view_delete_user_post(request, post_id):
 def view_comment_as_admin(request, post_id):
     status = comment_as_admin(post_id=post_id)
     return HttpResponse(status=status)
+
+
+# EXTERNAL
+
+
+def view_authenticate_with_external_service(request):
+    """Authentifiziert sich bei einem externen Dienst."""
+    pass
+
+
+# POST
+
+
+def view_get_post(request, post_id):
+    """Gibt einen bestimmten Vorschlag zurück."""
+    pass
+
+
+def view_delete_post(request, post_id):
+    """Löscht einen Vorschlag."""
+    pass
+
+
+def view_upvote_post(request, post_id):
+    """Erhöht die Bewertung eines Vorschlags."""
+    pass
+
+
+def view_downvote_post(request, post_id):
+    """Verringert die Bewertung eines Vorschlags."""
+    pass
+
+
+# USERS
+
+
+def view_register_user(request):
+    """Registriert einen neuen Benutzer."""
+    pass
+
+
+def view_login_user(request):
+    """Loggt einen Benutzer ein."""
+    pass
+
+
+def view_get_user_profile(request, user_id):
+    """Gibt das Benutzerprofil zurück."""
+    pass
+
+
+def view_delete_user_profile(request, user_id):
+    """Löscht das Benutzerprofil."""
+    pass
 
 
 def view_create_post(request, post_body):
