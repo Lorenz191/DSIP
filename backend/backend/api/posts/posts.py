@@ -14,7 +14,6 @@ def create_post(request, post):
         pass
 
 
-
 def get_post(request, post_id):
     """Gibt einen bestimmten Vorschlag zurück."""
     pass

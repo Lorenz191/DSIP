@@ -44,6 +44,7 @@ def view_comment_as_admin(request, post_id):
     status = comment_as_admin(post_id=post_id)
     return HttpResponse(status=status)
 
+
 # EXTERNAL
 
 
@@ -97,6 +98,7 @@ def view_delete_user_profile(request, user_id):
     """Löscht das Benutzerprofil."""
     pass
 
+
 def view_create_post(request, post_body):
     model = SeAn()
 
@@ -115,4 +117,3 @@ def view_update_post(request, post_id, post_body):
     else:
         status = update_post(post_id, post_body)
         return HttpResponse(status=status)
-
