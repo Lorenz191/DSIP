@@ -1,6 +1,8 @@
 from transformers import pipeline
 
-pipe = pipeline("text-classification", model="oliverguhr/german-sentiment-bert")
+pipe = pipeline(
+    "text-classification", model="oliverguhr/german-sentiment-bert", device="mps"
+)
 
 
 class SeAn:
@@ -8,8 +10,16 @@ class SeAn:
     def __init__(self):
         self.model = pipe
 
-    def get_sentiment(self, text):
-        result = self.model(text)
-        classes = [res["label"] for res in result]
-        probabilities = [res["score"] for res in result]
-        return classes, probabilities
+    def get_sentiment(self, post):
+        title = post["body"]["title"]
+        content = post["body"]["content"]
+
+        title_sentiment = self.model(title)[0]
+        content_sentiment = self.model(content)[0]
+
+        if (
+            title_sentiment["label"] == "negative"
+            or content_sentiment["label"] == "negative"
+        ):
+            return True, title_sentiment, content_sentiment
+        return False, title_sentiment, content_sentiment

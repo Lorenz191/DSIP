@@ -24,6 +24,7 @@ from ..api.sort.sorting import (
     sort_posts_by_popularity,
 )
 from ..api.users.users import register_user, get_user_profile, update_user_profile
+from ..sentiment_model.SentimentAnalysis import SeAn
 
 
 def sean_view(request, text):
@@ -43,7 +44,6 @@ def view_comment_as_admin(request, post_id):
     status = comment_as_admin(post_id=post_id)
     return HttpResponse(status=status)
 
-
 # EXTERNAL
 
 
@@ -55,18 +55,8 @@ def view_authenticate_with_external_service(request):
 # POST
 
 
-def view_create_post(request, post_body):
-    """Erstellt einen neuen Vorschlag."""
-    pass
-
-
 def view_get_post(request, post_id):
     """Gibt einen bestimmten Vorschlag zurück."""
-    pass
-
-
-def view_update_post(request, post_id):
-    """Aktualisiert einen bestehenden Vorschlag."""
     pass
 
 
@@ -106,3 +96,23 @@ def view_get_user_profile(request, user_id):
 def view_delete_user_profile(request, user_id):
     """Löscht das Benutzerprofil."""
     pass
+
+def view_create_post(request, post_body):
+    model = SeAn()
+
+    if model.get_sentiment(post_body)[0]:
+        return HttpResponse("Post contains negative sentiment", status=400)
+    else:
+        status = create_post(post_body)
+        return HttpResponse(status=status)
+
+
+def view_update_post(request, post_id, post_body):
+    model = SeAn()
+
+    if model.get_sentiment(post_body)[0]:
+        return HttpResponse("Post contains negative sentiment", status=400)
+    else:
+        status = update_post(post_id, post_body)
+        return HttpResponse(status=status)
+

@@ -1,6 +1,5 @@
 from rest_framework.response import Response
 from rest_framework import status
-from ....backend.sentiment_model.SentimentAnalysis import SeAn
 
 
 def create_post(request, post):
@@ -14,11 +13,15 @@ def create_post(request, post):
     else:
         pass
 
-    pass
 
 
 def get_post(request, post_id):
     """Gibt einen bestimmten Vorschlag zurück."""
+    pass
+
+
+def get_posts(request):
+    """Gibt alle Vorschläge zurück."""
     pass
 
 
