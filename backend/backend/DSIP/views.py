@@ -1,30 +1,19 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+
 from ..sentiment_model.SentimentAnalysis import SeAn
-from ..api.admin.admin import delete_user_post, comment_as_admin, get_reports
-from ..api.external.external import authenticate_with_external_service
-from ..api.forum.forum import (
-    create_forum_post,
-    get_forum_posts,
-    create_forum_comment,
-    get_forum_comments,
-)
-from ..api.moderation.moderation import analyze_sentiment, moderate_post
-from ..api.posts.posts import (
-    create_post,
-    get_post,
-    update_post,
-    delete_post,
-    upvote_post,
-    downvote_post,
-)
-from ..api.sort.sorting import (
-    sort_posts_by_newest,
-    sort_posts_by_oldest,
-    sort_posts_by_popularity,
-)
-from ..api.users.users import register_user, get_user_profile, update_user_profile
-from ..sentiment_model.SentimentAnalysis import SeAn
+from django.http import JsonResponse
+from bson import ObjectId
+from datetime import datetime
+from ..db_access.db_access import DB
+
+
+def custom_serializer(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError("Type not serializable")
 
 
 def sean_view(request, text):
@@ -36,13 +25,11 @@ def sean_view(request, text):
 
 
 def view_delete_user_post(request, post_id):
-    status = delete_user_post(post_id=post_id)
-    return HttpResponse(status=status)
+    pass
 
 
 def view_comment_as_admin(request, post_id):
-    status = comment_as_admin(post_id=post_id)
-    return HttpResponse(status=status)
+    pass
 
 
 # EXTERNAL
@@ -56,31 +43,45 @@ def view_authenticate_with_external_service(request):
 # POST
 
 
+def view_get_posts(request):
+    db_instance = DB()
+    posts = db_instance.select_posts()
+    serialized_posts = [
+        {
+            key: (
+                custom_serializer(value)
+                if isinstance(value, (ObjectId, datetime))
+                else value
+            )
+            for key, value in post.items()
+        }
+        for post in posts
+    ]
+    return JsonResponse(serialized_posts, safe=False)
+
+
 def view_get_post(request, post_id):
     """Gibt einen bestimmten Vorschlag zurück."""
-    status = get_post(post_id=post_id)
-    return HttpResponse(status=status)
-    pass
+    db_instance = DB()
+    post = db_instance.select_post_by_id(post_id)
+    return JsonResponse(post, safe=False)
 
 
 def view_delete_post(request, post_id):
     """Löscht einen Vorschlag."""
-    status = delete_post(post_id=post_id)
-    return HttpResponse(status=status)
+
     pass
 
 
 def view_upvote_post(request, post_id):
     """Erhöht die Bewertung eines Vorschlags."""
-    status = upvote_post(post_id=post_id)
-    return HttpResponse(status=status)
+
     pass
 
 
 def view_downvote_post(request, post_id):
     """Verringert die Bewertung eines Vorschlags."""
-    status = downvote_post(post_id=post_id)
-    return HttpResponse(status=status)
+
     pass
 
 
@@ -107,21 +108,9 @@ def view_delete_user_profile(request, user_id):
     pass
 
 
-def view_create_post(request, post_body):
-    model = SeAn()
-
-    if model.get_sentiment(post_body)[0]:
-        return HttpResponse("Post contains negative sentiment", status=400)
-    else:
-        status = create_post(post_body)
-        return HttpResponse(status=status)
+def view_create_post(request):
+    pass
 
 
 def view_update_post(request, post_id, post_body):
-    model = SeAn()
-
-    if model.get_sentiment(post_body)[0]:
-        return HttpResponse("Post contains negative sentiment", status=400)
-    else:
-        status = update_post(post_id, post_body)
-        return HttpResponse(status=status)
+    pass

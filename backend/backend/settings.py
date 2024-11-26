@@ -15,10 +15,10 @@ import os
 from dotenv import load_dotenv
 import django.db.backends.mysql
 
-load_dotenv("../../.env")
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(Path(BASE_DIR).parent / ".env")
 
 
 # Quick-start development settings - unsuitable for production
