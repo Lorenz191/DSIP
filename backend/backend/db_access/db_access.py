@@ -3,8 +3,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 import os
-
-load_dotenv("../../../.env")
+from bson import ObjectId
 
 
 class DB:
@@ -47,6 +46,11 @@ class DB:
         post_collection = self.db["Post"]
         posts = post_collection.find()
         return list(posts) if posts else []
+
+    def select_post_by_id(self, post_id):
+        post_collection = self.db["Post"]
+        post = post_collection.find_one({"_id": post_id})
+        return post if post else []
 
     def select_posts_for_user(self, user_id):
         user_collection = self.db["User"]
