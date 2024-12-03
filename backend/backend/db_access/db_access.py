@@ -19,11 +19,11 @@ class DB:
         self.db = self.client["DSIP"]
 
     # Insert into User
-    def insert_into_user(self, ms_number, is_admin):
+    def insert_into_user(self, user_id, is_admin):
         user_collection = self.db["User"]
-        if user_collection.find_one({"ms_number": ms_number}):
+        if user_collection.find_one({"uuid": user_id}):
             return False
-        user_document = {"ms_number": ms_number, "is_admin": is_admin}
+        user_document = {"uuid": user_id, "is_admin": is_admin}
         result = user_collection.insert_one(user_document)
         return str(result.inserted_id) if result.inserted_id else False
 

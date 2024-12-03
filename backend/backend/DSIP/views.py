@@ -175,7 +175,6 @@ def view_register_user(request):
 
 def view_login_user(request):
     """Loggt einen Benutzer ein."""
-    print(1)
     return oauth.auth0.authorize_redirect(
         request, request.build_absolute_uri(reverse("callback"))
     )
@@ -183,7 +182,6 @@ def view_login_user(request):
 
 def callback(request):
     token = oauth.auth0.authorize_access_token(request)
-    print(token)
     request.session["user"] = token
     return redirect(request.build_absolute_uri(reverse("index")))
 
@@ -219,6 +217,10 @@ def set_session(request):
         try:
             data = json.loads(request.body)
             auth0_id = data.get("auth0Id")
+
+            db_session = DB()
+            db_session.insert_into_user(user_id=auth0_id, is_admin=False)
+
             if auth0_id:
                 request.session["auth0_id"] = auth0_id
                 return JsonResponse({"success": True}, status=200)
