@@ -13,9 +13,8 @@ urlpatterns = [
     path("api/post/update/<str:post_id>", views.view_update_post),
     path("api/post/delete/<str:post_id>", views.view_delete_post),
     path("api/post/vote/", views.view_vote_post),
-    path("api/user/login", views.view_login_user),
+    path("", views.view_login_user),
     path("api/user/profile/<str:user_id>", views.view_get_user_profile),
     path("api/user/update/<str:user_id>", views.view_delete_user_profile),
-    path(r"^api/public/", views.public),
-    path(r"^api/private/", views.private),
+    path("api/set-session", views.set_session),
 ]

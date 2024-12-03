@@ -7,7 +7,7 @@ export default class AuthService {
   authenticated = this.isAuthenticated()
   authNotifier = new EventEmitter()
 
-  constructor () {
+  constructor() {
     this.login = this.login.bind(this)
     this.setSession = this.setSession.bind(this)
     this.logout = this.logout.bind(this)
@@ -21,7 +21,7 @@ export default class AuthService {
   auth0 = new auth0.WebAuth({
     domain: import.meta.env.VITE_AUTH0_DOMAIN,
     clientID: import.meta.env.VITE_AUTH0_CLIENT_ID,
-    redirectUri: 'http://localhost:8080/',
+    redirectUri: 'http://localhost:8080',
     audience: 'https://dsip.at/login',
     responseType: 'token id_token',
     scope: 'openid profile'
@@ -29,13 +29,13 @@ export default class AuthService {
 
   // this method calls the authorize() method
   // which triggers the Auth0 login page
-  login () {
+  login() {
     this.auth0.authorize()
   }
 
   // this method calls the parseHash() method of Auth0
   // to get authentication information from the callback URL
-  handleAuthentication () {
+  handleAuthentication() {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult)
@@ -58,17 +58,32 @@ export default class AuthService {
 
   // stores the user's access_token, id_token, and a time at
   // which the access_token will expire in the local storage
-  setSession (authResult) {
+  setSession(authResult) {
     this.accessToken = authResult.accessToken
     this.idToken = authResult.idToken
     this.profile = authResult.idTokenPayload
     this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime()
-    this.authNotifier.emit('authChange', {authenticated: true})
+    this.authNotifier.emit('authChange', { authenticated: true })
+    fetch('http://localhost:8000/api/set-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.accessToken}`
+      },
+      body: JSON.stringify({ auth0Id: this.profile.sub.split('|')[1] })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Session set on backend:', data)
+      })
+      .catch(error => {
+        console.error('Error setting session on backend:', error)
+      })
   }
 
   // remove the access and ID tokens from the
   // local storage and emits the authChange event
-  logout () {
+  logout() {
     delete this.accessToken
     delete this.idToken
     delete this.expiresAt
@@ -78,23 +93,23 @@ export default class AuthService {
   }
 
   // checks if the user is authenticated
-  isAuthenticated () {
+  isAuthenticated() {
     // Check whether the current time is past the
     // access token's expiry time
     return new Date().getTime() < this.expiresAt
   }
 
   // a static method to get the access token
-  getAuthToken () {
+  getAuthToken() {
     return this.accessToken
   }
 
-  // a method to get the User profile
-  getUserProfile () {
+  // a method to get the User pxrofile
+  getUserProfile() {
     return this.profile
   }
 
-  silentAuth () {
+  silentAuth() {
     return new Promise((resolve, reject) => {
       this.auth0.checkSession({}, (err, authResult) => {
         if (err) return reject(err)

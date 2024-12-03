@@ -175,6 +175,7 @@ def view_register_user(request):
 
 def view_login_user(request):
     """Loggt einen Benutzer ein."""
+    print(1)
     return oauth.auth0.authorize_redirect(
         request, request.build_absolute_uri(reverse("callback"))
     )
@@ -182,6 +183,7 @@ def view_login_user(request):
 
 def callback(request):
     token = oauth.auth0.authorize_access_token(request)
+    print(token)
     request.session["user"] = token
     return redirect(request.build_absolute_uri(reverse("index")))
 
@@ -201,17 +203,6 @@ def logout(request):
     )
 
 
-def index(request):
-    return render(
-        request,
-        "index.html",
-        context={
-            "session": request.session.get("user"),
-            "pretty": json.dumps(request.session.get("user"), indent=4),
-        },
-    )
-
-
 def view_get_user_profile(request, user_id):
     """Gibt das Benutzerprofil zurück."""
     pass
@@ -222,9 +213,18 @@ def view_delete_user_profile(request, user_id):
     pass
 
 
-def public(request):
-    return HttpResponse("You don't need to be authenticated to see this")
-
-
-def private(request):
-    return HttpResponse("You should not see this message if not authenticated!")
+@csrf_exempt
+def set_session(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            auth0_id = data.get("auth0Id")
+            if auth0_id:
+                request.session["auth0_id"] = auth0_id
+                return JsonResponse({"success": True}, status=200)
+            else:
+                return JsonResponse({"error": "auth0Id is required."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
