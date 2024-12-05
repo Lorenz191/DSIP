@@ -41,7 +41,6 @@ export default class AuthService {
         this.setSession(authResult)
       } else if (err) {
         console.log(err)
-        alert(`Error: ${err.error}. Check the console for further details.`)
       } else {
         this.silentAuth()
           .then(() => {
@@ -49,7 +48,6 @@ export default class AuthService {
           })
           .catch((err) => {
             console.log(err)
-            alert(`Error: ${err.error}. Check the console for further details.`)
           })
       }
       router.replace('/')
@@ -104,7 +102,7 @@ export default class AuthService {
     return this.accessToken
   }
 
-  // a method to get the User pxrofile
+  // a method to get the User profile
   getUserProfile() {
     return this.profile
   }

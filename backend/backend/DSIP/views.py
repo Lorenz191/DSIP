@@ -44,21 +44,6 @@ def sean_view(request, text):
     return HttpResponse(sentiment[0])
 
 
-# ADMIN
-
-
-def view_delete_user_post(request, post_id):
-    pass
-
-
-# EXTERNAL
-
-
-def view_authenticate_with_external_service(request):
-    """Authentifiziert sich bei einem externen Dienst."""
-    pass
-
-
 # POST
 
 
@@ -69,23 +54,46 @@ def view_get_posts(request):
     return JsonResponse(serialized_posts, safe=False)
 
 
-def view_get_post(request, post_id):
+def view_get_post(request):
     """Returns a specific post."""
-    db_instance = DB()
-    post = db_instance.select_post_by_id(post_id)
+    if request.method == "POST":
+        body = json.loads(request.body)
+        post_id = body.get("post_id")
 
-    if post is None:
-        return JsonResponse({"error": "Post not found"}, status=404)
+        db_instance = DB()
+        post = db_instance.select_post_by_id(post_id)
 
-    serialized_post = custom_serializer(post)
-    return JsonResponse(serialized_post, safe=False)
+        if post is None:
+            return JsonResponse({"error": "Post not found"}, status=404)
+
+        serialized_post = custom_serializer(post)
+        return JsonResponse(serialized_post, safe=False)
+
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 
-def view_delete_post(request, post_id):
+def view_delete_post(request):
     """Löscht einen Vorschlag."""
-    db_instance = DB()
+    if request.method == "POST":
+        body = json.loads(request.body)
+        post_id = body.get("post_id")
 
-    pass
+        db_instance = DB()
+        post_document = db_instance.select_post_by_id(post_id)
+
+        if (
+            post_document.get("fk_author") != request.session.get("auth0_id")
+            or request.session.get("is_admin") == False
+        ):
+            return JsonResponse(
+                {"error": "You are not authorized to delete this post."}, status=403
+            )
+
+        db_instance.delete_post(post_id)
+        return JsonResponse({"success": True}, status=200)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 
 @csrf_exempt
@@ -144,7 +152,7 @@ def view_create_post(request):
                 )
 
             post_document = {
-                "fk_author": ObjectId(post_data.get("fk_author")),
+                "fk_author": request.session.get("auth0_id"),
                 "body": body,
                 "is_anonym": post_data.get("is_anonym"),
                 "upvotes": [{"user": ObjectId(post_data.get("fk_author"))}],
@@ -162,15 +170,53 @@ def view_create_post(request):
 
 
 def view_update_post(request):
-    pass
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            post_id = body.get("post_id")
+            post_data = body.get("post_data")
+
+            db_instance = DB()
+            post_document = db_instance.select_post_by_id(post_id)
+
+            if post_document.get("fk_author") != request.session.get("auth0_id"):
+                return JsonResponse(
+                    {"error": "You are not authorized to update this post."}, status=403
+                )
+
+            result = db_instance.update_post_body(post_id, post_data)
+
+            return JsonResponse({"success": result}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 
-# USERS
+def view_update_status_post(request):
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            post_id = body.get("post_id")
+            status = body.get("status")
 
+            db_instance = DB()
+            post_document = db_instance.select_post_by_id(post_id)
 
-def view_register_user(request):
-    """Registriert einen neuen Benutzer."""
-    pass
+            if post_document.get("fk_author") != request.session.get("auth0_id"):
+                return JsonResponse(
+                    {"error": "You are not authorized to update this post."}, status=403
+                )
+
+            result = db_instance.update_post_status(post_id, status)
+
+            return JsonResponse({"success": result}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 
 def view_login_user(request):
@@ -201,14 +247,16 @@ def logout(request):
     )
 
 
-def view_get_user_profile(request, user_id):
-    """Gibt das Benutzerprofil zurück."""
-    pass
-
-
 def view_delete_user_profile(request, user_id):
     """Löscht das Benutzerprofil."""
-    pass
+    if request.session.get("auth0_id") == user_id:
+        db_instance = DB()
+        db_instance.delete_user(user_id)
+        return JsonResponse({"success": True}, status=200)
+    else:
+        return JsonResponse(
+            {"error": "You are not authorized to delete this user."}, status=403
+        )
 
 
 @csrf_exempt
