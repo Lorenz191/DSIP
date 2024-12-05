@@ -84,13 +84,18 @@ class DB:
             return []
 
     # Update Post Body
-    def update_post_body(self, post_id, title, content):
+    def update_post_body(self, post_id, body):
         try:
             post_id = ObjectId(post_id)
             post_collection = self.db["Post"]
             result = post_collection.update_one(
                 {"_id": post_id},
-                {"$set": {"body.title": title, "body.content": content}},
+                {
+                    "$set": {
+                        "body.title": body.get("title"),
+                        "body.content": body.get("content"),
+                    }
+                },
             )
             return result.modified_count > 0
         except Exception as e:
