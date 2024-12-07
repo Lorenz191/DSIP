@@ -81,6 +81,7 @@ const handleDownvote = () => {
 
 <style scoped>
 .post-container {
+  margin-bottom: 60px;
   width: 800px;
   height: 420px;
   box-shadow: 5px 5px 15px 0px rgba(0, 0, 0, 0.25);
