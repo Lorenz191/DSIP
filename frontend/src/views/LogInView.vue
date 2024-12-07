@@ -53,19 +53,6 @@ watch(
 </script>
 
 <template>
-    <div>
-    <button
-      class="btn btn-primary btn-margin"
-      v-if="authenticated"
-      @click="logout"
-    >
-      Log Out
-    </button>
-
-    {{ message }}
-    <br />
-  </div>
-
   <div class="all">
   <div class="container">
     <div class="left-section">
