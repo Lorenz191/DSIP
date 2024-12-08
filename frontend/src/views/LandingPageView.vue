@@ -4,13 +4,18 @@ import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import PostRead from '@/components/PostRead.vue'
 import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
+import { RouterLink } from 'vue-router'
 
 const posts = ref([])
+const sv_posts = ref([])
+const svPosts = ref(false)
 
 const fetchPosts = async () => {
   try {
     const response = await axios.get('http://localhost:8000/api/posts/get')
+    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get')
     posts.value = response.data
+    sv_posts.value = sv_response.data
   } catch (error) {
     console.error('Error fetching posts:', error)
   }
@@ -25,12 +30,21 @@ onMounted(() => {
   <LandingNav></LandingNav>
   <div class="posts-container">
     <div class="aside-container">
-      <UserAsideInformaiton></UserAsideInformaiton>
+      <UserAsideInformaiton :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
     </div>
     <div class="posts-wrapper">
-      <div class="post-container" v-for="post in posts" :key="post.id">
-        <PostRead :post="post"></PostRead>
-      </div>
+      <template v-if="!svPosts">
+        <div class="post-container" v-for="post in posts" :key="post.id">
+          <RouterLink :to="`/post/${post._id}`">
+            <PostRead :post="post"></PostRead>
+          </RouterLink>
+        </div>
+      </template>
+      <template v-else>
+        <div class="post-container" v-for="post in sv_posts" :key="post.id">
+          <PostRead :post="post"></PostRead>
+        </div>
+      </template>
     </div>
     <div class="new-post-container">
       <button class="new-post-button">
@@ -39,7 +53,6 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .aside-container, .new-post-container {
@@ -62,9 +75,6 @@ onMounted(() => {
   justify-content: flex-start;
   gap: 16px;
   overflow-y: auto;
-  /*box-shadow: 5px 5px 15px 0px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
-  border: 3px solid rgba(217, 217, 217, 0.20);*/
   padding: 16px;
 }
 
@@ -82,12 +92,13 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-.new-post-button{
+.new-post-button {
   background: #D9D9D9;
   font-family: Futura;
   font-size: 24px;
   width: 230px;
   height: 40px;
   border-radius: 5px;
+  margin-bottom: 60px;
 }
 </style>

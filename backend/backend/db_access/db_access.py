@@ -39,6 +39,12 @@ class DB:
         posts = post_collection.find()
         return list(posts) if posts else []
 
+    # Select all SV Posts
+    def select_posts_sv(self):
+        post_collection = self.db["Post"]
+        posts = post_collection.find({"sv_post": True})
+        return list(posts) if posts else []
+
     # Select Post by ID
     def select_post_by_id(self, post_id):
         post_collection = self.db["Post"]

@@ -1,33 +1,39 @@
 <script setup>
 import { ref } from 'vue'
 
-const svPosts = ref(false)
+const props = defineProps({
+  svPosts: {
+    type: Boolean,
+    required: true
+  }
+})
 
+const emit = defineEmits(['update:svPosts'])
+
+const toggleSvPosts = () => {
+  emit('update:svPosts', !props.svPosts)
+}
 </script>
 
 <template>
   <div class="aside-container">
     <div
       class="top-container"
-      :class="{ 'clicked': svPosts }"
-      @click="svPosts = !svPosts"
+      :class="{ 'clicked': props.svPosts }"
+      @click="toggleSvPosts"
     >
       <img src="../icons/Chat_Bubbles.svg" alt="Chat Bubbles" class="chat-icon">
     </div>
-    <div
-      class="seperation-container"
-    >
+    <div class="seperation-container">
       <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="5" viewBox="0 0 69 5" fill="none" id="line">
-        <path d="M2.7037 2.80457H66.2963"  stroke="#6FD1DE" stroke-opacity="0.85" stroke-width="4"
-              stroke-linecap="round" />
-        <path d="M2.7037 2.80457H66.2963"  stroke="#2EDB7B" stroke-opacity="0.85" stroke-width="4"
-              stroke-linecap="round" v-if="svPosts"/>
+        <path d="M2.7037 2.80457H66.2963"  stroke="#6FD1DE" stroke-opacity="0.85" stroke-width="4" stroke-linecap="round" />
+        <path d="M2.7037 2.80457H66.2963"  stroke="#2EDB7B" stroke-opacity="0.85" stroke-width="4" stroke-linecap="round" v-if="props.svPosts"/>
       </svg>
     </div>
     <div
       class="bottom-container"
-      :class="{ 'clicked': svPosts }"
-      @click="svPosts = !svPosts"
+      :class="{ 'clicked': props.svPosts }"
+      @click="toggleSvPosts"
     >
       <img src="../icons/Megaphone.svg" alt="Megaphone" class="megaphone">
     </div>
