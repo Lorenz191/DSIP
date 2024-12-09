@@ -1,6 +1,7 @@
 import auth0 from 'auth0-js'
 import EventEmitter from 'eventemitter3'
 import router from './../router'
+import axios from 'axios'
 
 
 export default class AuthService {
@@ -30,7 +31,12 @@ export default class AuthService {
   // this method calls the authorize() method
   // which triggers the Auth0 login page
   login() {
-    this.auth0.authorize()
+    console.log('Login method called');
+    this.auth0.authorize((err) => {
+      if (err) {
+        console.error('Error during login:', err);
+      }
+    });
   }
 
   // this method calls the parseHash() method of Auth0
@@ -62,21 +68,21 @@ export default class AuthService {
     this.profile = authResult.idTokenPayload
     this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime()
     this.authNotifier.emit('authChange', { authenticated: true })
-    fetch('http://localhost:8000/api/set-session', {
-      method: 'POST',
+
+    axios.post('http://localhost:8000/api/set-session', {
+      auth0Id: this.profile.sub.split('|')[1]
+    }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${this.accessToken}`
-      },
-      body: JSON.stringify({ auth0Id: this.profile.sub.split('|')[1] })
+      }
     })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Session set on backend:', data)
-      })
-      .catch(error => {
-        console.error('Error setting session on backend:', error)
-      })
+    .then(response => {
+      console.log('Session set on backend:', response.data)
+    })
+    .catch(error => {
+      console.error('Error setting session on backend:', error)
+    })
   }
 
   // remove the access and ID tokens from the

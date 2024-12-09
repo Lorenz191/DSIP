@@ -1,11 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted,  watch } from 'vue'
 
 const loginUrl = ref('');
 const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
 import AuthService from '../auth/AuthService'
+import { useRouter } from 'vue-router'
 
 const auth = new AuthService()
+
+const router = useRouter()
 
 const authenticated = ref(false)
 const message = ref('')
@@ -31,36 +34,25 @@ onMounted(() => {
     authenticated.value = authState.authenticated
     if (authState.authenticated) {
       userProfile.value = auth.getUserProfile()
-      message.value = userProfile.value ? `Hello, ${userProfile.value.name}` : 'User authenticated'
     } else {
       userProfile.value = null
       message.value = ''
     }
   })
-
-  authenticated.value = auth.isAuthenticated()
-  if (authenticated.value) {
-    userProfile.value = auth.getUserProfile()
-    message.value = userProfile.value ? `Hello, ${userProfile.value.name}` : ''
-  }
 })
+
+watch(
+  () => authenticated.value,
+  (newVal) => {
+    if (newVal) {
+      router.push({name: 'landing'})
+    }
+  }
+)
 
 </script>
 
 <template>
-    <div>
-    <button
-      class="btn btn-primary btn-margin"
-      v-if="authenticated"
-      @click="logout"
-    >
-      Log Out
-    </button>
-
-    {{ message }}
-    <br />
-  </div>
-
   <div class="all">
   <div class="container">
     <div class="left-section">

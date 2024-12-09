@@ -4,6 +4,7 @@
     <style>
       .cls-1 {
         stroke: #8dcbb6;
+        fill: none; /* Ensures the stroke is visible but the fill is transparent */
       }
 
       .cls-1, .cls-2 {
@@ -13,6 +14,7 @@
 
       .cls-2 {
         stroke: #2e5adb;
+        fill: none; /* Ensures the stroke is visible but the fill is transparent */
       }
     </style>
   </defs>

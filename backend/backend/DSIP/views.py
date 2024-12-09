@@ -47,6 +47,7 @@ def sean_view(request, text):
 # POST
 
 
+@csrf_exempt
 def view_get_posts(request):
     db_instance = DB()
     posts = db_instance.select_posts()
@@ -54,6 +55,14 @@ def view_get_posts(request):
     return JsonResponse(serialized_posts, safe=False)
 
 
+def view_get_sv_posts(request):
+    db_instance = DB()
+    posts = db_instance.select_posts_sv()
+    serialized_posts = [custom_serializer(post) for post in posts]
+    return JsonResponse(serialized_posts, safe=False)
+
+
+@csrf_exempt
 def view_get_post(request):
     """Returns a specific post."""
     if request.method == "POST":

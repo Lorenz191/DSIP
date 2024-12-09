@@ -7,6 +7,7 @@ urlpatterns = [
     path("sean/<str:text>/", views.sean_view),
     path("api/post/create/", views.view_create_post),
     path("api/posts/get/", views.view_get_posts),
+    path("api/posts_sv/get/", views.view_get_sv_posts),
     path("api/post/get/", views.view_get_post),
     path("api/post/update/<str:post_id>", views.view_update_post),
     path("api/post/delete/", views.view_delete_post),
