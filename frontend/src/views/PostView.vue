@@ -33,7 +33,7 @@ onMounted(() => {
       <h1 class="title">{{ post.body.title }}</h1>
     </div>
     <div class="text-container">
-      <p>
+      <p class="post-content">
         {{post.body.content}}
       </p>
     </div>
@@ -41,5 +41,30 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.date {
+  color: rgba(51, 51, 51, 0.75);
+  font-family: Futura;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
 
+.title {
+  color: #000;
+  font-family: Futura;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.post-content{
+  color: #000;
+  font-family: Futura;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
 </style>
