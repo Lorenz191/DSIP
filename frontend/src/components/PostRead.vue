@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const props = defineProps({
   post: {
@@ -36,22 +37,24 @@ const handleDownvote = () => {
 
 <template>
   <div class="post-container">
-    <div class="date-container">
-      <p class="date">Veröffentlicht am {{ date }}</p>
-    </div>
-    <div class="title-container">
-      <h1 class="title">{{ props.post.body.title }}</h1>
-    </div>
-    <div class="seperation-line-container">
-      <svg xmlns="http://www.w3.org/2000/svg" width="720" height="4" viewBox="0 0 720 4" fill="none">
-        <path d="M2 2H699.5" stroke="#333333" stroke-opacity="0.2" stroke-width="3" stroke-linecap="round" />
-      </svg>
-    </div>
-    <div class="text-container">
-      <p class="post-body">
-        {{ props.post.body.content }}
-      </p>
-    </div>
+    <RouterLink :to="`/post/${props.post._id}`">
+      <div class="date-container">
+        <p class="date">Veröffentlicht am {{ date }}</p>
+      </div>
+      <div class="title-container">
+        <h1 class="title">{{ props.post.body.title }}</h1>
+      </div>
+      <div class="seperation-line-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="720" height="4" viewBox="0 0 720 4" fill="none">
+          <path d="M2 2H699.5" stroke="#333333" stroke-opacity="0.2" stroke-width="3" stroke-linecap="round" />
+        </svg>
+      </div>
+      <div class="text-container">
+        <p class="post-body">
+          {{ props.post.body.content }}
+        </p>
+      </div>
+    </RouterLink>
     <div class="seperation-line-container">
       <svg xmlns="http://www.w3.org/2000/svg" width="720" height="4" viewBox="0 0 720 4" fill="none">
         <path d="M2 2H699.5" stroke="#333333" stroke-opacity="0.2" stroke-width="3" stroke-linecap="round" />
@@ -60,9 +63,12 @@ const handleDownvote = () => {
     <div class="voting-container-container">
       <div class="voting-container">
         <div class="upvote">
-          <img src="./icons/Arrow_Up_Black.svg" alt="upvote" style="height: 36px;" v-if="!upvoted && !hover_up" @click="handleUpvote" @mouseover="hover_up = true" @mouseleave="hover_up = false">
-          <img src="./icons/Arrow_Up_Green_Filled.svg" alt="upvote" style="height: 36px;" v-if="upvoted" @click="handleUpvote">
-          <img src="./icons/Arrow_Up_Green.svg" alt="upvote" style="height: 36px;" v-if="hover_up && !upvoted" @click="handleUpvote" @mouseover="hover_up = true" @mouseleave="hover_up = false">
+          <img src="./icons/Arrow_Up_Black.svg" alt="upvote" style="height: 36px;" v-if="!upvoted && !hover_up"
+               @click="handleUpvote" @mouseover="hover_up = true" @mouseleave="hover_up = false">
+          <img src="./icons/Arrow_Up_Green_Filled.svg" alt="upvote" style="height: 36px;" v-if="upvoted"
+               @click="handleUpvote">
+          <img src="./icons/Arrow_Up_Green.svg" alt="upvote" style="height: 36px;" v-if="hover_up && !upvoted"
+               @click="handleUpvote" @mouseover="hover_up = true" @mouseleave="hover_up = false">
         </div>
         <div class="vertical-seperation-line">
           <svg xmlns="http://www.w3.org/2000/svg" width="2" height="36" viewBox="0 0 2 36" fill="none">
@@ -70,9 +76,12 @@ const handleDownvote = () => {
           </svg>
         </div>
         <div class="downvote">
-          <img src="./icons/Arrow_Down_Blackl.svg" alt="downvote" style="height: 36px;" v-if="!downvoted && !hover_down" @click="handleDownvote" @mouseover="hover_down = true" @mouseleave="hover_down = false">
-          <img src="./icons/Arrow_Down_Blue_Filled.svg" alt="downvote" style="height: 36px;" v-if="downvoted" @click="handleDownvote">
-          <img src="./icons/Arrow_Down_Blue.svg" alt="downvote" style="height: 36px;" v-if="hover_down && !downvoted" @click="handleDownvote" @mouseover="hover_down = true" @mouseleave="hover_down = false">
+          <img src="./icons/Arrow_Down_Blackl.svg" alt="downvote" style="height: 36px;" v-if="!downvoted && !hover_down"
+               @click="handleDownvote" @mouseover="hover_down = true" @mouseleave="hover_down = false">
+          <img src="./icons/Arrow_Down_Blue_Filled.svg" alt="downvote" style="height: 36px;" v-if="downvoted"
+               @click="handleDownvote">
+          <img src="./icons/Arrow_Down_Blue.svg" alt="downvote" style="height: 36px;" v-if="hover_down && !downvoted"
+               @click="handleDownvote" @mouseover="hover_down = true" @mouseleave="hover_down = false">
         </div>
       </div>
     </div>

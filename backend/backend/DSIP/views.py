@@ -47,6 +47,7 @@ def sean_view(request, text):
 # POST
 
 
+@csrf_exempt
 def view_get_posts(request):
     db_instance = DB()
     posts = db_instance.select_posts()

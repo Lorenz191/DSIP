@@ -35,9 +35,7 @@ onMounted(() => {
     <div class="posts-wrapper">
       <template v-if="!svPosts">
         <div class="post-container" v-for="post in posts" :key="post.id">
-          <RouterLink :to="`/post/${post._id}`">
             <PostRead :post="post"></PostRead>
-          </RouterLink>
         </div>
       </template>
       <template v-else>
