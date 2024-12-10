@@ -42,7 +42,9 @@
   padding-left: 6px;
   padding-right: 6px;
 }
-
+.search-container{
+  width: 100%;
+}
 .icon-container {
   display: flex;
   flex-direction: row;
@@ -58,5 +60,8 @@
 
 .icon:hover {
   cursor: pointer;
+}
+input{
+  width: fit-content;
 }
 </style>

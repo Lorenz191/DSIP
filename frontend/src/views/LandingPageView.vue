@@ -4,11 +4,25 @@ import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import PostRead from '@/components/PostRead.vue'
 import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
+import CreatePostModal from "@/components/CreatePostModal.vue";
 import { RouterLink } from 'vue-router'
 
 const posts = ref([])
 const sv_posts = ref([])
 const svPosts = ref(false)
+
+const showModal = ref(false)
+const openCreatePostModal = () => {
+  showModal.value = true
+}
+
+// Close the modal and clear inputs
+const closeCreatePostModal = () => {
+  showModal.value = false
+  newPostTitle.value = ""
+  newPostContent.value = ""
+}
+
 
 const fetchPosts = async () => {
   try {
@@ -45,10 +59,14 @@ onMounted(() => {
       </template>
     </div>
     <div class="new-post-container">
-      <button class="new-post-button">
+      <button @click="openCreatePostModal" class="new-post-button">
         Neuer Beitrag
       </button>
     </div>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay">
+    <CreatePostModal @close="closeCreatePostModal"></CreatePostModal>
   </div>
 </template>
 
@@ -99,4 +117,19 @@ onMounted(() => {
   border-radius: 5px;
   margin-bottom: 60px;
 }
+
+/* Overlay for the modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
 </style>
