@@ -1,6 +1,7 @@
 <script setup>
 
 
+import UserIconSmall from "@/components/User/UserIconSmall.vue";
 </script>
 
 <template>
@@ -17,7 +18,9 @@
           <img src="./icons/Filter.svg" class="icon" alt="filter-icon" style="background: transparent; height: 25px;">
         </div>
       </div>
+
     </div>
+  <user-icon-small></user-icon-small>
   </div>
 </template>
 
@@ -43,6 +46,11 @@
   padding-right: 6px;
 }
 
+
+user-icon-small {
+  display: flex;
+  align-items: flex-end;
+}
 .icon-container {
   display: flex;
   flex-direction: row;
