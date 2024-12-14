@@ -8,7 +8,7 @@ const props = defineProps({
     required: true
   }
 })
-const mockprops = ref('Status'); //Lorenz ändern
+const status = ref(props.post.status);
 
 const date = new Date(props.post.created_at).toLocaleDateString()
 
@@ -43,7 +43,7 @@ const handleDownvote = () => {
     <RouterLink :to="`/post/${props.post._id}`">
       <div class="date-container">
         <p class="date">Veröffentlicht am {{ date }}</p>
-        <p class="status">{{mockprops}}</p>
+        <p class="status">{{status}}</p>
       </div>
       <div class="title-container">
         <h1 class="title">{{ props.post.body.title }}</h1>

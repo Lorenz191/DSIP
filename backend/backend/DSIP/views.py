@@ -155,10 +155,10 @@ def view_create_post(request):
 
             sentiment = SeAn().get_sentiment(body.get("title"), body.get("content"))
 
-            if sentiment[0]:
-                return JsonResponse(
-                    {"error": "Post contains negative sentiment."}, status=400
-                )
+            ##if sentiment[0]:
+            ##  return JsonResponse(
+            ##    {"error": "Post contains negative sentiment."}, status=400
+            ##)
 
             post_document = {
                 "fk_author": request.session.get("auth0_id"),

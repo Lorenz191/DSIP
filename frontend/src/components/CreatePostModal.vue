@@ -5,6 +5,7 @@ import { ref, defineEmits } from 'vue'
 // Inputs for the new post's title and content
 const newPostTitle = ref("")
 const newPostContent = ref("")
+const isAnonym = ref(false)
 
 // Emit event to close the modal
 const emit = defineEmits(['close'])
@@ -14,6 +15,7 @@ function closeCreatePostModal() {
   emit('close') // Notify parent to close the modal
   newPostTitle.value = ""
   newPostContent.value = ""
+  isAnonym.value = false
 }
 
 
@@ -21,9 +23,10 @@ function closeCreatePostModal() {
 const createPost = async () => {
   try {
     // Send POST request to API with new post data
-    await axios.post('http://localhost:8000/api/posts/create', {
-      title: newPostTitle.value,
-      content: newPostContent.value
+    await axios.post('http://localhost:8000/api/post/create/', {
+      "body": {"title": newPostTitle.value,
+                "content": newPostContent.value},
+      "is_anonym": isAnonym.value
     })
     // Close the modal after saving
     closeCreatePostModal()

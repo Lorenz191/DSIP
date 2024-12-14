@@ -5,7 +5,6 @@ import { ref, onMounted } from 'vue'
 import PostRead from '@/components/PostRead.vue'
 import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
 import CreatePostModal from "@/components/CreatePostModal.vue";
-import { RouterLink } from 'vue-router'
 
 const posts = ref([])
 const sv_posts = ref([])
@@ -16,11 +15,9 @@ const openCreatePostModal = () => {
   showModal.value = true
 }
 
-// Close the modal and clear inputs
 const closeCreatePostModal = () => {
   showModal.value = false
-  newPostTitle.value = ""
-  newPostContent.value = ""
+  fetchPosts()
 }
 
 
