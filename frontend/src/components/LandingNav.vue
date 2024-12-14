@@ -1,10 +1,30 @@
 <script setup>
+import AuthService from '@/auth/AuthService.js'
+const props = defineProps({
+  arrow: {
+    type: Boolean,
+    required: false
+  },
+  logout: {
+    type: Boolean,
+    required: false
+  }
+})
 
+const auth = new AuthService()
+
+const logOut = () => {
+  auth.logout()
+}
 
 </script>
 
 <template>
   <div class="nav-container">
+    <div class="back-arrow-container">
+      <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> &#60; </a>
+      <button @click="logOut" v-if="logout">Abmelden</button>
+    </div>
     <div class="search-bar-container">
       <div class="search-container">
         <input class="searchbar" placeholder="nach Begriff suchen...">
@@ -18,6 +38,9 @@
         </div>
       </div>
     </div>
+    <div class="user-profile-container">
+
+    </div>
   </div>
 </template>
 
@@ -27,7 +50,13 @@
   height: 80px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
+}
+
+.arrow-back{
+  font-size: 20px;
+  color: white;
+  font-weight: 500;
 }
 
 .search-bar-container {
@@ -42,9 +71,7 @@
   padding-left: 6px;
   padding-right: 6px;
 }
-.search-container{
-  width: 100%;
-}
+
 .icon-container {
   display: flex;
   flex-direction: row;
@@ -60,8 +87,5 @@
 
 .icon:hover {
   cursor: pointer;
-}
-input{
-  width: fit-content;
 }
 </style>

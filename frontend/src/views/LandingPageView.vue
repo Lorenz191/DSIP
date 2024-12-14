@@ -38,7 +38,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <LandingNav></LandingNav>
+  <LandingNav logout></LandingNav>
   <div class="posts-container">
     <div class="aside-container">
       <UserAsideInformaiton :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
