@@ -1,10 +1,21 @@
 <script setup>
+import AuthService from '@/auth/AuthService.js'
 const props = defineProps({
   arrow: {
     type: Boolean,
     required: false
+  },
+  logout: {
+    type: Boolean,
+    required: false
   }
 })
+
+const auth = new AuthService()
+
+const logOut = () => {
+  auth.logout()
+}
 
 </script>
 
@@ -12,6 +23,7 @@ const props = defineProps({
   <div class="nav-container">
     <div class="back-arrow-container">
       <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> &#60; </a>
+      <button @click="logOut" v-if="logout">Abmelden</button>
     </div>
     <div class="search-bar-container">
       <div class="search-container">

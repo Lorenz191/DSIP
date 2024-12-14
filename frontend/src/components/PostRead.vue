@@ -8,6 +8,7 @@ const props = defineProps({
     required: true
   }
 })
+const status = ref(props.post.status);
 
 const date = new Date(props.post.created_at).toLocaleDateString()
 
@@ -17,6 +18,7 @@ const hover_up = ref(false)
 const hover_down = ref(false)
 
 const handleUpvote = () => {
+  hover_down.value = false;
   if (!upvoted.value) {
     upvoted.value = true
     downvoted.value = false
@@ -26,6 +28,7 @@ const handleUpvote = () => {
 }
 
 const handleDownvote = () => {
+  hover_up.value = false;
   if (!downvoted.value) {
     downvoted.value = true
     upvoted.value = false
@@ -40,6 +43,7 @@ const handleDownvote = () => {
     <RouterLink :to="`/post/${props.post._id}`">
       <div class="date-container">
         <p class="date">Veröffentlicht am {{ date }}</p>
+        <p class="status">{{status}}</p>
       </div>
       <div class="title-container">
         <h1 class="title">{{ props.post.body.title }}</h1>
@@ -92,7 +96,8 @@ const handleDownvote = () => {
 .post-container {
   margin-bottom: 60px;
   width: 800px;
-  height: 420px;
+  height: auto;
+  padding-bottom: 10px;
   box-shadow: 5px 5px 15px 0px rgba(0, 0, 0, 0.25);
   border-radius: 20px;
   border: 3px solid rgba(217, 217, 217, 0.20);
@@ -100,6 +105,9 @@ const handleDownvote = () => {
 }
 
 .date-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   padding: 12px;
 }
 
@@ -134,8 +142,14 @@ const handleDownvote = () => {
 .text-container {
   padding-left: 40px;
   padding-right: 40px;
-  width: 720px;
-  height: 240px;
+  width: 780px;
+  max-height: 290px;
+  height: auto;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  max-lines: 12;
+  overflow: hidden;
 }
 
 .voting-container-container {

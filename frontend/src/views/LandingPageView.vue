@@ -4,11 +4,22 @@ import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import PostRead from '@/components/PostRead.vue'
 import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
-import { RouterLink } from 'vue-router'
+import CreatePostModal from "@/components/CreatePostModal.vue";
 
 const posts = ref([])
 const sv_posts = ref([])
 const svPosts = ref(false)
+
+const showModal = ref(false)
+const openCreatePostModal = () => {
+  showModal.value = true
+}
+
+const closeCreatePostModal = () => {
+  showModal.value = false
+  fetchPosts()
+}
+
 
 const fetchPosts = async () => {
   try {
@@ -27,7 +38,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <LandingNav></LandingNav>
+  <LandingNav logout></LandingNav>
   <div class="posts-container">
     <div class="aside-container">
       <UserAsideInformaiton :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
@@ -45,10 +56,14 @@ onMounted(() => {
       </template>
     </div>
     <div class="new-post-container">
-      <button class="new-post-button">
+      <button @click="openCreatePostModal" class="new-post-button">
         Neuer Beitrag
       </button>
     </div>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay">
+    <CreatePostModal @close="closeCreatePostModal"></CreatePostModal>
   </div>
 </template>
 
@@ -99,4 +114,19 @@ onMounted(() => {
   border-radius: 5px;
   margin-bottom: 60px;
 }
+
+/* Overlay for the modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
 </style>
