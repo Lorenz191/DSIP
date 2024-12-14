@@ -1,18 +1,10 @@
 <script setup>
-const props = defineProps({
-  arrow: {
-    type: Boolean,
-    required: false
-  }
-})
+
 
 </script>
 
 <template>
   <div class="nav-container">
-    <div class="back-arrow-container">
-      <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> &#60; </a>
-    </div>
     <div class="search-bar-container">
       <div class="search-container">
         <input class="searchbar" placeholder="nach Begriff suchen...">
@@ -26,9 +18,6 @@ const props = defineProps({
         </div>
       </div>
     </div>
-    <div class="user-profile-container">
-
-    </div>
   </div>
 </template>
 
@@ -38,13 +27,7 @@ const props = defineProps({
   height: 80px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
-}
-
-.arrow-back{
-  font-size: 20px;
-  color: white;
-  font-weight: 500;
+  justify-content: center;
 }
 
 .search-bar-container {
