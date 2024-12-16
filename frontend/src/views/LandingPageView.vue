@@ -25,7 +25,8 @@ const fetchPosts = async () => {
   try {
     const response = await axios.get('http://localhost:8000/api/posts/get')
     const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get')
-    posts.value = response.data
+    posts.value = response.data.sort((a,b) => b.upvotes.length - a.upvotes.length)
+
     sv_posts.value = sv_response.data
   } catch (error) {
     console.error('Error fetching posts:', error)

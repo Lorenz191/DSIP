@@ -92,6 +92,9 @@ onMounted(() => {
   socket.onmessage = (event) => {
     console.log('Message from server ', event.data)
     const data = JSON.parse(event.data)
+    if (data.post_id !== props.post._id) {
+      return
+    }
     votes.upvotes = data.upvotes
     votes.downvotes = data.downvotes
   }
