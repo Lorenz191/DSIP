@@ -121,60 +121,6 @@ class DB:
             print(f"Error updating post status: {e}")
             return False
 
-    # Add Votes to a Post
-    def add_post_votes(self, post_id, user_id, vote_type="upvote"):
-        try:
-            post_id = ObjectId(post_id)
-            user_id = ObjectId(user_id)
-            post_collection = self.db["Post"]
-
-            update_field = "upvotes" if vote_type == "upvote" else "downvotes"
-
-            existing_vote = post_collection.find_one(
-                {"_id": post_id, update_field: {"$elemMatch": {"user": user_id}}}
-            )
-
-            print(existing_vote)
-
-            if existing_vote:
-                return False
-
-            result = post_collection.update_one(
-                {"_id": post_id}, {"$push": {update_field: {"user": user_id}}}
-            )
-
-            return result.modified_count > 0
-
-        except Exception as e:
-            print(f"Error adding vote: {e}")
-            return False
-
-    def remove_post_vote(self, post_id, user_id, vote_type="upvote"):
-        try:
-            post_id = ObjectId(post_id)
-            user_id = ObjectId(user_id)
-            post_collection = self.db["Post"]
-
-            update_field = "upvotes" if vote_type == "upvote" else "downvotes"
-
-            # Check if the user has voted
-            existing_vote = post_collection.find_one(
-                {"_id": post_id, update_field: {"$elemMatch": {"user": user_id}}}
-            )
-
-            if not existing_vote:
-                return False
-
-            result = post_collection.update_one(
-                {"_id": post_id}, {"$pull": {update_field: {"user": user_id}}}
-            )
-
-            return result.modified_count > 0
-
-        except Exception as e:
-            print(f"Error removing vote: {e}")
-            return False
-
     # Delete a Post
     def delete_post(self, post_id):
         try:
@@ -195,4 +141,29 @@ class DB:
             return result.deleted_count > 0
         except Exception as e:
             print(f"Error deleting user: {e}")
+            return False
+
+    from bson.objectid import ObjectId
+
+    def update_post_votes(self, post_id, votes):
+        try:
+            post_collection = self.db["Post"]
+
+            # Convert post_id to ObjectId
+            post_id = ObjectId(post_id)
+
+            # Update query
+            result = post_collection.update_one(
+                {"_id": post_id},
+                {
+                    "$set": {
+                        "upvotes": votes["upvotes"],
+                        "downvotes": votes["downvotes"],
+                    }
+                },
+            )
+
+            return result.modified_count > 0
+        except Exception as e:
+            print(f"Error updating post: {e}")
             return False
