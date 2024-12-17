@@ -164,7 +164,7 @@ def view_create_post(request):
                 "fk_author": request.session.get("auth0_id"),
                 "body": body,
                 "is_anonym": post_data.get("is_anonym"),
-                "upvotes": [{"user": ObjectId(post_data.get("fk_author"))}],
+                "upvotes": [],
                 "downvotes": [],
                 "status": "published",
                 "created_at": datetime.now(),
