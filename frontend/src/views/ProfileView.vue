@@ -47,14 +47,17 @@ onMounted(() => {
 
 function categorisePosts(){
   for (const post of posts.value){
-        if(post.value.fk_author == user){
+        if(post.value.fk_author.equals(user)){
           ownP.push(post)
         }else if(post.value.upvotes.includes(user)){
           likedP.push(post)
-        }else{
+        }else if(post.value.downvotes.includes(user)){
           dislikedP.push(post)
         }
   }
+  console.log(ownP);
+  console.log(likedP);
+  console.log(dislikedP);
 }
 
 </script>
@@ -72,15 +75,25 @@ function categorisePosts(){
   </div>
 
   <div id="nav-container">
-    <ProfileNav></ProfileNav>
+    <ProfileNav :own="own" :liked="liked" :disliked="disliked" @update:own="own = $event" @update:liked="liked = $event" @update:disliked="disliked = $event"></ProfileNav>
   </div>
 
   <div class="post-container">
     <template v-if="own">
-     <div class="post-container" v-for="post in posts" :key="post.id">
+     <div class="post-container" v-for="post in ownP" :key="post.id">
             <PostRead :post="post"></PostRead>
         </div>
       </template>
+    <template v-else-if="liked">
+           <div class="post-container" v-for="post in likedP" :key="post.id">
+            <PostRead :post="post"></PostRead>
+        </div>
+    </template>
+     <template v-else-if="disliked">
+           <div class="post-container" v-for="post in dislikedP" :key="post.id">
+            <PostRead :post="post"></PostRead>
+        </div>
+    </template>
 
     <template>
     </template>
