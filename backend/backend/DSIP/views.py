@@ -112,32 +112,24 @@ def view_vote_post(request):
         try:
             body = json.loads(request.body)
             post_id = body.get("post_id")
-            user_id = body.get("user_id")
+            votes = body.get("votes")
 
-            vote_type = body.get("vote_type", "upvote")
-
-            if not post_id or not user_id:
-                return JsonResponse(
-                    {"error": "post_id and user_id are required."}, status=400
-                )
+            if not post_id or not votes:
+                return JsonResponse({"error": "Missing post_id or votes."}, status=400)
 
             db_instance = DB()
-
-            if body.get("action") == "add":
-                success = db_instance.add_post_votes(post_id, user_id, vote_type)
-            elif body.get("action") == "remove":
-                success = db_instance.remove_post_vote(post_id, user_id, vote_type)
-            else:
-                return JsonResponse(
-                    {"error": "Invalid action. Must be 'add' or 'remove'."}, status=400
-                )
+            success = db_instance.update_post_votes(post_id, votes)
 
             if success:
                 return JsonResponse({"success": True}, status=200)
             else:
-                return JsonResponse({"error": "Failed to update vote."}, status=500)
+                return JsonResponse(
+                    {"error": "Votes not modified. Check data or post existence."},
+                    status=200,
+                )
 
         except Exception as e:
+            print(f"Exception: {e}")
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
@@ -164,7 +156,7 @@ def view_create_post(request):
                 "fk_author": request.session.get("auth0_id"),
                 "body": body,
                 "is_anonym": post_data.get("is_anonym"),
-                "upvotes": [{"user": ObjectId(post_data.get("fk_author"))}],
+                "upvotes": [],
                 "downvotes": [],
                 "status": "published",
                 "created_at": datetime.now(),
@@ -178,7 +170,7 @@ def view_create_post(request):
             return JsonResponse({"error": str(e)}, status=500)
 
 
-def view_update_post(request):
+def view_update_post_body(request):
     if request.method == "POST":
         try:
             body = json.loads(request.body)

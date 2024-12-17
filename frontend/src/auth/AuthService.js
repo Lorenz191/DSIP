@@ -2,6 +2,7 @@ import auth0 from 'auth0-js'
 import EventEmitter from 'eventemitter3'
 import router from './../router'
 import axios from 'axios'
+import { useUserStore } from './../stores/user.js'
 
 
 export default class AuthService {
@@ -69,7 +70,7 @@ export default class AuthService {
     this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime()
     this.authNotifier.emit('authChange', { authenticated: true })
 
-    axios.post('http://localhost:8000/api/set-session', {
+    axios.post('http://localhost:8000/api/set-session/', {
       auth0Id: this.profile.sub.split('|')[1]
     }, {
       headers: {
@@ -79,6 +80,8 @@ export default class AuthService {
     })
     .then(response => {
       console.log('Session set on backend:', response.data)
+      router.push({name: 'landing'})
+      useUserStore().setUserUuid(this.profile.sub.split('|')[1])
     })
     .catch(error => {
       console.error('Error setting session on backend:', error)
@@ -88,13 +91,16 @@ export default class AuthService {
   // remove the access and ID tokens from the
   // local storage and emits the authChange event
   logout() {
-    delete this.accessToken
-    delete this.idToken
-    delete this.expiresAt
-    this.authNotifier.emit('authChange', false)
-    // navigate to the home route
-    router.replace('/')
-  }
+  delete this.accessToken
+  delete this.idToken
+  delete this.expiresAt
+  this.authNotifier.emit('authChange', false)
+  useUserStore().clearUserUuid()
+
+  const returnTo = 'http://localhost:8080'
+  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID
+  window.location.href = `https://${import.meta.env.VITE_AUTH0_DOMAIN}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`
+}
 
   // checks if the user is authenticated
   isAuthenticated() {
