@@ -65,7 +65,7 @@ watch(
       </div>
       <div class="login-container">
         <button class="btn btn-primary btn-margin login-button" v-if="!authenticated" @click="login" type="submit">
-          <a :href="loginUrl">Anmelden</a>
+          <p>Anmelden</p>
         </button>
       </div>
     </div>

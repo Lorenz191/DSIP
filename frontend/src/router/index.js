@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LogInView from "../views/LogInView.vue";
 import LandingPageView from '@/views/LandingPageView.vue'
 import PostView from '@/views/PostView.vue'
-import ProfileView from "@/views/ProfileView.vue";
+import CreatePost from "@/components/CreatePost.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -21,7 +21,7 @@ const router = createRouter({
     },
     {path: '/landing', name: 'landing', component: LandingPageView},
     {path: '/post/:id', name: 'post', component: PostView},
-    {path: '/profile', name: 'profile', component: ProfileView}
+    {path: "/create", name:'create', component: CreatePost}
   ]
 })
 

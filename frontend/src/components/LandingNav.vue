@@ -1,12 +1,36 @@
 <script setup>
+import AuthService from '@/auth/AuthService.js'
+const props = defineProps({
+  arrow: {
+    type: Boolean,
+    required: false
+  },
+  logout: {
+    type: Boolean,
+    required: false
+  },
+  searchbar:{
+    type: Boolean,
+    required: true
+  }
+})
 
+const auth = new AuthService()
+
+const logOut = () => {
+  auth.logout()
+}
 
 import UserIconSmall from "@/components/User/UserIconSmall.vue";
 </script>
 
 <template>
   <div class="nav-container">
-    <div class="search-bar-container">
+    <div class="back-arrow-container">
+      <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> &#60; </a>
+      <button @click="logOut" v-if="logout">Abmelden</button>
+    </div>
+    <div class="search-bar-container" v-if="searchbar">
       <div class="search-container">
         <input class="searchbar" placeholder="nach Begriff suchen...">
       </div>
@@ -20,7 +44,13 @@ import UserIconSmall from "@/components/User/UserIconSmall.vue";
       </div>
 
     </div>
+
   <user-icon-small></user-icon-small>
+
+    <div class="user-profile-container">
+
+    </div>
+
   </div>
 </template>
 
@@ -30,7 +60,13 @@ import UserIconSmall from "@/components/User/UserIconSmall.vue";
   height: 80px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
+}
+
+.arrow-back{
+  font-size: 20px;
+  color: white;
+  font-weight: 500;
 }
 
 .search-bar-container {

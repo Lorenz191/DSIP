@@ -1,7 +1,7 @@
 from transformers import pipeline
 
 pipe = pipeline(
-    "text-classification", model="oliverguhr/german-sentiment-bert", device=-1
+    "text-classification", model="oliverguhr/german-sentiment-bert", device="cpu"
 )
 
 
