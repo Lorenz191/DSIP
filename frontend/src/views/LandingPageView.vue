@@ -5,13 +5,28 @@ import { ref, onMounted } from 'vue'
 import PostRead from '@/components/PostRead.vue'
 import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
 import {RouterLink} from "vue-router";
+import { useUserStore } from '@/stores/user.js'
 
 const posts = ref([])
 const sv_posts = ref([])
 const svPosts = ref(false)
 const loading = ref(true)
 
+const userID = useUserStore().userUuid
+const accessToken = 'YOUR_ACCESS_TOKEN';
 
+const requestOptions = {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  }
+};
+
+fetch(`https://${import.meta.env.VITE_AUTH0_DOMAIN}/api/v2/users/${userID}/roles`, requestOptions)
+  .then(response => response.json())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
 
 const fetchPosts = async () => {
   try {
