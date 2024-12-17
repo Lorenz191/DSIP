@@ -7,6 +7,7 @@ export const useUserStore = defineStore('user', () => {
 
   function setUserUuid(uuid) {
     userUuid.value = uuid
+
     localStorage.setItem('userUuid', uuid)
   }
 
