@@ -17,6 +17,14 @@ coverage
 /cypress/videos/
 /cypress/screenshots/
 
+AccessTests/
+.env
+.idea
+.backend/backend/pycache/
+.backend/backend/DSIP/pycache/
+.backend/backend/dbaccess/pycache/
+.backend/backend/sentimentmodel/__pycache/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
