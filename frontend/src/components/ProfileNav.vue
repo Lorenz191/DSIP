@@ -1,4 +1,18 @@
 <script setup>
+const props = defineProps({
+  own:{
+    type: Boolean
+  },
+  liked:{
+    type: Boolean
+  },
+  disliked:{
+    type: Boolean
+  }
+})
+
+
+
 
 </script>
 

@@ -45,10 +45,10 @@ import UserIconSmall from "@/components/User/UserIconSmall.vue";
 
     </div>
 
-  <user-icon-small></user-icon-small>
 
-    <div class="user-profile-container">
 
+    <div class="user-profile-container icon">
+      <user-icon-small></user-icon-small>
     </div>
 
   </div>
