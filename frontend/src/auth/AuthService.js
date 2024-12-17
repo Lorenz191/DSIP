@@ -91,14 +91,16 @@ export default class AuthService {
   // remove the access and ID tokens from the
   // local storage and emits the authChange event
   logout() {
-    delete this.accessToken
-    delete this.idToken
-    delete this.expiresAt
-    this.authNotifier.emit('authChange', false)
-    useUserStore().clearUserUuid()
-    // navigate to the home route
-    router.replace('/')
-  }
+  delete this.accessToken
+  delete this.idToken
+  delete this.expiresAt
+  this.authNotifier.emit('authChange', false)
+  useUserStore().clearUserUuid()
+
+  const returnTo = 'http://localhost:8080'
+  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID
+  window.location.href = `https://${import.meta.env.VITE_AUTH0_DOMAIN}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`
+}
 
   // checks if the user is authenticated
   isAuthenticated() {
