@@ -1,10 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted,  watch } from 'vue'
 
+const loginUrl = ref('');
 const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
 import AuthService from '../auth/AuthService'
+import { useRouter } from 'vue-router'
+
 const auth = new AuthService()
 
+const router = useRouter()
 
 const authenticated = ref(false)
 const message = ref('')
@@ -18,6 +22,9 @@ const login = () => {
   auth.login()
 }
 
+const logout = () => {
+  auth.logout()
+}
 
 
 onMounted(() => {
@@ -34,6 +41,14 @@ onMounted(() => {
   })
 })
 
+watch(
+  () => authenticated.value,
+  (newVal) => {
+    if (newVal) {
+      router.push({name: 'landing'})
+    }
+  }
+)
 
 </script>
 
@@ -50,7 +65,7 @@ onMounted(() => {
       </div>
       <div class="login-container">
         <button class="btn btn-primary btn-margin login-button" v-if="!authenticated" @click="login" type="submit">
-          Anmelden
+          <p>Anmelden</p>
         </button>
       </div>
     </div>

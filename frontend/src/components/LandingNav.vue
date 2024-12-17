@@ -8,6 +8,10 @@ const props = defineProps({
   logout: {
     type: Boolean,
     required: false
+  },
+  searchbar:{
+    type: Boolean,
+    required: true
   }
 })
 
@@ -25,7 +29,7 @@ const logOut = () => {
       <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> &#60; </a>
       <button @click="logOut" v-if="logout">Abmelden</button>
     </div>
-    <div class="search-bar-container">
+    <div class="search-bar-container" v-if="searchbar">
       <div class="search-container">
         <input class="searchbar" placeholder="nach Begriff suchen...">
       </div>

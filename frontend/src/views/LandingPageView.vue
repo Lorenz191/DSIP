@@ -4,21 +4,13 @@ import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import PostRead from '@/components/PostRead.vue'
 import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
-import CreatePostModal from "@/components/CreatePostModal.vue";
+import {RouterLink} from "vue-router";
 
 const posts = ref([])
 const sv_posts = ref([])
 const svPosts = ref(false)
+const loading = ref(true)
 
-const showModal = ref(false)
-const openCreatePostModal = () => {
-  showModal.value = true
-}
-
-const closeCreatePostModal = () => {
-  showModal.value = false
-  fetchPosts()
-}
 
 
 const fetchPosts = async () => {
@@ -30,6 +22,8 @@ const fetchPosts = async () => {
     sv_posts.value = sv_response.data
   } catch (error) {
     console.error('Error fetching posts:', error)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -39,12 +33,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <LandingNav logout></LandingNav>
+  <LandingNav logout searchbar></LandingNav>
   <div class="posts-container">
     <div class="aside-container">
       <UserAsideInformaiton :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
     </div>
     <div class="posts-wrapper">
+      <div v-if="loading" class="loading-container">
+        <span class="loader"> </span>
+      </div>
+
       <template v-if="!svPosts">
         <div class="post-container" v-for="post in posts" :key="post.id">
             <PostRead :post="post"></PostRead>
@@ -57,14 +55,12 @@ onMounted(() => {
       </template>
     </div>
     <div class="new-post-container">
-      <button @click="openCreatePostModal" class="new-post-button">
+      <RouterLink :to="`/create`">
+      <button class="new-post-button">
         Neuer Beitrag
       </button>
+      </RouterLink>
     </div>
-  </div>
-
-  <div v-if="showModal" class="modal-overlay">
-    <CreatePostModal @close="closeCreatePostModal"></CreatePostModal>
   </div>
 </template>
 
@@ -130,4 +126,49 @@ onMounted(() => {
   z-index: 1000;
 }
 
+.loading-container {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loader:before, .loader:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #2EDB7B;
+  transform: translate(-50%, 100%) scale(0);
+  animation: push 2s infinite ease-in;
+}
+
+.loader:after {
+  animation-delay: 1s;
+}
+
+@keyframes push {
+  0% {
+    transform: translate(-50%, 100%) scale(1);
+  }
+  15%, 25% {
+    transform: translate(-50%, 50%) scale(1);
+  }
+  50%, 75% {
+    transform: translate(-50%, -30%) scale(0.5);
+  }
+  80%, 100% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
 </style>
