@@ -4,10 +4,17 @@ import UserIconBig from "@/components/User/UserIconBig.vue";
 import ProfileNav from "@/components/ProfileNav.vue";
 import {useRouter} from "vue-router";
 import axios from "axios";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {useUserStore} from "@/stores/user.js";
+import PostRead from "@/components/PostRead.vue";
 
-const user = useUserStore()
+const user = useUserStore().userUuid;
+const own = ref(true);
+const liked = ref (false);
+const disliked = ref(false);
+const likedP = [];
+const dislikedP = [];
+const ownP = [];
 
 
 const router = useRouter();
@@ -27,12 +34,28 @@ const fetchPosts = async () => {
     sv_posts.value = sv_response.data
   } catch (error) {
     console.error('Error fetching posts:', error)
-  } finally {
-    loading.value = false
+  }finally {
+    console.log(posts.value)
+    console.log(user)
   }
 }
 
+onMounted(() => {
+  fetchPosts();
+  categorisePosts();
+})
 
+function categorisePosts(){
+  for (const post of posts.value){
+        if(post.value.fk_author == user){
+          ownP.push(post)
+        }else if(post.value.upvotes.includes(user)){
+          likedP.push(post)
+        }else{
+          dislikedP.push(post)
+        }
+  }
+}
 
 </script>
 
@@ -53,12 +76,22 @@ const fetchPosts = async () => {
   </div>
 
   <div class="post-container">
+    <template v-if="own">
+     <div class="post-container" v-for="post in posts" :key="post.id">
+            <PostRead :post="post"></PostRead>
+        </div>
+      </template>
 
+    <template>
+    </template>
+
+    <template>
+
+    </template>
   </div>
 </template>
 
 <style scoped>
-
 
 #header {
   background: #2EDB7B;
