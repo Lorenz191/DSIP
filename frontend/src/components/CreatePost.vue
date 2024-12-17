@@ -5,8 +5,11 @@ import LandingNav from "@/components/LandingNav.vue";
 
 <template>
   <LandingNav :arrow="true" :searchbar="false"></LandingNav>
-  <div class="content">
+  <div class="header">
     <h1>Neuen Beitrag erstellen</h1>
+  </div>
+  <div class="content">
+    <input type="text" placeholder="Titel">
   </div>
 </template>
 
