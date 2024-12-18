@@ -155,7 +155,6 @@ def view_create_post(request):
             post_document = {
                 "fk_author": request.session.get("auth0_id"),
                 "body": body,
-                "is_anonym": post_data.get("is_anonym"),
                 "upvotes": [],
                 "downvotes": [],
                 "status": "published",

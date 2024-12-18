@@ -127,20 +127,6 @@ onMounted(() => {
   margin-bottom: 60px;
 }
 
-/* Overlay for the modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
 .loading-container {
   height: 90vh;
   display: flex;
@@ -185,5 +171,9 @@ onMounted(() => {
   80%, 100% {
     transform: translate(-50%, -50%) scale(0);
   }
+}
+input::placeholder{
+  font-weight: bolder;
+  color: red;
 }
 </style>
