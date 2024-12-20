@@ -16,7 +16,6 @@ const props = defineProps({
   }
 });
 const emit = defineEmits(['update:own','update:liked','update:disliked']);
-const activeButton = ref('');
 
 
 
