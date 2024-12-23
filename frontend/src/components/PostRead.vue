@@ -16,6 +16,10 @@ const props = defineProps({
   post: {
     type: Object,
     required: true
+  },
+  adminView: {
+    type: Boolean,
+    required: false
   }
 })
 
@@ -117,11 +121,14 @@ onUnmounted(() => {
 
 <template>
   <div class="post-container">
-    <RouterLink :to="`/post/${props.post._id}`">
-      <div class="date-container">
-        <p class="date">Veröffentlicht am {{ date }}</p>
+    <div class="date-container">
+      <p class="date">Veröffentlicht am {{ date }}</p>
+      <div class="status-del-div">
+        <p class="del-symbol" v-if="adminView">&#x1F5D1;</p>
         <p class="status">{{ status }}</p>
       </div>
+    </div>
+    <RouterLink :to="`/post/${props.post._id}`">
       <div class="title-container">
         <h1 class="title">{{ props.post.body.title }}</h1>
       </div>
@@ -301,5 +308,11 @@ img:hover {
   flex-direction: row;
   align-items: center;
   gap: 2px;
+}
+
+.status-del-div {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 }
 </style>

@@ -1,54 +1,52 @@
 <script setup>
-import LandingNav from '@/components/LandingNav.vue'
-import axios from 'axios'
+import LandingNav from '@/components/LandingNav.vue';
+import axios from 'axios';
 import { ref, onMounted } from 'vue'
-import PostRead from '@/components/PostRead.vue'
-import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
-import {RouterLink} from "vue-router";
-import { useUserStore } from '@/stores/user.js'
+import PostRead from '@/components/PostRead.vue';
+import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue';
+import { RouterLink } from "vue-router";
 
-const posts = ref([])
-const sv_posts = ref([])
-const svPosts = ref(false)
-const loading = ref(true)
+const posts = ref([]);
+const sv_posts = ref([]);
+const svPosts = ref(false);
+const loading = ref(true);
+const admin = ref(false);
 
-const userID = useUserStore().userUuid
-const accessToken = 'YOUR_ACCESS_TOKEN';
-
-const requestOptions = {
-  method: 'GET',
-  headers: {
-    'Authorization': `Bearer ${accessToken}`,
-    'Content-Type': 'application/json'
-  }
-};
-
-fetch(`https://${import.meta.env.VITE_AUTH0_DOMAIN}/api/v2/users/${userID}/roles`, requestOptions)
-  .then(response => response.json())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));
-
-const fetchPosts = async () => {
+const fetchUserInfo = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/posts/get')
-    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get')
-    posts.value = response.data.sort((a,b) => b.upvotes.length - a.upvotes.length)
-
-    sv_posts.value = sv_response.data
+    const response = await axios.get('http://localhost:8000/api/user/get');
+    const roles = response.data.roles[0];
+    console.log(roles)
+    if (roles === 'is_admin') {
+      admin.value = true;
+    }
   } catch (error) {
-    console.error('Error fetching posts:', error)
-  } finally {
-    loading.value = false
+    console.error('Error fetching user info:', error);
   }
 }
 
+const fetchPosts = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/posts/get');
+    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get');
+    posts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length);
+    sv_posts.value = sv_response.data;
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
 onMounted(() => {
-  fetchPosts()
-})
+  fetchPosts();
+  fetchUserInfo()
+});
 </script>
 
+
 <template>
-  <LandingNav logout searchbar></LandingNav>
+  <LandingNav logout searchbar ></LandingNav>
   <div class="posts-container">
     <div class="aside-container">
       <UserAsideInformaiton :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
@@ -60,7 +58,7 @@ onMounted(() => {
 
       <template v-if="!svPosts">
         <div class="post-container" v-for="post in posts" :key="post.id">
-            <PostRead :post="post"></PostRead>
+            <PostRead :post="post" :adminView="admin"></PostRead>
         </div>
       </template>
       <template v-else>
