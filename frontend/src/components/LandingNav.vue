@@ -12,6 +12,10 @@ const props = defineProps({
   searchbar:{
     type: Boolean,
     required: true
+  },
+  newPostBut:{
+    type: Boolean,
+    required: false
   }
 })
 
@@ -25,8 +29,11 @@ const logOut = () => {
 
 <template>
   <div class="nav-container">
+    <div v-if="props.newPostBut">
+
+    </div>
     <div class="back-arrow-container">
-      <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> &#60; </a>
+      <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> <img src="./icons/Arrow_back.svg" class="icon" alt="arrow-back" style="height: 25px"></a>
       <button @click="logOut" v-if="logout">Abmelden</button>
     </div>
     <div class="search-bar-container" v-if="searchbar">

@@ -11,6 +11,7 @@ const posts = ref([])
 const sv_posts = ref([])
 const svPosts = ref(false)
 const loading = ref(true)
+const small = ref(false)
 
 const userID = useUserStore().userUuid
 const accessToken = 'YOUR_ACCESS_TOKEN';
@@ -69,7 +70,7 @@ onMounted(() => {
         </div>
       </template>
     </div>
-    <div class="new-post-container">
+    <div class="new-post-container"  v-if="!small" >
       <RouterLink :to="`/create`">
       <button class="new-post-button">
         Neuer Beitrag
@@ -80,26 +81,24 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.aside-container, .new-post-container {
-  width: 20vw;
-}
 
 .posts-container {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 4fr 1fr;
+  column-gap: 20px;
   margin-top: 55px;
   min-height: calc(100vh - 80px - 55px);
+  width: auto;
 }
 
 .posts-wrapper {
-  width: 60vw;
   height: 80vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   gap: 16px;
-  overflow-y: auto;
+  overflow: scroll;
   padding: 16px;
 }
 
@@ -125,6 +124,7 @@ onMounted(() => {
   height: 40px;
   border-radius: 5px;
   margin-bottom: 60px;
+  margin-right: 3vw;
 }
 
 .loading-container {
@@ -176,4 +176,5 @@ input::placeholder{
   font-weight: bolder;
   color: red;
 }
+
 </style>
