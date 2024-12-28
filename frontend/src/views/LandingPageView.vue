@@ -1,7 +1,7 @@
 <script setup>
 import LandingNav from '@/components/LandingNav.vue'
 import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, onUnmounted} from 'vue'
 import PostRead from '@/components/PostRead.vue'
 import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
 import {RouterLink} from "vue-router";
@@ -11,8 +11,6 @@ const posts = ref([])
 const sv_posts = ref([])
 const svPosts = ref(false)
 const loading = ref(true)
-const small = ref(false)
-
 const userID = useUserStore().userUuid
 const accessToken = 'YOUR_ACCESS_TOKEN';
 
@@ -46,13 +44,30 @@ const fetchPosts = async () => {
 onMounted(() => {
   fetchPosts()
 })
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
 </script>
 
 <template>
   <LandingNav logout searchbar></LandingNav>
-  <div class="posts-container">
-    <div class="aside-container">
+  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
+    <div v-if="screenWidth>700" class="aside-container">
       <UserAsideInformaiton :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
+    </div>
+    <div v-else class="aside-container-small">
+      <UserAsideInformaiton :horizontal="true" :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
     </div>
     <div class="posts-wrapper">
       <div v-if="loading" class="loading-container">
@@ -70,7 +85,7 @@ onMounted(() => {
         </div>
       </template>
     </div>
-    <div class="new-post-container"  v-if="!small" >
+    <div class="new-post-container"  v-if="!svPosts&screenWidth>700" >
       <RouterLink :to="`/create`">
       <button class="new-post-button">
         Neuer Beitrag
@@ -105,6 +120,11 @@ onMounted(() => {
 .aside-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.aside-container-small {
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -176,5 +196,38 @@ input::placeholder{
   font-weight: bolder;
   color: red;
 }
+.small-posts-container{
+  height:calc(100vh - 150px);
+  width: auto;
+  display: grid;
+  grid-template-areas:
+  'posts'
+  'posts'
+  'aside'
+;
+  .posts-wrapper {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  overflow: scroll;
+  padding: 16px;
+}
 
+.aside-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  grid-area: aside;
+}
+  .posts-wrapper{
+    grid-area: posts;
+  }
+.post-container{
+  width: 350px;
+}
+}
 </style>
