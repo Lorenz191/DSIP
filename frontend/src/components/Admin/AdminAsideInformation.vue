@@ -1,12 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps({
-  svPosts: {
-    type: Boolean,
-    required: true
-  }
-})
+const emit = defineEmits(['update:displayChange'])
 
 const enumarator = {
   posts: 1,
@@ -18,15 +13,19 @@ const currentState = ref(enumarator.posts)
 
 const togglePost = () => {
   currentState.value = enumarator.posts
+  emit('update:displayChange', 1)
 }
 
 const toggleAdmin = () => {
   currentState.value = enumarator.adminstat
+  emit('update:displayChange', 2)
 }
 
 const toggleSvPosts = () => {
   currentState.value = enumarator.svposts
+  emit('update:displayChange', 3)
 }
+
 </script>
 
 <template>
@@ -35,7 +34,7 @@ const toggleSvPosts = () => {
       <img src="../icons/Chat_Bubbles.svg" alt="Chat Bubbles" class="chat-icon" />
     </div>
 
-    <div class="seperation-container">
+    <div class="separation-container">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="100px"
@@ -50,7 +49,7 @@ const toggleSvPosts = () => {
           stroke-opacity="0.85"
           stroke-width="4"
           stroke-linecap="round"
-          class="seperaiton-line"
+          class="separation-line"
           :class="{
             posts: currentState === 1,
             adminstat: currentState === 2,
@@ -79,7 +78,7 @@ const toggleSvPosts = () => {
           stroke-opacity="0.85"
           stroke-width="4"
           stroke-linecap="round"
-          class="seperaiton-line"
+          class="separation-line"
           :class="{
             posts: currentState === 1,
             adminstat: currentState === 2,
@@ -166,15 +165,15 @@ const toggleSvPosts = () => {
   border-left: 5px solid #4f378a;
 }
 
-.seperaiton-line.posts{
+.separation-line.posts{
   stroke: rgba(111, 209, 222, 0.85);
 }
 
-.seperaiton-line.adminstat{
+.separation-line.adminstat{
   stroke: #4f378a;
 }
 
-.seperaiton-line.svposts{
+.separation-line.svposts{
   stroke: #2edb7b;
 }
 </style>

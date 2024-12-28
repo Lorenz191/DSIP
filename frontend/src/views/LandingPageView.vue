@@ -9,7 +9,7 @@ import AdminAsideInformation from '@/components/Admin/AdminAsideInformation.vue'
 
 const posts = ref([]);
 const sv_posts = ref([]);
-const svPosts = ref(false);
+const toDisplay = ref(1)
 const loading = ref(true);
 const admin = ref(false);
 
@@ -73,20 +73,23 @@ onMounted(() => {
   <div class="posts-container">
 
     <div class="aside-container">
-      <AdminAsideInformation v-if="admin" :sv-posts="svPosts"  @update:svPosts="svPosts = $event"></AdminAsideInformation>
-      <AsideInformation v-else :sv-posts="svPosts" @update:svPosts="svPosts = $event"></AsideInformation>
+      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AsideInformation v-else  @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
 
     <div class="posts-wrapper">
       <div v-if="loading" class="loading-container">
         <span class="loader"> </span>
       </div>
-      <div v-if="!svPosts">
+      <div v-if="toDisplay === 1">
         <div class="post-container" v-for="post in posts" :key="post.id">
             <PostRead :post="post" :adminView="admin"></PostRead>
         </div>
       </div>
-      <div v-else>
+      <div v-if="toDisplay === 2 && admin">
+        <h1>Admin dashboard</h1>
+      </div>
+      <div v-if="toDisplay === 3">
         <div class="post-container" v-for="post in sv_posts" :key="post.id">
           <PostRead :post="post"></PostRead>
         </div>
