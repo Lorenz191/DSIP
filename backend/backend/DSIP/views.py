@@ -85,6 +85,7 @@ def view_get_post(request):
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 
+@csrf_exempt
 def view_delete_post(request):
     """Löscht einen Vorschlag."""
     if request.method == "POST":
@@ -94,9 +95,12 @@ def view_delete_post(request):
         db_instance = DB()
         post_document = db_instance.select_post_by_id(post_id)
 
+        print(cache.get("roles")[0] != "is_admin")
+        print(post_document.get("fk_author") != cache.get("auth0_id"))
+
         if (
-            post_document.get("fk_author") != request.session.get("auth0_id")
-            or request.session.get("is_admin") == False
+            post_document.get("fk_author") != cache.get("auth0_id")
+            and cache.get("roles")[0] != "is_admin"
         ):
             return JsonResponse(
                 {"error": "You are not authorized to delete this post."}, status=403
@@ -154,16 +158,27 @@ def view_create_post(request):
             ##  return JsonResponse(
             ##    {"error": "Post contains negative sentiment."}, status=400
             ##)
-
-            post_document = {
-                "fk_author": request.session.get("auth0_id"),
-                "body": body,
-                "is_anonym": post_data.get("is_anonym"),
-                "upvotes": [],
-                "downvotes": [],
-                "status": "published",
-                "created_at": datetime.now(),
-            }
+            if cache.get("roles")[0] != "is_admin":
+                post_document = {
+                    "fk_author": cache.get("auth0_id"),
+                    "body": body,
+                    "is_anonym": post_data.get("is_anonym"),
+                    "upvotes": [],
+                    "downvotes": [],
+                    "status": "published",
+                    "created_at": datetime.now(),
+                }
+            elif cache.get("roles")[0] == "is_admin":
+                post_document = {
+                    "fk_author": cache.get("auth0_id"),
+                    "body": body,
+                    "is_anonym": post_data.get("is_anonym"),
+                    "upvotes": [],
+                    "downvotes": [],
+                    "status": "published",
+                    "sv_post": True,
+                    "created_at": datetime.now(),
+                }
 
             result = db_instance.insert_into_post(post_document)
 

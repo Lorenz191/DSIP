@@ -84,6 +84,20 @@ const send = () => {
   }
 }
 
+const deletePost = () => {
+  try {
+    axios
+      .post('http://localhost:8000/api/post/delete/', {
+        post_id: props.post._id
+      })
+      .then((response) => {
+        console.log(response)
+      })
+  } catch (error) {
+    console.error('Error deleting post:', error)
+  }
+}
+
 let socket
 
 onMounted(() => {
@@ -124,7 +138,7 @@ onUnmounted(() => {
     <div class="date-container">
       <p class="date">Veröffentlicht am {{ date }}</p>
       <div class="status-del-div">
-        <p class="del-symbol" v-if="adminView">&#x1F5D1;</p>
+        <p class="del-symbol" v-if="adminView" @click="deletePost">&#x1F5D1;</p>
         <p class="status">{{ status }}</p>
       </div>
     </div>
@@ -314,5 +328,9 @@ img:hover {
   display: flex;
   flex-direction: row;
   gap: 5px;
+}
+
+.del-symbol:hover{
+  cursor: pointer;
 }
 </style>

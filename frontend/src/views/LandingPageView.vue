@@ -3,8 +3,9 @@ import LandingNav from '@/components/LandingNav.vue';
 import axios from 'axios';
 import { ref, onMounted } from 'vue'
 import PostRead from '@/components/PostRead.vue';
-import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue';
 import { RouterLink } from "vue-router";
+import AsideInformation from '@/components/User/AsideInformation.vue'
+import AdminAsideInformation from '@/components/Admin/AdminAsideInformation.vue'
 
 const posts = ref([]);
 const sv_posts = ref([]);
@@ -38,7 +39,29 @@ const fetchPosts = async () => {
   }
 };
 
+let socket;
+
 onMounted(() => {
+  socket = new WebSocket('ws://localhost:8000/ws/posts/');
+
+  socket.onopen = () => {
+    console.log('Connected to the Postsocket');
+  };
+
+  socket.onmessage = (event) => {
+    if (JSON.parse(event.data)["message"] === 'post_delete') {
+      fetchPosts();
+    }
+  }
+
+  socket.onerror = (error) => {
+    console.error('Postocket error:', error)
+  }
+
+  socket.onclose = (event) => {
+    console.log('Postsocket closed:', event);
+  }
+
   fetchPosts();
   fetchUserInfo()
 });
@@ -48,24 +71,26 @@ onMounted(() => {
 <template>
   <LandingNav logout searchbar ></LandingNav>
   <div class="posts-container">
+
     <div class="aside-container">
-      <UserAsideInformaiton :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
+      <AdminAsideInformation v-if="admin" :sv-posts="svPosts"  @update:svPosts="svPosts = $event"></AdminAsideInformation>
+      <AsideInformation v-else :sv-posts="svPosts" @update:svPosts="svPosts = $event"></AsideInformation>
     </div>
+
     <div class="posts-wrapper">
       <div v-if="loading" class="loading-container">
         <span class="loader"> </span>
       </div>
-
-      <template v-if="!svPosts">
+      <div v-if="!svPosts">
         <div class="post-container" v-for="post in posts" :key="post.id">
             <PostRead :post="post" :adminView="admin"></PostRead>
         </div>
-      </template>
-      <template v-else>
+      </div>
+      <div v-else>
         <div class="post-container" v-for="post in sv_posts" :key="post.id">
           <PostRead :post="post"></PostRead>
         </div>
-      </template>
+      </div>
     </div>
     <div class="new-post-container">
       <RouterLink :to="`/create`">

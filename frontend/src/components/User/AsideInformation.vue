@@ -5,7 +5,7 @@ const props = defineProps({
   svPosts: {
     type: Boolean,
     required: true
-  }
+  },
 })
 
 const emit = defineEmits(['update:svPosts'])
@@ -30,6 +30,7 @@ const toggleSvPosts = () => {
         <path d="M2.7037 2.80457H66.2963"  stroke="#2EDB7B" stroke-opacity="0.85" stroke-width="4" stroke-linecap="round" v-if="props.svPosts"/>
       </svg>
     </div>
+
     <div
       class="bottom-container"
       :class="{ 'clicked': props.svPosts }"
