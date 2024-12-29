@@ -6,6 +6,7 @@ import PostRead from '@/components/PostRead.vue';
 import { RouterLink } from "vue-router";
 import AsideInformation from '@/components/User/AsideInformation.vue'
 import AdminAsideInformation from '@/components/Admin/AdminAsideInformation.vue'
+import SVDashboardView from '@/views/SV-DashboardView.vue'
 
 const posts = ref([]);
 const sv_posts = ref([]);
@@ -87,7 +88,7 @@ onMounted(() => {
         </div>
       </div>
       <div v-if="toDisplay === 2 && admin">
-        <h1>Admin dashboard</h1>
+        <SVDashboardView :posts="posts"></SVDashboardView>
       </div>
       <div v-if="toDisplay === 3">
         <div class="post-container" v-for="post in sv_posts" :key="post.id">

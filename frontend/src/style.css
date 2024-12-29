@@ -43,6 +43,15 @@
     --p-text-hover-muted-color: var(--p-surface-600);
 }
 
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --p-primary-color: var(--p-primary-400);
