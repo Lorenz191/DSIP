@@ -218,7 +218,7 @@ onUnmounted(() => {
 <style scoped>
 .post-container {
   margin-bottom: 60px;
-  width: 800px;
+  width: auto;
   height: auto;
   padding-bottom: 10px;
   box-shadow: 5px 5px 15px 0px rgba(0, 0, 0, 0.25);
@@ -302,4 +302,5 @@ img:hover {
   align-items: center;
   gap: 2px;
 }
+
 </style>

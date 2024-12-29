@@ -1,5 +1,6 @@
 <script setup>
 import AuthService from '@/auth/AuthService.js'
+import {onMounted, onUnmounted, ref} from "vue";
 const props = defineProps({
   arrow: {
     type: Boolean,
@@ -12,10 +13,6 @@ const props = defineProps({
   searchbar:{
     type: Boolean,
     required: true
-  },
-  newPostBut:{
-    type: Boolean,
-    required: false
   }
 })
 
@@ -25,10 +22,25 @@ const logOut = () => {
   auth.logout()
 }
 
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
+
 </script>
 
 <template>
-  <div class="nav-container">
+  <div :class="[{'nav-container' : screenWidth>700}, {'small-nav-container' : screenWidth<700}]">
     <div v-if="props.newPostBut">
 
     </div>
@@ -98,5 +110,25 @@ const logOut = () => {
 
 .icon:hover {
   cursor: pointer;
+}
+.small-nav-container{
+  background: #2EDB7B;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  .search-bar-container {
+  height: 34px;
+  display: flex;
+  flex-direction: row;
+  background: white;
+  width: 70vw;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
 }
 </style>

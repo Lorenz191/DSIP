@@ -197,7 +197,7 @@ input::placeholder{
   color: red;
 }
 .small-posts-container{
-  height:calc(100vh - 150px);
+  height:calc(100vh - 80px);
   width: auto;
   display: grid;
   grid-template-areas:
@@ -206,14 +206,13 @@ input::placeholder{
   'aside'
 ;
   .posts-wrapper {
-  height: 80vh;
+  height: 75vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   gap: 16px;
   overflow: scroll;
-  padding: 16px;
 }
 
 .aside-container {
@@ -221,13 +220,15 @@ input::placeholder{
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  height: calc(100vh - 75vh - 80px);
   grid-area: aside;
 }
   .posts-wrapper{
     grid-area: posts;
+    overflow-x: hidden;
   }
 .post-container{
-  width: 350px;
+  width: 90vw;
 }
 }
 </style>
