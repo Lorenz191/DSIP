@@ -52,6 +52,7 @@
   -ms-overflow-style: none;
 }
 
+
 @media (prefers-color-scheme: dark) {
     :root {
         --p-primary-color: var(--p-primary-400);
