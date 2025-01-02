@@ -34,11 +34,11 @@ const toggleSv = () => {
       <img src="../icons/Chat_Bubbles.svg" alt="Chat Bubbles" class="chat-icon" />
     </div>
     <div class="seperation-container">
-      <svg
+       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="100px"
-        height="5"
-        viewBox="0 0 69 5"
+        :width="props.horizontal ? '5px' : '100px'"
+        :height="props.horizontal ? '100px' : '5px'"
+        :viewBox="props.horizontal ? '0 0 5 69' : '0 0 69 5'"
         fill="none"
         id="line"
       >
@@ -48,6 +48,46 @@ const toggleSv = () => {
           stroke-opacity="0.85"
           stroke-width="4"
           stroke-linecap="round"
+          v-if="!props.horizontal"
+          class="separation-line"
+          :class="{
+            posts: currentState === 1,
+            svposts: currentState === 2
+          }"
+        />
+        <path
+          d="M2.80457 2.7037V66.2963"
+          stroke="#6FD1DE"
+          stroke-opacity="0.85"
+          stroke-width="4"
+          stroke-linecap="round"
+          v-if="props.horizontal"
+          class="separation-line"
+          :class="{
+            posts: currentState === 1,
+            svposts: currentState === 2
+          }"
+        />
+        <path
+          d="M2.7037 2.80457H66.2963"
+          stroke="#2EDB7B"
+          stroke-opacity="0.85"
+          stroke-width="4"
+          stroke-linecap="round"
+          v-if="props.svPosts && !props.horizontal"
+          class="separation-line"
+          :class="{
+            posts: currentState === 1,
+            svposts: currentState === 2
+          }"
+        />
+        <path
+          d="M2.80457 2.7037V66.2963"
+          stroke="#2EDB7B"
+          stroke-opacity="0.85"
+          stroke-width="4"
+          stroke-linecap="round"
+          v-if="props.svPosts && props.horizontal"
           class="separation-line"
           :class="{
             posts: currentState === 1,
@@ -130,32 +170,32 @@ const toggleSv = () => {
 }
   .top-container {
   border-radius: 30px 0px 0px 30px;
-  border-top: 5px solid rgba(111, 209, 222, 0.85);
-  border-bottom: 5px solid rgba(111, 209, 222, 0.85);
-  border-left: 5px solid rgba(111, 209, 222, 0.85);
+  border-top: 2px solid rgba(221, 221, 221, 0.87);
+  border-bottom: 2px solid rgba(221, 221, 221, 0.87);
+  border-left: 2px solid rgba(221, 221, 221, 0.87);
+  background: #fff;
   border-right: none;
-  background: #FFF;
 }
 
 .bottom-container {
   border-radius: 0px 30px 30px 0px;
-  border-bottom: 2px solid rgba(221, 221, 221, 0.87);
-  border-right: 2px solid rgba(221, 221, 221, 0.87);
   border-top: 2px solid rgba(221, 221, 221, 0.87);
+  border-right: 2px solid rgba(221, 221, 221, 0.87);
+  border-bottom: 2px solid rgba(221, 221, 221, 0.87);
+  background: #fff;
   border-left: none;
-
-  background: #FFF;
 }
- .bottom-container.clicked {
-  border-bottom: 5px solid #2EDB7B;
-  border-right: 5px solid #2EDB7B;
-  border-top: 5px solid #2EDB7B;
+
+.bottom-container.clicked {
+  border-bottom: 5px solid #2edb7b;
+  border-right: 5px solid #2edb7b;
+  border-top: 5px solid #2edb7b;
 }
 
 .top-container.clicked {
-  border-top: 2px solid rgba(221, 221, 221, 0.87);
-  border-bottom: 2px solid rgba(221, 221, 221, 0.87);
-  border-left: 2px solid rgba(221, 221, 221, 0.87);
+  border-top: 5px solid rgba(111, 209, 222, 0.85);
+  border-bottom: 5px solid rgba(111, 209, 222, 0.85);
+  border-left: 5px solid rgba(111, 209, 222, 0.85);
 }
 }
 

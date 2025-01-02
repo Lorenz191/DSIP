@@ -245,7 +245,7 @@ onUnmounted(() => {
 
 .post-container {
   margin-bottom: 60px;
-  width: 800px;
+  width: auto;
   height: auto;
   padding-bottom: 10px;
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.25);
@@ -292,7 +292,7 @@ onUnmounted(() => {
 .text-container {
   padding-left: 40px;
   padding-right: 40px;
-  width: 780px;
+  width: auto;
   max-height: 290px;
   height: auto;
   overflow-wrap: break-word;

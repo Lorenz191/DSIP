@@ -12,7 +12,7 @@ const posts = ref([]);
 const sv_posts = ref([]);
 const toDisplay = ref(1)
 const loading = ref(true);
-const admin = ref(false);
+const admin = ref(true);
 
 const fetchUserInfo = async () => {
   try {
@@ -92,7 +92,7 @@ onUnmounted(() => {
       <AsideInformation v-else  @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
     <div v-else class="aside-container-small">
-      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AdminAsideInformation :horizontal="true" v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
       <AsideInformation v-else :horizontal="true" @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
     <div class="posts-wrapper">
