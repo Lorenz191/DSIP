@@ -7,15 +7,12 @@ from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import redirect, render
 from urllib.parse import quote_plus, urlencode
-from django.core.cache import cache
 
 from ..sentiment_model.SentimentAnalysis import SeAn
 from django.http import JsonResponse
 from bson import ObjectId
 from datetime import datetime
 from ..db_access.db_access import DB
-
-import requests
 
 oauth = OAuth()
 
@@ -85,7 +82,6 @@ def view_get_post(request):
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 
-@csrf_exempt
 def view_delete_post(request):
     """Löscht einen Vorschlag."""
     if request.method == "POST":
@@ -95,12 +91,9 @@ def view_delete_post(request):
         db_instance = DB()
         post_document = db_instance.select_post_by_id(post_id)
 
-        print(cache.get("roles")[0] != "is_admin")
-        print(post_document.get("fk_author") != cache.get("auth0_id"))
-
         if (
-            post_document.get("fk_author") != cache.get("auth0_id")
-            and cache.get("roles")[0] != "is_admin"
+            post_document.get("fk_author") != request.session.get("auth0_id")
+            or request.session.get("is_admin") == False
         ):
             return JsonResponse(
                 {"error": "You are not authorized to delete this post."}, status=403
@@ -158,27 +151,15 @@ def view_create_post(request):
             ##  return JsonResponse(
             ##    {"error": "Post contains negative sentiment."}, status=400
             ##)
-            if cache.get("roles")[0] != "is_admin":
-                post_document = {
-                    "fk_author": cache.get("auth0_id"),
-                    "body": body,
-                    "is_anonym": post_data.get("is_anonym"),
-                    "upvotes": [],
-                    "downvotes": [],
-                    "status": "published",
-                    "created_at": datetime.now(),
-                }
-            elif cache.get("roles")[0] == "is_admin":
-                post_document = {
-                    "fk_author": cache.get("auth0_id"),
-                    "body": body,
-                    "is_anonym": post_data.get("is_anonym"),
-                    "upvotes": [],
-                    "downvotes": [],
-                    "status": "published",
-                    "sv_post": True,
-                    "created_at": datetime.now(),
-                }
+
+            post_document = {
+                "fk_author": request.session.get("auth0_id"),
+                "body": body,
+                "upvotes": [],
+                "downvotes": [],
+                "status": "published",
+                "created_at": datetime.now(),
+            }
 
             result = db_instance.insert_into_post(post_document)
 
@@ -283,35 +264,17 @@ def set_session(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-
             auth0_id = data.get("auth0Id")
-            access_token = data.get("accessToken")
-            roles = data.get("roles")
 
-            if not auth0_id or not access_token:
-                return JsonResponse(
-                    {"error": "Both auth0Id and accessToken are required."}, status=400
-                )
+            db_session = DB()
+            db_session.insert_into_user(user_id=auth0_id, is_admin=False)
 
-            cache.set("auth0_id", auth0_id)
-            cache.set("access_token", access_token)
-            cache.set("roles", roles)
-
-            print("Auth0 ID set in cache:", cache.get("auth0_id"))
-            print("Access token set in cache:", cache.get("access_token"))
-            print("Roles set in cache", cache.get("roles"))
-
-            return JsonResponse({"success": True, "uuid": auth0_id}, status=200)
-
+            if auth0_id:
+                request.session["auth0_id"] = auth0_id
+                return JsonResponse({"success": True}, status=200)
+            else:
+                return JsonResponse({"error": "auth0Id is required."}, status=400)
         except Exception as e:
-            print(f"Error in set_session: {str(e)}")
             return JsonResponse({"error": str(e)}, status=500)
     else:
-        return JsonResponse(
-            {"error": "Invalid HTTP method. Only POST is allowed."}, status=405
-        )
-
-
-@csrf_exempt
-def get_user_roles(request):
-    return JsonResponse({"roles": cache.get("roles")}, status=200)
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)

@@ -1,5 +1,6 @@
 <script setup>
 import AuthService from '@/auth/AuthService.js'
+import {onMounted, onUnmounted, ref} from "vue";
 const props = defineProps({
   arrow: {
     type: Boolean,
@@ -21,12 +22,30 @@ const logOut = () => {
   auth.logout()
 }
 
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
+
 </script>
 
 <template>
-  <div class="nav-container">
+  <div :class="[{'nav-container' : screenWidth>700}, {'small-nav-container' : screenWidth<700}]">
+    <div v-if="props.newPostBut">
+
+    </div>
     <div class="back-arrow-container">
-      <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> &#60; </a>
+      <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> <img src="./icons/Arrow_back.svg" class="icon" alt="arrow-back" style="height: 25px"></a>
       <button @click="logOut" v-if="logout">Abmelden</button>
     </div>
     <div class="search-bar-container" v-if="searchbar">
@@ -91,5 +110,25 @@ const logOut = () => {
 
 .icon:hover {
   cursor: pointer;
+}
+.small-nav-container{
+  background: #2EDB7B;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  .search-bar-container {
+  height: 34px;
+  display: flex;
+  flex-direction: row;
+  background: white;
+  width: 70vw;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
 }
 </style>

@@ -1,11 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, watch, onUnmounted} from 'vue'
 
-import AuthService from '../auth/AuthService'
-
+const loginUrl = ref('');
 const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
+import AuthService from '../auth/AuthService'
+import { useRouter } from 'vue-router'
 
 const auth = new AuthService()
+
+const router = useRouter()
 
 const authenticated = ref(false)
 const message = ref('')
@@ -18,6 +21,25 @@ const handleAuthentication = () => {
 const login = () => {
   auth.login()
 }
+
+const logout = () => {
+  auth.logout()
+}
+
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
 
 
 onMounted(() => {
@@ -34,13 +56,23 @@ onMounted(() => {
   })
 })
 
+watch(
+  () => authenticated.value,
+  (newVal) => {
+    if (newVal) {
+      router.push({name: 'landing'})
+    }
+  }
+)
+
 </script>
 
 <template>
   <div class="all">
-  <div class="container">
+  <div :class="[{'container' : screenWidth>700}, {'container-small': screenWidth<700}]">
     <div class="left-section">
-      <img src="../components/icons/Title_Picture.svg" alt="Picture" class="title-image" />
+      <img v-if="screenWidth>700" src="../components/icons/Title_Picture.svg" alt="Picture" class="title-image" />
+      <img v-else style="scale: 120%" src="../components/icons/Parliament_Small.svg" alt="Picture" class="title-image"/>
     </div>
 
     <div class="right-section">
@@ -48,10 +80,13 @@ onMounted(() => {
         <h1>Digitales Schülerparlament</h1>
       </div>
       <div class="login-container">
-        <button class="btn btn-primary btn-margin login-button" :disabled="authenticated" @click="login" type="submit">
+        <button class="btn btn-primary btn-margin login-button" v-if="!authenticated" @click="login" type="submit">
           <p>Anmelden</p>
         </button>
       </div>
+    </div>
+     <div v-if="screenWidth<700" class="left-section">
+      <img src="../components/icons/Parliament_Small.svg" alt="Picture" class="title-image smallUnder"/>
     </div>
   </div>
   </div>
@@ -142,6 +177,17 @@ onMounted(() => {
 h1{
   font-weight: bold;
   font-size: large;
+}
+.container-small{
+  width: 85vw;
+  .text-container{
+    width: 90%;
+  }
+}
+.smallUnder{
+  z-index: -1;
+  rotate: 180deg;
+  scale: 120%;
 }
 .sponsor {
   display: flex;
