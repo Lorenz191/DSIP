@@ -40,6 +40,14 @@ async def watch_votes():
                                 ),
                             },
                         )
+                elif change["operationType"] == "delete":
+                    channel_layer = get_channel_layer()
+                    await channel_layer.group_send(
+                        "posts",
+                        {
+                            "type": "post_delete",
+                        },
+                    )
     except PyMongoError as e:
         print(f"Error watching change stream: {e}")
 

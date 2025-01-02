@@ -15,5 +15,6 @@ urlpatterns = [
     path("", views.view_login_user),
     path("api/user/update/", views.view_delete_user_profile),
     path("api/set-session/", views.set_session),
+    path("api/user/get/", views.get_user_roles),
     path("api/post/status", views.view_update_status_post),
 ]

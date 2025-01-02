@@ -16,6 +16,10 @@ const props = defineProps({
   post: {
     type: Object,
     required: true
+  },
+  adminView: {
+    type: Boolean,
+    required: false
   }
 })
 
@@ -80,6 +84,20 @@ const send = () => {
   }
 }
 
+const deletePost = () => {
+  try {
+    axios
+      .post('http://localhost:8000/api/post/delete/', {
+        post_id: props.post._id
+      })
+      .then((response) => {
+        console.log(response)
+      })
+  } catch (error) {
+    console.error('Error deleting post:', error)
+  }
+}
+
 let socket
 
 onMounted(() => {
@@ -116,15 +134,42 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="post-container">
-    <RouterLink :to="`/post/${props.post._id}`">
+  <div class="main-container">
+    <div class="post-container">
       <div class="date-container">
         <p class="date">Veröffentlicht am {{ date }}</p>
-        <p class="status">{{ status }}</p>
+        <div class="status-del-div">
+          <p class="del-symbol" v-if="adminView" @click="deletePost">&#x1F5D1;</p>
+          <p class="status">{{ status }}</p>
+        </div>
       </div>
-      <div class="title-container">
-        <h1 class="title">{{ props.post.body.title }}</h1>
-      </div>
+      <RouterLink :to="`/post/${props.post._id}`">
+        <div class="title-container">
+          <h1 class="title">{{ props.post.body.title }}</h1>
+        </div>
+        <div class="seperation-line-container">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="720"
+            height="4"
+            viewBox="0 0 720 4"
+            fill="none"
+          >
+            <path
+              d="M2 2H699.5"
+              stroke="#333333"
+              stroke-opacity="0.2"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+        <div class="text-container">
+          <p class="post-body">
+            {{ props.post.body.content }}
+          </p>
+        </div>
+      </RouterLink>
       <div class="seperation-line-container">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -142,73 +187,51 @@ onUnmounted(() => {
           />
         </svg>
       </div>
-      <div class="text-container">
-        <p class="post-body">
-          {{ props.post.body.content }}
-        </p>
-      </div>
-    </RouterLink>
-    <div class="seperation-line-container">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="720"
-        height="4"
-        viewBox="0 0 720 4"
-        fill="none"
-      >
-        <path
-          d="M2 2H699.5"
-          stroke="#333333"
-          stroke-opacity="0.2"
-          stroke-width="3"
-          stroke-linecap="round"
-        />
-      </svg>
-    </div>
-    <div class="voting-container-container">
-      <div class="voting-container">
-        <div class="upvote">
-          <p>
-            {{ upvotesCount }}
-          </p>
-          <img
-            :src="upvoted ? ArrowUpGreenFilled : hover_up ? ArrowUpGreen : ArrowUpBlack"
-            alt="upvote"
-            style="height: 36px"
-            @click="handleUpvote"
-            @mouseover="hover_up = true"
-            @mouseleave="hover_up = false"
-          />
-        </div>
-        <div class="vertical-seperation-line">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="2"
-            height="36"
-            viewBox="0 0 2 36"
-            fill="none"
-          >
-            <path
-              d="M1 1V34.5"
-              stroke="#D9D9D9"
-              stroke-opacity="0.5"
-              stroke-width="1.5"
-              stroke-linecap="round"
+      <div class="voting-container-container">
+        <div class="voting-container">
+          <div class="upvote">
+            <p>
+              {{ upvotesCount }}
+            </p>
+            <img
+              :src="upvoted ? ArrowUpGreenFilled : hover_up ? ArrowUpGreen : ArrowUpBlack"
+              alt="upvote"
+              style="height: 36px"
+              @click="handleUpvote"
+              @mouseover="hover_up = true"
+              @mouseleave="hover_up = false"
             />
-          </svg>
-        </div>
-        <div class="downvote">
-          <p>
-            {{ downvotesCount }}
-          </p>
-          <img
-            :src="downvoted ? ArrowDownBlueFilled : hover_down ? ArrowDownBlue : ArrowDownBlack"
-            alt="upvote"
-            style="height: 36px"
-            @click="handleDownvote"
-            @mouseover="hover_down = true"
-            @mouseleave="hover_down = false"
-          />
+          </div>
+          <div class="vertical-seperation-line">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="2"
+              height="36"
+              viewBox="0 0 2 36"
+              fill="none"
+            >
+              <path
+                d="M1 1V34.5"
+                stroke="#D9D9D9"
+                stroke-opacity="0.5"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div class="downvote">
+            <p>
+              {{ downvotesCount }}
+            </p>
+            <img
+              :src="downvoted ? ArrowDownBlueFilled : hover_down ? ArrowDownBlue : ArrowDownBlack"
+              alt="upvote"
+              style="height: 36px"
+              @click="handleDownvote"
+              @mouseover="hover_down = true"
+              @mouseleave="hover_down = false"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -216,12 +239,16 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.main-container{
+  padding:10px;
+}
+
 .post-container {
   margin-bottom: 60px;
   width: 800px;
   height: auto;
   padding-bottom: 10px;
-  box-shadow: 5px 5px 15px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.25);
   border-radius: 20px;
   border: 3px solid rgba(217, 217, 217, 0.2);
   background: #fff;
@@ -301,5 +328,15 @@ img:hover {
   flex-direction: row;
   align-items: center;
   gap: 2px;
+}
+
+.status-del-div {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.del-symbol:hover {
+  cursor: pointer;
 }
 </style>

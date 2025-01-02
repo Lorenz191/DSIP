@@ -1,14 +1,11 @@
 <script setup>
-import { ref, onMounted,  watch } from 'vue'
+import { ref, onMounted } from 'vue'
 
-const loginUrl = ref('');
-const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
 import AuthService from '../auth/AuthService'
-import { useRouter } from 'vue-router'
+
+const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
 
 const auth = new AuthService()
-
-const router = useRouter()
 
 const authenticated = ref(false)
 const message = ref('')
@@ -20,10 +17,6 @@ const handleAuthentication = () => {
 
 const login = () => {
   auth.login()
-}
-
-const logout = () => {
-  auth.logout()
 }
 
 
@@ -41,15 +34,6 @@ onMounted(() => {
   })
 })
 
-watch(
-  () => authenticated.value,
-  (newVal) => {
-    if (newVal) {
-      router.push({name: 'landing'})
-    }
-  }
-)
-
 </script>
 
 <template>
@@ -64,7 +48,7 @@ watch(
         <h1>Digitales Schülerparlament</h1>
       </div>
       <div class="login-container">
-        <button class="btn btn-primary btn-margin login-button" v-if="!authenticated" @click="login" type="submit">
+        <button class="btn btn-primary btn-margin login-button" :disabled="authenticated" @click="login" type="submit">
           <p>Anmelden</p>
         </button>
       </div>

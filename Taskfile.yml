@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  runserver:
+    desc: Run all servers
+    cmds:
+      - python ./backend/manage.py runserver &
+      - npm run dsip --prefix ./frontend &
+      - daphne -b 0.0.0.0 -p 8000 ./backend.backend.asgi:application &
+      - python ./backend/change_stream_listener.py

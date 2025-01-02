@@ -4,7 +4,6 @@ import router from './../router'
 import axios from 'axios'
 import { useUserStore } from './../stores/user.js'
 
-
 export default class AuthService {
   authenticated = this.isAuthenticated()
   authNotifier = new EventEmitter()
@@ -17,9 +16,7 @@ export default class AuthService {
     this.handleAuthentication = this.handleAuthentication.bind(this)
   }
 
-
-  // create an instance of auth0.WebAuth with your
-  // API and Client credentials
+  // create an instance of auth0.WebAuth with your API and Client credentials
   auth0 = new auth0.WebAuth({
     domain: import.meta.env.VITE_AUTH0_DOMAIN,
     clientID: import.meta.env.VITE_AUTH0_CLIENT_ID,
@@ -29,19 +26,17 @@ export default class AuthService {
     scope: 'openid profile'
   })
 
-  // this method calls the authorize() method
-  // which triggers the Auth0 login page
+  // this method calls the authorize() method which triggers the Auth0 login page
   login() {
-    console.log('Login method called');
+    console.log('Login method called')
     this.auth0.authorize((err) => {
       if (err) {
-        console.error('Error during login:', err);
+        console.error('Error during login:', err)
       }
-    });
+    })
   }
 
-  // this method calls the parseHash() method of Auth0
-  // to get authentication information from the callback URL
+  // this method calls the parseHash() method of Auth0 to get authentication information from the callback URL
   handleAuthentication() {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
@@ -61,51 +56,57 @@ export default class AuthService {
     })
   }
 
-  // stores the user's access_token, id_token, and a time at
-  // which the access_token will expire in the local storage
+  // stores the user's access_token, id_token, and a time at which the access_token will expire in the local storage
   setSession(authResult) {
     this.accessToken = authResult.accessToken
     this.idToken = authResult.idToken
     this.profile = authResult.idTokenPayload
+    this.roles = this.profile['/roles']
     this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime()
     this.authNotifier.emit('authChange', { authenticated: true })
 
-    axios.post('http://localhost:8000/api/set-session/', {
-      auth0Id: this.profile.sub.split('|')[1]
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.accessToken}`
-      }
-    })
-    .then(response => {
-      console.log('Session set on backend:', response.data)
-      router.push({name: 'landing'})
-      useUserStore().setUserUuid(this.profile.sub.split('|')[1])
-    })
-    .catch(error => {
-      console.error('Error setting session on backend:', error)
-    })
+
+    axios
+      .post(
+        'http://localhost:8000/api/set-session/',
+        {
+          auth0Id: this.profile.sub.split('|')[1],
+          accessToken: this.accessToken,
+          roles: this.roles,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.accessToken}`
+          }
+        }
+      )
+      .then((response) => {
+        console.log('Session set on backend:', response.data)
+        useUserStore().setUserUuid(response.data.uuid)
+        router.push({ name: 'landing' })
+      })
+      .catch((error) => {
+        console.error('Error setting session on backend:', error)
+      })
   }
 
-  // remove the access and ID tokens from the
-  // local storage and emits the authChange event
+  // remove the access and ID tokens from the local storage and emits the authChange event
   logout() {
-  delete this.accessToken
-  delete this.idToken
-  delete this.expiresAt
-  this.authNotifier.emit('authChange', false)
-  useUserStore().clearUserUuid()
+    delete this.accessToken
+    delete this.idToken
+    delete this.expiresAt
+    this.authNotifier.emit('authChange', false)
+    useUserStore().clearUserUuid()
 
-  const returnTo = 'http://localhost:8080'
-  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID
-  window.location.href = `https://${import.meta.env.VITE_AUTH0_DOMAIN}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`
-}
+    const returnTo = 'http://localhost:8080'
+    const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID
+    window.location.href = `https://${import.meta.env.VITE_AUTH0_DOMAIN}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`
+  }
 
   // checks if the user is authenticated
   isAuthenticated() {
-    // Check whether the current time is past the
-    // access token's expiry time
+    // Check whether the current time is past the access token's expiry time
     return new Date().getTime() < this.expiresAt
   }
 
@@ -124,6 +125,7 @@ export default class AuthService {
       this.auth0.checkSession({}, (err, authResult) => {
         if (err) return reject(err)
         this.setSession(authResult)
+        console.warn('Silent auth successful')
         resolve()
       })
     })
