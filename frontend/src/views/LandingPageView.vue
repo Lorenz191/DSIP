@@ -1,49 +1,72 @@
 <script setup>
-import LandingNav from '@/components/LandingNav.vue'
-import axios from 'axios'
-import {ref, onMounted, onUnmounted} from 'vue'
-import PostRead from '@/components/PostRead.vue'
-import UserAsideInformaiton from '@/components/User/UserAsideInformaiton.vue'
-import {RouterLink} from "vue-router";
-import { useUserStore } from '@/stores/user.js'
+import LandingNav from '@/components/LandingNav.vue';
+import axios from 'axios';
+import { ref, onMounted, onUnmounted } from 'vue'
+import PostRead from '@/components/PostRead.vue';
+import { RouterLink } from "vue-router";
+import AsideInformation from '@/components/User/AsideInformation.vue'
+import AdminAsideInformation from '@/components/Admin/AdminAsideInformation.vue'
+import SVDashboardView from '@/views/SV-DashboardView.vue'
 
-const posts = ref([])
-const sv_posts = ref([])
-const svPosts = ref(false)
-const loading = ref(true)
-const userID = useUserStore().userUuid
-const accessToken = 'YOUR_ACCESS_TOKEN';
+const posts = ref([]);
+const sv_posts = ref([]);
+const toDisplay = ref(1)
+const loading = ref(true);
+const admin = ref(false);
 
-const requestOptions = {
-  method: 'GET',
-  headers: {
-    'Authorization': `Bearer ${accessToken}`,
-    'Content-Type': 'application/json'
-  }
-};
-
-fetch(`https://${import.meta.env.VITE_AUTH0_DOMAIN}/api/v2/users/${userID}/roles`, requestOptions)
-  .then(response => response.json())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));
-
-const fetchPosts = async () => {
+const fetchUserInfo = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/posts/get')
-    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get')
-    posts.value = response.data.sort((a,b) => b.upvotes.length - a.upvotes.length)
-
-    sv_posts.value = sv_response.data
+    const response = await axios.get('http://localhost:8000/api/user/get');
+    const roles = response.data.roles[0];
+    console.log(roles)
+    if (roles === 'is_admin') {
+      admin.value = true;
+    }
   } catch (error) {
-    console.error('Error fetching posts:', error)
-  } finally {
-    loading.value = false
+    console.error('Error fetching user info:', error);
   }
 }
 
+const fetchPosts = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/posts/get');
+    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get');
+    posts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length);
+    sv_posts.value = sv_response.data;
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+let socket;
+
 onMounted(() => {
-  fetchPosts()
-})
+  socket = new WebSocket('ws://localhost:8000/ws/posts/');
+
+  socket.onopen = () => {
+    console.log('Connected to the Postsocket');
+  };
+
+  socket.onmessage = (event) => {
+    if (JSON.parse(event.data)["message"] === 'post_delete') {
+      fetchPosts();
+    }
+  }
+
+  socket.onerror = (error) => {
+    console.error('Postocket error:', error)
+  }
+
+  socket.onclose = (event) => {
+    console.log('Postsocket closed:', event);
+  }
+
+  fetchPosts();
+  fetchUserInfo()
+});
+
 const screenWidth = ref(window.innerWidth);
 
 const updateScreenWidth = () => {
@@ -61,31 +84,33 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <LandingNav logout searchbar></LandingNav>
-  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
-    <div v-if="screenWidth>700" class="aside-container">
-      <UserAsideInformaiton :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
+    <LandingNav logout searchbar ></LandingNav>
+  <div class="posts-container">
+
+    <div class="aside-container">
+      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AsideInformation v-else  @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
-    <div v-else class="aside-container-small">
-      <UserAsideInformaiton :horizontal="true" :sv-posts="svPosts" @update:svPosts="svPosts = $event"></UserAsideInformaiton>
-    </div>
+
     <div class="posts-wrapper">
       <div v-if="loading" class="loading-container">
         <span class="loader"> </span>
       </div>
-
-      <template v-if="!svPosts">
+      <div v-if="toDisplay === 1">
         <div class="post-container" v-for="post in posts" :key="post.id">
-            <PostRead :post="post"></PostRead>
+            <PostRead :post="post" :adminView="admin"></PostRead>
         </div>
-      </template>
-      <template v-else>
+      </div>
+      <div v-if="toDisplay === 2 && admin">
+        <SVDashboardView :posts="posts"></SVDashboardView>
+      </div>
+      <div v-if="toDisplay === 3">
         <div class="post-container" v-for="post in sv_posts" :key="post.id">
           <PostRead :post="post"></PostRead>
         </div>
-      </template>
+      </div>
     </div>
-    <div class="new-post-container"  v-if="!svPosts&screenWidth>700" >
+    <div class="new-post-container">
       <RouterLink :to="`/create`">
       <button class="new-post-button">
         Neuer Beitrag
