@@ -88,8 +88,10 @@ onUnmounted(() => {
   <div class="posts-container">
 
     <div class="aside-container">
-      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
-      <AsideInformation v-else  @update:displayChange="toDisplay = $event"></AsideInformation>
+      <AdminAsideInformation v-if="admin&screenWidth>700"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AdminAsideInformation v-else-if="admin&screenWidth<700"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AsideInformation v-else-if="!admin&screenWidth>700"  @update:displayChange="toDisplay = $event"></AsideInformation>
+      <AsideInformation v-else :horizontal="true" @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
 
     <div class="posts-wrapper">

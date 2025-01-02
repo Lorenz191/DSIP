@@ -1,5 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+const props = defineProps({
+  horizontal:{
+    type: Boolean,
+    required: false
+  }
+})
 
 const enumarator = {
   posts: 1,
@@ -19,10 +25,11 @@ const toggleSv = () => {
   currentState.value = enumarator.svposts
   emit('update:displayChange', 2)
 }
+
 </script>
 
 <template>
-  <div class="aside-container">
+  <div :class="['aside-container', { horizontal: props.horizontal }]">
     <div class="top-container" :class="{ clicked: currentState === 1 }" @click="togglePosts">
       <img src="../icons/Chat_Bubbles.svg" alt="Chat Bubbles" class="chat-icon" />
     </div>
@@ -111,6 +118,45 @@ const toggleSv = () => {
   border-top: 5px solid rgba(111, 209, 222, 0.85);
   border-right: 5px solid rgba(111, 209, 222, 0.85);
   border-left: 5px solid rgba(111, 209, 222, 0.85);
+}
+.aside-container.horizontal{
+  width: 240px;
+  height: 100px;
+  display: flex;
+  flex-direction: row;
+  .top-container, .bottom-container {
+  width: 120px;
+  height: 100px;
+}
+  .top-container {
+  border-radius: 30px 0px 0px 30px;
+  border-top: 5px solid rgba(111, 209, 222, 0.85);
+  border-bottom: 5px solid rgba(111, 209, 222, 0.85);
+  border-left: 5px solid rgba(111, 209, 222, 0.85);
+  border-right: none;
+  background: #FFF;
+}
+
+.bottom-container {
+  border-radius: 0px 30px 30px 0px;
+  border-bottom: 2px solid rgba(221, 221, 221, 0.87);
+  border-right: 2px solid rgba(221, 221, 221, 0.87);
+  border-top: 2px solid rgba(221, 221, 221, 0.87);
+  border-left: none;
+
+  background: #FFF;
+}
+ .bottom-container.clicked {
+  border-bottom: 5px solid #2EDB7B;
+  border-right: 5px solid #2EDB7B;
+  border-top: 5px solid #2EDB7B;
+}
+
+.top-container.clicked {
+  border-top: 2px solid rgba(221, 221, 221, 0.87);
+  border-bottom: 2px solid rgba(221, 221, 221, 0.87);
+  border-left: 2px solid rgba(221, 221, 221, 0.87);
+}
 }
 
 .separation-line.posts {
