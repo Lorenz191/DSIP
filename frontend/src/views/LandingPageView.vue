@@ -85,15 +85,16 @@ onUnmounted(() => {
 
 <template>
     <LandingNav logout searchbar ></LandingNav>
-  <div class="posts-container">
+  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
 
-    <div class="aside-container">
-      <AdminAsideInformation v-if="admin&screenWidth>700"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
-      <AdminAsideInformation v-else-if="admin&screenWidth<700"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
-      <AsideInformation v-else-if="!admin&screenWidth>700"  @update:displayChange="toDisplay = $event"></AsideInformation>
+    <div v-if="screenWidth>700" class="aside-container">
+      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AsideInformation v-else  @update:displayChange="toDisplay = $event"></AsideInformation>
+    </div>
+    <div v-else class="aside-container-small">
+      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
       <AsideInformation v-else :horizontal="true" @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
-
     <div class="posts-wrapper">
       <div v-if="loading" class="loading-container">
         <span class="loader"> </span>
@@ -112,7 +113,7 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div class="new-post-container">
+    <div class="new-post-container"  v-if="!svPosts&screenWidth>700" >
       <RouterLink :to="`/create`">
       <button class="new-post-button">
         Neuer Beitrag
