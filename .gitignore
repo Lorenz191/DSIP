@@ -5,3 +5,6 @@ AccessTests/
 .backend/backend/DSIP/pycache/
 .backend/backend/dbaccess/pycache/
 .backend/backend/sentimentmodel/__pycache/
+.backend/backend/DSIP/__pycache__/
+.backend/backend/__pycache__/
+.backend/backend/db_access/__pycache__/
