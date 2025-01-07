@@ -1,7 +1,6 @@
 <script setup>
 
 import UserIconBig from "@/components/User/UserIconBig.vue";
-import ProfileNav from "@/components/ProfileNav.vue";
 import {useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
 import {useUserStore} from "@/stores/user.js";
