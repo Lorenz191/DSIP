@@ -9,6 +9,7 @@ import ArrowUpBlack from './icons/Arrow_Up_Black.svg'
 import ArrowUpGreen from './icons/Arrow_Up_Green.svg'
 import ArrowUpGreenFilled from './icons/Arrow_Up_Green_Filled.svg'
 import axios from 'axios'
+import DeletionModal from '@/components/modals/DeletionModal.vue'
 
 const currentUser = useUserStore().userUuid
 
@@ -40,6 +41,8 @@ const downvoted = ref(votes.downvotes.includes(currentUser))
 
 const hover_up = ref(false)
 const hover_down = ref(false)
+
+const showDeletionModal = ref(false)
 
 const handleUpvote = () => {
   if (upvoted.value || downvoted.value) {
@@ -135,11 +138,16 @@ onUnmounted(() => {
 
 <template>
   <div class="main-container">
+    <DeletionModal
+      v-if="showDeletionModal"
+      @confirm="() => { deletePost(); showDeletionModal = false; }"
+      @cancel="showDeletionModal = false"
+    ></DeletionModal>
     <div class="post-container">
       <div class="date-container">
         <p class="date">Veröffentlicht am {{ date }}</p>
         <div class="status-del-div">
-          <p class="del-symbol" v-if="adminView" @click="deletePost">&#x1F5D1;</p>
+          <p class="del-symbol" v-if="adminView" @click="showDeletionModal = true">&#x1F5D1;</p>
           <p class="status">{{ status }}</p>
         </div>
       </div>

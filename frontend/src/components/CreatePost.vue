@@ -32,7 +32,7 @@ const createPost = async () => {
 </script>
 
 <template>
-  <LandingNav :arrow="true" :searchbar="false"></LandingNav>
+  <LandingNav :arrow="true" :logout="false" :searchbar="false"></LandingNav>
   <div v-if="loading" class="loading-container">
     <span class="loader"> </span>
   </div>
