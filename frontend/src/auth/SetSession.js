@@ -1,14 +1,16 @@
-import { useAuth0 } from '@auth0/auth0-vue';
-import axios from 'axios';
-import { useUserStore } from '@/stores/user.js';
+import { useAuth0 } from '@auth0/auth0-vue'
+import axios from 'axios'
+import { useUserStore } from '@/stores/user.js'
 
 export const setSession = async () => {
-  const { getAccessTokenSilently, user, logout } = useAuth0();
+  const { getAccessTokenSilently, user, logout } = useAuth0()
 
   try {
-    const accessToken = await getAccessTokenSilently();
-    const profile = user.value;
+    // Get access token and user profile
+    const accessToken = await getAccessTokenSilently()
+    const profile = user.value
 
+    // Set session on the backend
     const response = await axios.post(
       'http://localhost:8000/api/set-session/',
       {
@@ -19,22 +21,30 @@ export const setSession = async () => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`
         },
-        withCredentials: true,
+        withCredentials: true
       }
-    );
+    )
 
-    console.log('Session successfully set on backend:', response.data);
+    console.log('Session successfully set on backend:', response.data)
 
-    const userStore = useUserStore();
-    userStore.setUserUuid(response.data.uuid);
+    // Only proceed to get user data if session was set successfully
+    const userStore = useUserStore()
+    userStore.setUserUuid(response.data.uuid)
+
+    const userResponse = await axios.get('http://localhost:8000/api/user/get/')
+    console.log(userResponse.data)
+
+    return  userResponse.data.roles.includes('is_admin')
+
+
   } catch (error) {
-    console.error('Error during session setup:', error);
+    console.error('Error during session setup:', error)
     logout({
-        logoutParams: {
-          target: '/'
-        }
-      })
+      logoutParams: {
+        target: '/'
+      }
+    })
   }
-};
+}

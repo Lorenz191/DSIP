@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render
 from urllib.parse import quote_plus, urlencode
 from django.core.cache import cache
 from django.middleware.csrf import get_token
+import logging
 
 from ..sentiment_model.SentimentAnalysis import SeAn
 from django.http import JsonResponse
@@ -278,6 +279,9 @@ def view_delete_user_profile(request, user_id):
         )
 
 
+logging.basicConfig(level=logging.DEBUG)
+
+
 @csrf_exempt
 def set_session(request):
     if request.method == "POST":
@@ -293,18 +297,20 @@ def set_session(request):
                     {"error": "Both auth0Id and accessToken are required."}, status=400
                 )
 
+            # Logging cache operations
+
             cache.set("auth0_id", auth0_id)
             cache.set("access_token", access_token)
             cache.set("roles", roles)
 
-            print("Auth0 ID set in cache:", cache.get("auth0_id"))
-            print("Access token set in cache:", cache.get("access_token"))
-            print("Roles set in cache", cache.get("roles"))
+            logging.info("Auth0 ID set in cache: %s", cache.get("auth0_id"))
+            logging.info("Access token set in cache: %s", cache.get("access_token"))
+            logging.info("Roles set in cache: %s", cache.get("roles"))
 
             return JsonResponse({"success": True, "uuid": auth0_id}, status=200)
 
         except Exception as e:
-            print(f"Error in set_session: {str(e)}")
+            logging.error("Error in set_session: %s", str(e), exc_info=True)
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse(

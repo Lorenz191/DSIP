@@ -46,13 +46,8 @@ const fetchPosts = async () => {
 
 let socket
 
-onMounted(() => {
-  setSession()
-
-  axios.get('http://localhost:8000/api/user/get/').then((response) => {
-    admin = response.data.roles.includes("is_admin")
-  })
-
+onMounted(async () => {
+  admin.value = await setSession()
 
   socket = new WebSocket('ws://localhost:8000/ws/posts/')
 
