@@ -13,6 +13,7 @@ import { setSession } from '@/auth/SetSession.js'
 const posts = ref([])
 const sv_posts = ref([])
 const toDisplay = ref(1)
+
 const loading = ref(true)
 let admin = ref(false)
 const { isAuthenticated, logout } = useAuth0()
@@ -96,15 +97,17 @@ onUnmounted(() => {
 
 <template>
   <LandingNav logout searchbar></LandingNav>
-  <div class="posts-container">
-    <div class="aside-container">
-      <AdminAsideInformation
-        v-if="admin"
-        @update:displayChange="toDisplay = $event"
-      ></AdminAsideInformation>
-      <AsideInformation v-else @update:displayChange="toDisplay = $event"></AsideInformation>
-    </div>
+  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
 
+    <div v-if="screenWidth>700" class="aside-container">
+      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AsideInformation v-else  @update:displayChange="toDisplay = $event"></AsideInformation>
+
+    </div>
+    <div v-else class="aside-container-small">
+      <AdminAsideInformation :horizontal="true" v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AsideInformation v-else :horizontal="true" @update:displayChange="toDisplay = $event"></AsideInformation>
+    </div>
     <div class="posts-wrapper">
       <div v-if="loading" class="loading-container">
         <span class="loader"> </span>
@@ -123,7 +126,7 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div class="new-post-container">
+    <div class="new-post-container"  v-if="!svPosts&screenWidth>700" >
       <RouterLink :to="`/create`">
         <button class="new-post-button">Neuer Beitrag</button>
       </RouterLink>

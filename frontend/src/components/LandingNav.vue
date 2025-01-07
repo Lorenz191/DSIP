@@ -5,6 +5,7 @@ import { useAuth0 } from '@auth0/auth0-vue'
 
 const {isAuthenticated} = useAuth0()
 
+import UserIconSmall from "@/components/User/UserIconSmall.vue";
 const props = defineProps({
   arrow: {
     type: Boolean,
@@ -61,7 +62,7 @@ onUnmounted(() => {
       </div>
     </div>
     <div class="user-profile-container">
-
+      <UserIconSmall></UserIconSmall>
     </div>
   </div>
 </template>
