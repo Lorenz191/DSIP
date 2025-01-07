@@ -1,6 +1,7 @@
 <script setup>
 import AuthService from '@/auth/AuthService.js'
 import {onMounted, onUnmounted, ref} from "vue";
+import UserIconSmall from "@/components/User/UserIconSmall.vue";
 const props = defineProps({
   arrow: {
     type: Boolean,
@@ -62,7 +63,7 @@ onUnmounted(() => {
       </div>
     </div>
     <div class="user-profile-container">
-
+      <UserIconSmall></UserIconSmall>
     </div>
   </div>
 </template>
