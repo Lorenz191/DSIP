@@ -1,5 +1,4 @@
 <script setup>
-import AuthService from '@/auth/AuthService.js'
 import {onMounted, onUnmounted, ref} from "vue";
 import LogoutButton from '@/components/Buttons/logout-button.vue'
 import { useAuth0 } from '@auth0/auth0-vue'
@@ -20,8 +19,6 @@ const props = defineProps({
     required: true
   }
 })
-
-const auth = new AuthService()
 
 
 const screenWidth = ref(window.innerWidth);

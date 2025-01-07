@@ -1,34 +1,8 @@
 <script setup>
-import {ref, onMounted, watch, onUnmounted} from 'vue'
+import {ref, onMounted, onUnmounted} from 'vue'
 
 const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
-import AuthService from '../auth/AuthService'
-import { useRouter } from 'vue-router'
 import LoginButton from '@/components/Buttons/login-button.vue'
-import {useAuth0} from '@auth0/auth0-vue'
-import LogoutButton from '@/components/Buttons/logout-button.vue'
-
-const {isAuthenticated} = useAuth0()
-
-const auth = new AuthService()
-
-const router = useRouter()
-
-const authenticated = ref(false)
-const message = ref('')
-const userProfile = ref(null)
-
-const handleAuthentication = () => {
-  auth.handleAuthentication()
-}
-
-const login = () => {
-  auth.login()
-}
-
-const logout = () => {
-  auth.logout()
-}
 
 const screenWidth = ref(window.innerWidth);
 
@@ -45,30 +19,6 @@ onUnmounted(() => {
 });
 
 
-
-onMounted(() => {
-  handleAuthentication()
-
-  auth.authNotifier.on('authChange', (authState) => {
-    authenticated.value = authState.authenticated
-    if (authState.authenticated) {
-      userProfile.value = auth.getUserProfile()
-    } else {
-      userProfile.value = null
-      message.value = ''
-    }
-  })
-})
-
-watch(
-  () => authenticated.value,
-  (newVal) => {
-    if (newVal) {
-      router.push({name: 'landing'})
-    }
-  }
-)
-
 </script>
 
 <template>
@@ -84,8 +34,7 @@ watch(
         <h1>Digitales Schülerparlament</h1>
       </div>
       <div class="login-container">
-        <LoginButton v-if="!isAuthenticated"></LoginButton>
-        <LogoutButton v-else></LogoutButton>
+        <LoginButton></LoginButton>
       </div>
     </div>
      <div v-if="screenWidth<700" class="left-section">
