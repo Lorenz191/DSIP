@@ -21,4 +21,18 @@ const handleLogin = async () => {
   <button class="button__login" @click="handleLogin">Log In</button>
 </template>
 
-<style scoped></style>
+<style scoped>
+button {
+  color: white;
+  font-family: Futura;
+  font-weight: bold;
+  background: #2edb7b;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+button:hover{
+  cursor: pointer;
+  background: #1e9e57;
+}
+</style>

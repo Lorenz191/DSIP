@@ -16,5 +16,9 @@
 </template>
 
 <style scoped>
-
+button{
+  color: white;
+  font-family: Futura;
+  font-weight: bold;
+}
 </style>

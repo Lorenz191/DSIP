@@ -2,10 +2,11 @@
 import {onMounted, onUnmounted, ref} from "vue";
 import LogoutButton from '@/components/Buttons/logout-button.vue'
 import { useAuth0 } from '@auth0/auth0-vue'
+import { useRouter } from 'vue-router'
+import UserIconSmall from "@/components/User/UserIconSmall.vue";
 
 const {isAuthenticated} = useAuth0()
 
-import UserIconSmall from "@/components/User/UserIconSmall.vue";
 const props = defineProps({
   arrow: {
     type: Boolean,
@@ -21,12 +22,17 @@ const props = defineProps({
   }
 })
 
+const router = useRouter()
 
 const screenWidth = ref(window.innerWidth);
 
 const updateScreenWidth = () => {
   screenWidth.value = window.innerWidth;
 };
+
+const back = () => {
+  router.push("/landing")
+}
 
 onMounted(() => {
   window.addEventListener('resize', updateScreenWidth);
@@ -45,8 +51,8 @@ onUnmounted(() => {
 
     </div>
     <div class="back-arrow-container">
-      <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> <img src="./icons/Arrow_back.svg" class="icon" alt="arrow-back" style="height: 25px"></a>
-      <LogoutButton v-if="isAuthenticated"></LogoutButton>
+      <img v-if="arrow" src="./icons/Arrow_Back.svg" class="icon" alt="arrow-back" style="height: 25px" @click="back">
+      <LogoutButton v-if="isAuthenticated & logout" ></LogoutButton>
     </div>
     <div class="search-bar-container" v-if="searchbar">
       <div class="search-container">
