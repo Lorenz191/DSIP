@@ -14,6 +14,7 @@ application = ProtocolTypeRouter(
             URLRouter(
                 [
                     path("ws/votes/", consumers.VoteConsumer.as_asgi()),
+                    path("ws/posts/", consumers.PostConsumer.as_asgi()),
                 ]
             )
         ),

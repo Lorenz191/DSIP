@@ -86,6 +86,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
 
 TEMPLATES = [
     {
@@ -114,6 +116,16 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": "127.0.0.1:11211",
+    }
+}
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 
 CORS_ORIGIN_WHITELIST = ("http://localhost:8080",)
 

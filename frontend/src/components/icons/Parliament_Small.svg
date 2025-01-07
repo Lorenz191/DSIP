@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 332.56 215.22">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-2 {
+        fill: url(#linear-gradient-4);
+      }
+
+      .cls-3 {
+        fill: url(#linear-gradient-3);
+      }
+
+      .cls-4 {
+        fill: url(#linear-gradient-5);
+      }
+
+      .cls-5 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-6 {
+        fill: #e1e1e1;
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="41.48" y1="96.93" x2="41.48" y2="90.65" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e1e1e1"/>
+      <stop offset="1" stop-color="#e1e1e1"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="41.48" y1="215.22" x2="41.48" y2="99.54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#e1e1e1"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="123.02" x2="123.02" xlink:href="#linear-gradient-2"/>
+    <linearGradient id="linear-gradient-4" x1="291.08" x2="291.08" gradientTransform="translate(582.16 314.76) rotate(-180)" xlink:href="#linear-gradient-2"/>
+    <linearGradient id="linear-gradient-5" x1="209.55" x2="209.55" gradientTransform="translate(419.09 314.76) rotate(-180)" xlink:href="#linear-gradient-2"/>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer_1">
+    <g>
+      <g>
+        <rect class="cls-5" x="22.87" y="90.65" width="37.22" height="6.28"/>
+        <rect class="cls-1" x="27.39" y="99.54" width="28.18" height="115.67"/>
+      </g>
+      <rect class="cls-6" x="104.41" y="90.65" width="37.22" height="6.28"/>
+      <rect class="cls-3" x="108.93" y="99.54" width="28.18" height="115.67"/>
+      <rect class="cls-6" x="272.47" y="90.65" width="37.22" height="6.28" transform="translate(582.16 187.58) rotate(180)"/>
+      <rect class="cls-2" x="276.99" y="99.54" width="28.18" height="115.67" transform="translate(582.16 314.76) rotate(180)"/>
+      <rect class="cls-6" x="190.93" y="90.65" width="37.22" height="6.28" transform="translate(419.09 187.58) rotate(180)"/>
+      <rect class="cls-4" x="195.45" y="99.54" width="28.18" height="115.67" transform="translate(419.09 314.76) rotate(180)"/>
+      <g>
+        <polygon class="cls-6" points="14.68 60.25 166.28 5.32 317.89 60.25 332.56 60.25 166.28 0 0 60.25 14.68 60.25"/>
+        <polygon class="cls-6" points="303.21 60.25 29.35 60.25 166.28 10.64 303.21 60.25"/>
+        <polygon class="cls-6" points="309.3 65.94 309.3 72.99 298.04 72.99 298.04 65.94 290.99 65.94 290.99 72.99 279.72 72.99 279.72 65.94 272.67 65.94 272.67 72.99 261.4 72.99 261.4 65.94 254.35 65.94 254.35 72.99 243.08 72.99 243.08 65.94 236.03 65.94 236.03 72.99 224.77 72.99 224.77 65.94 217.71 65.94 217.71 72.99 206.45 72.99 206.45 65.94 199.39 65.94 199.39 72.99 188.13 72.99 188.13 65.94 181.08 65.94 181.08 72.99 169.81 72.99 169.81 65.94 162.76 65.94 162.76 72.99 151.49 72.99 151.49 65.94 144.44 65.94 144.44 72.99 133.17 72.99 133.17 65.94 126.12 65.94 126.12 72.99 114.86 72.99 114.86 65.94 107.8 65.94 107.8 72.99 96.54 72.99 96.54 65.94 89.48 65.94 89.48 72.99 78.22 72.99 78.22 65.94 71.17 65.94 71.17 72.99 59.9 72.99 59.9 65.94 52.85 65.94 52.85 72.99 41.58 72.99 41.58 65.94 34.53 65.94 34.53 72.99 23.26 72.99 23.26 65.94 16.21 65.94 16.21 72.99 16.21 87.23 316.36 87.23 316.36 72.99 316.36 72.99 316.36 65.94 309.3 65.94"/>
+      </g>
+    </g>
+  </g>
+</svg>

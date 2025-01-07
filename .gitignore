@@ -1,3 +1,7 @@
 AccessTests/
 .env
 .idea
+.backend/backend/pycache/
+.backend/backend/DSIP/pycache/
+.backend/backend/dbaccess/pycache/
+.backend/backend/sentimentmodel/__pycache/
