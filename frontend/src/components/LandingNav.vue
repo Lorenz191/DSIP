@@ -1,6 +1,11 @@
 <script setup>
 import AuthService from '@/auth/AuthService.js'
 import {onMounted, onUnmounted, ref} from "vue";
+import LogoutButton from '@/components/Buttons/logout-button.vue'
+import { useAuth0 } from '@auth0/auth0-vue'
+
+const {isAuthenticated} = useAuth0()
+
 const props = defineProps({
   arrow: {
     type: Boolean,
@@ -18,9 +23,6 @@ const props = defineProps({
 
 const auth = new AuthService()
 
-const logOut = () => {
-  auth.logout()
-}
 
 const screenWidth = ref(window.innerWidth);
 
@@ -46,7 +48,7 @@ onUnmounted(() => {
     </div>
     <div class="back-arrow-container">
       <a class="arrow-back" href="http://localhost:8080/landing" v-if="props.arrow"> <img src="./icons/Arrow_back.svg" class="icon" alt="arrow-back" style="height: 25px"></a>
-      <button @click="logOut" v-if="logout">Abmelden</button>
+      <LogoutButton v-if="isAuthenticated"></LogoutButton>
     </div>
     <div class="search-bar-container" v-if="searchbar">
       <div class="search-container">

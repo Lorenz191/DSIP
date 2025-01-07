@@ -1,10 +1,14 @@
 <script setup>
 import {ref, onMounted, watch, onUnmounted} from 'vue'
 
-const loginUrl = ref('');
 const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
 import AuthService from '../auth/AuthService'
 import { useRouter } from 'vue-router'
+import LoginButton from '@/components/Buttons/login-button.vue'
+import {useAuth0} from '@auth0/auth0-vue'
+import LogoutButton from '@/components/Buttons/logout-button.vue'
+
+const {isAuthenticated} = useAuth0()
 
 const auth = new AuthService()
 
@@ -80,9 +84,8 @@ watch(
         <h1>Digitales Schülerparlament</h1>
       </div>
       <div class="login-container">
-        <button class="btn btn-primary btn-margin login-button" v-if="!authenticated" @click="login" type="submit">
-          <p>Anmelden</p>
-        </button>
+        <LoginButton v-if="!isAuthenticated"></LoginButton>
+        <LogoutButton v-else></LogoutButton>
       </div>
     </div>
      <div v-if="screenWidth<700" class="left-section">

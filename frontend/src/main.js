@@ -9,6 +9,7 @@ import VueNativeSock from 'vue-native-websocket-vue3'
 
 import App from './App.vue'
 import router from './router'
+import { createAuth0 } from '@auth0/auth0-vue'
 
 const app = createApp(App)
 
@@ -24,5 +25,15 @@ app.use(VueNativeSock, 'ws://localhost:8000/ws/votes/', {
     reconnectionAttempts: 5,
     reconnectionDelay: 3000,
 })
+
+app.use(
+  createAuth0({
+      domain: import.meta.env.VITE_AUTH0_DOMAIN,
+      clientId: import.meta.env.VITE_AUTH0_CLIENT_ID,
+      authorizationParams: {
+          redirect_uri: "http://localhost:8080/callback",
+      },
+  })
+)
 
 app.mount('#app')

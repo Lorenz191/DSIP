@@ -1,57 +1,68 @@
 <script setup>
-import LandingNav from '@/components/LandingNav.vue';
-import axios from 'axios';
+import LandingNav from '@/components/LandingNav.vue'
+import axios from 'axios'
 import { ref, onMounted, onUnmounted } from 'vue'
-import PostRead from '@/components/PostRead.vue';
-import { RouterLink } from "vue-router";
+import PostRead from '@/components/PostRead.vue'
+import { RouterLink } from 'vue-router'
 import AsideInformation from '@/components/User/AsideInformation.vue'
 import AdminAsideInformation from '@/components/Admin/AdminAsideInformation.vue'
 import SVDashboardView from '@/views/SV-DashboardView.vue'
+import { useAuth0 } from '@auth0/auth0-vue'
+import { setSession } from '@/auth/SetSession.js'
 
-const posts = ref([]);
-const sv_posts = ref([]);
+const posts = ref([])
+const sv_posts = ref([])
 const toDisplay = ref(1)
-const loading = ref(true);
-const admin = ref(false);
+const loading = ref(true)
+let admin = ref(false)
+const { isAuthenticated, logout } = useAuth0()
 
 const fetchUserInfo = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/user/get');
-    const roles = response.data.roles[0];
-    console.log(roles)
-    if (roles === 'is_admin') {
-      admin.value = true;
+    if (isAuthenticated.value === false) {
+      logout({
+        logoutParams: {
+          target: '/'
+        }
+      })
     }
   } catch (error) {
-    console.error('Error fetching user info:', error);
+    console.error('Error fetching user info:', error)
   }
 }
 
 const fetchPosts = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/posts/get');
-    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get');
-    posts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length);
-    sv_posts.value = sv_response.data;
+    const response = await axios.get('http://localhost:8000/api/posts/get')
+    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get')
+    posts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length)
+    sv_posts.value = sv_response.data
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error fetching posts:', error)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-let socket;
+let socket
 
 onMounted(() => {
-  socket = new WebSocket('ws://localhost:8000/ws/posts/');
+  setSession()
+
+  axios.get('http://localhost:8000/api/user/get/').then((response) => {
+    admin = response.data.roles.includes("is_admin")
+  })
+
+
+  socket = new WebSocket('ws://localhost:8000/ws/posts/')
 
   socket.onopen = () => {
-    console.log('Connected to the Postsocket');
-  };
+    console.log('Connected to the Postsocket')
+  }
 
   socket.onmessage = (event) => {
-    if (JSON.parse(event.data)["message"] === 'post_delete') {
-      fetchPosts();
+    if (JSON.parse(event.data)['message'] === 'post_delete') {
+      fetchPosts()
     }
   }
 
@@ -60,36 +71,38 @@ onMounted(() => {
   }
 
   socket.onclose = (event) => {
-    console.log('Postsocket closed:', event);
+    console.log('Postsocket closed:', event)
   }
 
-  fetchPosts();
+  fetchPosts()
   fetchUserInfo()
-});
+})
 
-const screenWidth = ref(window.innerWidth);
+const screenWidth = ref(window.innerWidth)
 
 const updateScreenWidth = () => {
-  screenWidth.value = window.innerWidth;
-};
+  screenWidth.value = window.innerWidth
+}
 
 onMounted(() => {
-  window.addEventListener('resize', updateScreenWidth);
-});
+  window.addEventListener('resize', updateScreenWidth)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateScreenWidth);
-});
+  window.removeEventListener('resize', updateScreenWidth)
+})
 
 </script>
 
 <template>
-    <LandingNav logout searchbar ></LandingNav>
+  <LandingNav logout searchbar></LandingNav>
   <div class="posts-container">
-
     <div class="aside-container">
-      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
-      <AsideInformation v-else  @update:displayChange="toDisplay = $event"></AsideInformation>
+      <AdminAsideInformation
+        v-if="admin"
+        @update:displayChange="toDisplay = $event"
+      ></AdminAsideInformation>
+      <AsideInformation v-else @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
 
     <div class="posts-wrapper">
@@ -98,7 +111,7 @@ onUnmounted(() => {
       </div>
       <div v-if="toDisplay === 1">
         <div class="post-container" v-for="post in posts" :key="post.id">
-            <PostRead :post="post" :adminView="admin"></PostRead>
+          <PostRead :post="post" :adminView="admin"></PostRead>
         </div>
       </div>
       <div v-if="toDisplay === 2 && admin">
@@ -112,16 +125,13 @@ onUnmounted(() => {
     </div>
     <div class="new-post-container">
       <RouterLink :to="`/create`">
-      <button class="new-post-button">
-        Neuer Beitrag
-      </button>
+        <button class="new-post-button">Neuer Beitrag</button>
       </RouterLink>
     </div>
   </div>
 </template>
 
 <style scoped>
-
 .posts-container {
   display: grid;
   grid-template-columns: 1fr 4fr 1fr;
@@ -148,6 +158,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
 }
+
 .aside-container-small {
   display: flex;
   align-items: center;
@@ -162,7 +173,7 @@ onUnmounted(() => {
 }
 
 .new-post-button {
-  background: #D9D9D9;
+  background: #d9d9d9;
   font-family: Futura;
   font-size: 24px;
   width: 230px;
@@ -186,15 +197,16 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.loader:before, .loader:after {
-  content: "";
+.loader:before,
+.loader:after {
+  content: '';
   position: absolute;
   left: 50%;
   bottom: 0;
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #2EDB7B;
+  background: #2edb7b;
   transform: translate(-50%, 100%) scale(0);
   animation: push 2s infinite ease-in;
 }
@@ -207,53 +219,60 @@ onUnmounted(() => {
   0% {
     transform: translate(-50%, 100%) scale(1);
   }
-  15%, 25% {
+  15%,
+  25% {
     transform: translate(-50%, 50%) scale(1);
   }
-  50%, 75% {
+  50%,
+  75% {
     transform: translate(-50%, -30%) scale(0.5);
   }
-  80%, 100% {
+  80%,
+  100% {
     transform: translate(-50%, -50%) scale(0);
   }
 }
-input::placeholder{
+
+input::placeholder {
   font-weight: bolder;
   color: red;
 }
-.small-posts-container{
-  height:calc(100vh - 80px);
+
+.small-posts-container {
+  height: calc(100vh - 80px);
   width: auto;
   display: grid;
   grid-template-areas:
-  'posts'
-  'posts'
-  'aside'
-;
-  .posts-wrapper {
-  height: 75vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  overflow: scroll;
-}
+    'posts'
+    'posts'
+    'aside';
 
-.aside-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 75vh - 80px);
-  grid-area: aside;
-}
-  .posts-wrapper{
+  .posts-wrapper {
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    overflow: scroll;
+  }
+
+  .aside-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 75vh - 80px);
+    grid-area: aside;
+  }
+
+  .posts-wrapper {
     grid-area: posts;
     overflow-x: hidden;
   }
-.post-container{
-  width: 90vw;
-}
+
+  .post-container {
+    width: 90vw;
+  }
 }
 </style>

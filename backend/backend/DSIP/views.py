@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.shortcuts import redirect, render
 from urllib.parse import quote_plus, urlencode
 from django.core.cache import cache
+from django.middleware.csrf import get_token
 
 from ..sentiment_model.SentimentAnalysis import SeAn
 from django.http import JsonResponse
@@ -142,7 +143,6 @@ def view_vote_post(request):
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
 
-@csrf_exempt
 def view_create_post(request):
     """Erstellt einen neuen Vorschlag."""
     db_instance = DB()
