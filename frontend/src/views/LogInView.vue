@@ -19,7 +19,7 @@ const handleAuthentication = () => {
 }
 
 const login = () => {
-  auth.login()
+router.push('/landing')
 }
 
 const logout = () => {
