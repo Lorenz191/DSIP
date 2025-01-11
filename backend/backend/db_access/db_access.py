@@ -8,6 +8,18 @@ from dotenv import load_dotenv
 load_dotenv()  # Load environment variables
 
 
+def custom_serializer(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    elif isinstance(obj, datetime):
+        return obj.isoformat()
+    elif isinstance(obj, list):
+        return [custom_serializer(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {key: custom_serializer(value) for key, value in obj.items()}
+    return obj
+
+
 class DB:
     def __init__(self):
         self.client = MongoClient(
@@ -59,18 +71,10 @@ class DB:
     # Select Posts for a specific User
     def select_posts_for_user(self, user_id):
         try:
-            user_id = ObjectId(user_id)
+            user_id = user_id
             post_collection = self.db["Post"]
             posts = post_collection.find({"fk_author": user_id})
-            return [
-                {
-                    "title": post["body"]["title"],
-                    "content": post["body"]["content"],
-                    "status": post["status"],
-                    "created_at": post["created_at"],
-                }
-                for post in posts
-            ]
+            return list(posts) if posts else []
         except Exception as e:
             print(f"Error selecting posts for user: {e}")
             return []
@@ -167,3 +171,13 @@ class DB:
         except Exception as e:
             print(f"Error updating post: {e}")
             return False
+
+    def select_upvotes(self, user_id):
+        post_collection = self.db["Post"]
+        posts = post_collection.find({"upvotes": user_id})
+        return list(posts) if posts else []
+
+    def select_downvotes(self, user_id):
+        post_collection = self.db["Post"]
+        posts = post_collection.find({"downvotes": user_id})
+        return list(posts) if posts else []

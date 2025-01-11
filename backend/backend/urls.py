@@ -13,6 +13,8 @@ urlpatterns = [
     path("api/post/vote/", views.view_vote_post),
     path("api/user/update/", views.view_delete_user_profile),
     path("api/set-session/", views.set_session),
-    path("api/user/get/", views.get_user_roles),
     path("api/post/status", views.view_update_status_post),
+    path("api/posts/get/user/upvoted/", views.view_get_user_liked_posts),
+    path("api/posts/get/user/downvoted/", views.view_get_user_disliked_posts),
+    path("api/posts/get/user/", views.view_get_user_posts),
 ]
