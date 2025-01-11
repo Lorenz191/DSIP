@@ -4,6 +4,7 @@ tasks:
   runserver:
     desc: Run all servers
     cmds:
+      - export DJANGO_SETTINGS_MODULE=backend.settings && python ./backend/manage.py runserver &
       - python ./backend/manage.py runserver &
       - npm run dsip --prefix ./frontend &
       - daphne backend.backend.asgi:application &

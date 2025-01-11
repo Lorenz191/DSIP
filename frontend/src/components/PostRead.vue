@@ -107,7 +107,7 @@ onMounted(() => {
   socket = new WebSocket('ws://localhost:8000/ws/votes/')
 
   socket.onopen = () => {
-    console.log('WebSocket connection opened')
+    console.log('VoteSocket connection opened')
   }
 
   socket.onmessage = (event) => {
@@ -121,11 +121,11 @@ onMounted(() => {
   }
 
   socket.onerror = (error) => {
-    console.error('WebSocket error:', error)
+    console.error('VoteSocket error:', error)
   }
 
   socket.onclose = (event) => {
-    console.log('WebSocket closed:', event)
+    console.log('VoteSocket closed:', event)
   }
 })
 

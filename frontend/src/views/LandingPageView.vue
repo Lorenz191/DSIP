@@ -9,14 +9,21 @@ import AdminAsideInformation from '@/components/Admin/AdminAsideInformation.vue'
 import SVDashboardView from '@/views/SV-DashboardView.vue'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { setSession } from '@/auth/SetSession.js'
+import { useSessionStore } from '@/stores/session.js'
 
+const { isAuthenticated, logout } = useAuth0()
+const sessionStore = useSessionStore()
 const posts = ref([])
 const sv_posts = ref([])
 const toDisplay = ref(1)
-
 const loading = ref(true)
-let admin = ref(false)
-const { isAuthenticated, logout } = useAuth0()
+
+const initializeSession = async () => {
+  if (!sessionStore.isSessionSet) {
+    const isAdmin = await setSession()
+    sessionStore.setSessionStatus(true, isAdmin)
+  }
+}
 
 const fetchUserInfo = async () => {
   try {
@@ -34,12 +41,12 @@ const fetchUserInfo = async () => {
 
 const fetchPosts = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/posts/get')
-    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get')
+    const response = await axios.get('http://localhost:8000/api/posts/get', { timeout: 10000 })
+    const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get', { timeout: 10000 })
     posts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length)
     sv_posts.value = sv_response.data
   } catch (error) {
-    console.error('Error fetching posts:', error)
+    console.error('Error fetching posts:', error.message)
   } finally {
     loading.value = false
   }
@@ -48,7 +55,7 @@ const fetchPosts = async () => {
 let socket
 
 onMounted(async () => {
-  admin.value = await setSession()
+  await initializeSession()
 
   socket = new WebSocket('ws://localhost:8000/ws/posts/')
 
@@ -70,8 +77,8 @@ onMounted(async () => {
     console.log('Postsocket closed:', event)
   }
 
-  fetchPosts()
-  fetchUserInfo()
+  await fetchPosts()
+  await fetchUserInfo()
 })
 
 const screenWidth = ref(window.innerWidth)
@@ -87,41 +94,47 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateScreenWidth)
 })
-
 </script>
 
 <template>
   <LandingNav logout searchbar></LandingNav>
-  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
+  <div :class="[{'posts-container' : screenWidth > 700}, {'small-posts-container' : screenWidth < 700}]">
 
-    <div v-if="screenWidth>700" class="aside-container">
-      <AdminAsideInformation v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
-      <AsideInformation v-else  @update:displayChange="toDisplay = $event"></AsideInformation>
-
+    <div v-if="screenWidth > 700" class="aside-container">
+      <AdminAsideInformation v-if="sessionStore.isAdmin" @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AsideInformation v-else @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
     <div v-else class="aside-container-small">
-      <AdminAsideInformation :horizontal="true" v-if="admin"  @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AdminAsideInformation :horizontal="true" v-if="sessionStore.isAdmin"
+                             @update:displayChange="toDisplay = $event"></AdminAsideInformation>
       <AsideInformation v-else :horizontal="true" @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
+
     <div class="posts-wrapper">
       <div v-if="loading" class="loading-container">
         <span class="loader"> </span>
       </div>
-      <div v-if="toDisplay === 1">
-        <div class="post-container" v-for="post in posts" :key="post.id">
-          <PostRead :post="post" :adminView="admin"></PostRead>
+      <div v-else>
+        <div v-if="toDisplay === 1 && posts.length">
+          <div class="post-container" v-for="post in posts" :key="post.id">
+            <PostRead :post="post" :adminView="sessionStore.isAdmin"></PostRead>
+          </div>
         </div>
-      </div>
-      <div v-if="toDisplay === 2 && admin">
-        <SVDashboardView :posts="posts"></SVDashboardView>
-      </div>
-      <div v-if="toDisplay === 3">
-        <div class="post-container" v-for="post in sv_posts" :key="post.id">
-          <PostRead :post="post"></PostRead>
+        <div v-else-if="toDisplay === 1 && !posts.length">
+          <p>No posts available or an error occurred.</p>
+        </div>
+        <div v-if="toDisplay === 2 && sessionStore.isAdmin">
+          <SVDashboardView :posts="posts"></SVDashboardView>
+        </div>
+        <div v-if="toDisplay === 3">
+          <div class="post-container" v-for="post in sv_posts" :key="post.id">
+            <PostRead :post="post"></PostRead>
+          </div>
         </div>
       </div>
     </div>
-    <div class="new-post-container"  v-if="!svPosts&screenWidth>700" >
+
+    <div class="new-post-container" v-if="!sv_posts.length && screenWidth > 700">
       <RouterLink :to="`/create`">
         <button class="new-post-button">Neuer Beitrag</button>
       </RouterLink>

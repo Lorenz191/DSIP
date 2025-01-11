@@ -1,20 +1,19 @@
 <script setup>
 import { useAuth0 } from '@auth0/auth0-vue'
-const {loginWithRedirect} = useAuth0()
+
+const { loginWithRedirect } = useAuth0()
 
 const handleLogin = async () => {
   try {
-    console.log('Starting login...');
+    console.log('Starting login...')
     await loginWithRedirect({
       appState: { target: '/landing' }
-    });
-    console.log('Redirecting after login...');
+    })
+    console.log('Redirecting after login...')
   } catch (error) {
-    console.error('Error during login:', error);
+    console.error('Error during login:', error)
   }
-};
-
-
+}
 </script>
 
 <template>
@@ -31,7 +30,7 @@ button {
   border-radius: 5px;
 }
 
-button:hover{
+button:hover {
   cursor: pointer;
   background: #1e9e57;
 }

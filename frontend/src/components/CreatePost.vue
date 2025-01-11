@@ -3,23 +3,17 @@ import LandingNav from '@/components/LandingNav.vue'
 import { ref } from 'vue'
 import axios from 'axios'
 import router from '@/router/index.js'
-import { getCookie } from '@/functions/HelperFunctions.js'
 
 const postTitle = ref('')
 const postContent = ref('')
 const loading = ref(false)
 
 const createPost = async () => {
-  console.log(getCookie('csrftoken'))
   try {
     loading.value = true
     await axios.post(
       'http://localhost:8000/api/post/create/',
       { title: postTitle.value, content: postContent.value },
-      {
-        headers: { 'X-CSRFToken': getCookie('csrftoken') },
-        withCredentials: true
-      }
     )
   } catch (error) {
     console.error('Error creating post:', error)
