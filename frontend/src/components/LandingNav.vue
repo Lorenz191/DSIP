@@ -1,8 +1,8 @@
 <script setup>
-import AuthService from '@/auth/AuthService.js'
 import {onMounted, onUnmounted, ref} from "vue";
 import {useRouter} from "vue-router";
 import UserIconSmall from "@/components/User/UserIconSmall.vue";
+import LogoutButton from '@/components/Buttons/logout-button.vue'
 const props = defineProps({
   arrow: {
     type: Boolean,
@@ -22,11 +22,6 @@ const props = defineProps({
   }
 })
 const router = useRouter();
-const auth = new AuthService()
-
-const logOut = () => {
-  auth.logout()
-}
 
 const screenWidth = ref(window.innerWidth);
 
@@ -52,7 +47,7 @@ const backToLanding = () => {
 
     <div class="back-arrow-container icon">
       <img src="../components/icons/Arrow_back.svg" alt="arrow_back" v-if="props.arrow" @click="backToLanding" >
-      <button @click="logOut" v-if="props.logout">Abmelden</button>
+      <logout-button></logout-button>
     </div>
 
     <div class="search-bar-container" v-if="props.searchbar">
