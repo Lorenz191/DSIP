@@ -94,14 +94,19 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateScreenWidth)
 })
+
+const handleSearch = (searchInput) => {
+  console.log('Search input:', searchInput)
+}
 </script>
 
 <template>
-  <LandingNav logout searchbar profile-icon></LandingNav>
+  <LandingNav logout searchbar profile-icon @search="handleSearch"></LandingNav>
   <div :class="[{'posts-container' : screenWidth > 700}, {'small-posts-container' : screenWidth < 700}]">
 
     <div v-if="screenWidth > 700" class="aside-container">
-      <AdminAsideInformation v-if="sessionStore.isAdmin" @update:displayChange="toDisplay = $event"></AdminAsideInformation>
+      <AdminAsideInformation v-if="sessionStore.isAdmin"
+                             @update:displayChange="toDisplay = $event"></AdminAsideInformation>
       <AsideInformation v-else @update:displayChange="toDisplay = $event"></AsideInformation>
     </div>
     <div v-else class="aside-container-small">
