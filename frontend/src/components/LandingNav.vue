@@ -47,7 +47,7 @@ const backToLanding = () => {
 
     <div class="back-arrow-container icon">
       <img src="../components/icons/Arrow_back.svg" alt="arrow_back" v-if="props.arrow" @click="backToLanding" >
-      <logout-button></logout-button>
+      <logout-button v-if="logout"></logout-button>
     </div>
 
     <div class="search-bar-container" v-if="props.searchbar">

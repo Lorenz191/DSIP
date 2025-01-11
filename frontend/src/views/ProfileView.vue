@@ -1,9 +1,10 @@
 <script setup>
 import UserIconBig from '@/components/User/UserIconBig.vue'
 import { useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import PostRead from '@/components/PostRead.vue'
 import axios from 'axios'
+import LandingNav from '@/components/LandingNav.vue'
 
 const likedP = ref([])
 const dislikedP = ref([])
@@ -14,22 +15,21 @@ const states = {
   dislike: 2
 }
 
+let state = ref(states.own)
 
-let state = ref(states.own);
-
-const screenWidth = ref(window.innerWidth);
+const screenWidth = ref(window.innerWidth)
 
 const updateScreenWidth = () => {
-  screenWidth.value = window.innerWidth;
-};
+  screenWidth.value = window.innerWidth
+}
 
 onMounted(() => {
-  window.addEventListener('resize', updateScreenWidth);
-});
+  window.addEventListener('resize', updateScreenWidth)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateScreenWidth);
-});
+  window.removeEventListener('resize', updateScreenWidth)
+})
 
 const router = useRouter()
 
@@ -64,65 +64,61 @@ onMounted(() => {
 </script>
 
 <template>
-
-
-<LandingNav arrow ></LandingNav>
+  <LandingNav arrow ></LandingNav>
 
   <div id="icon-container">
     <UserIconBig></UserIconBig>
   </div>
 
-
-    <div :class="[{'profile-nav-container' : screenWidth>700}, {'profile-small-nav-container' : screenWidth<700}]" >
-    <div
-      class="ownPosts-container"
-      @click="toggleownPosts"
-      :class="{ active: (state === 0)}"
-    >
+  <div
+    :class="[
+      { 'profile-nav-container': screenWidth > 700 },
+      { 'profile-small-nav-container': screenWidth < 700 }
+    ]"
+  >
+    <div class="ownPosts-container" @click="toggleownPosts" :class="{ active: state === 0 }">
       <p>Meine Beiträge</p>
     </div>
-    <div
-      class="likedPosts-container"
-      @click="togglelikedPosts"
-      :class="{ active: (state === 1)}"
-    >
+    <div class="likedPosts-container" @click="togglelikedPosts" :class="{ active: state === 1 }">
       <p>Gefällt mir</p>
     </div>
     <div
       class="dislikedPosts-container"
       @click="toggledislikedPosts"
-      :class="{ active: state === 2}"
+      :class="{ active: state === 2 }"
     >
       <p>Gefällt mir nicht</p>
     </div>
   </div>
 
-  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
+  <div
+    :class="[
+      { 'posts-container': screenWidth > 700 },
+      { 'small-posts-container': screenWidth < 700 }
+    ]"
+  >
     <div class="posts-wrapper">
-
-       <div v-if="loading" class="loading-container">
+      <div v-if="loading" class="loading-container">
         <span class="loader"> </span>
       </div>
 
-     <div v-if="state === 0">
-          <div class="post-container" v-for="post in ownP.values()" :key="post.id">
-            <PostRead :post="post"></PostRead>
-          </div>
+      <div v-if="state === 0">
+        <div class="post-container" v-for="post in ownP.values()" :key="post.id">
+          <PostRead :post="post"></PostRead>
+        </div>
       </div>
 
-
       <div v-if="state === 1">
-           <div class="post-container" v-for="post in likedP.values()" :key="post.id">
-            <PostRead :post="post"></PostRead>
-           </div>
+        <div class="post-container" v-for="post in likedP.values()" :key="post.id">
+          <PostRead :post="post"></PostRead>
+        </div>
       </div>
 
       <div v-if="state === 2">
-           <div class="post-container" v-for="post in dislikedP.values()" :key="post.id">
-            <PostRead :post="post"></PostRead>
-           </div>
+        <div class="post-container" v-for="post in dislikedP.values()" :key="post.id">
+          <PostRead :post="post"></PostRead>
+        </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -130,7 +126,7 @@ onMounted(() => {
 <style scoped>
 #header {
   width: 100%;
-  background: #2EDB7B;
+  background: #2edb7b;
   height: 80px;
 }
 
@@ -190,8 +186,6 @@ onMounted(() => {
   padding: 16px;
 }
 
-
-
 .loading-container {
   height: 90vh;
   display: flex;
@@ -206,15 +200,16 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.loader:before, .loader:after {
-  content: "";
+.loader:before,
+.loader:after {
+  content: '';
   position: absolute;
   left: 50%;
   bottom: 0;
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #2EDB7B;
+  background: #2edb7b;
   transform: translate(-50%, 100%) scale(0);
   animation: push 2s infinite ease-in;
 }
@@ -223,18 +218,20 @@ onMounted(() => {
   animation-delay: 1s;
 }
 
-
 @keyframes push {
   0% {
     transform: translate(-50%, 100%) scale(1);
   }
-  15%, 25% {
+  15%,
+  25% {
     transform: translate(-50%, 50%) scale(1);
   }
-  50%, 75% {
+  50%,
+  75% {
     transform: translate(-50%, -30%) scale(0.5);
   }
-  80%, 100% {
+  80%,
+  100% {
     transform: translate(-50%, -50%) scale(0);
   }
 }
@@ -244,9 +241,9 @@ onMounted(() => {
   width: auto;
   display: grid;
   grid-template-areas:
-  'nav'
-  'posts'
-  'posts';
+    'nav'
+    'posts'
+    'posts';
 
   .posts-wrapper {
     height: 75vh;
@@ -268,14 +265,13 @@ onMounted(() => {
   }
 }
 
-
 .profile-small-nav-container {
   max-width: 600px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   margin: 0 auto;
-  font-weight: normal;;
+  font-weight: normal;
 
   .ownPosts-container p,
   .likedPosts-container p,
