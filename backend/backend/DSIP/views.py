@@ -311,6 +311,33 @@ def set_session(request):
 
 
 @csrf_exempt
-# @check_origin_and_auth
-def get_user_roles(request):
-    return JsonResponse({"roles": cache.get("roles")}, status=200)
+def view_get_user_posts(request):
+    if request.method == "GET":
+        db_instance = DB()
+        posts = db_instance.select_posts_for_user(cache.get("auth0_id"))
+        serialized_posts = [custom_serializer(post) for post in posts]
+        return JsonResponse(serialized_posts, status=200, safe=False)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+
+@csrf_exempt
+def view_get_user_liked_posts(request):
+    if request.method == "GET":
+        db_instance = DB()
+        posts = db_instance.select_upvotes(cache.get("auth0_id"))
+        serialized_posts = [custom_serializer(post) for post in posts]
+        return JsonResponse(serialized_posts, status=200, safe=False)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+
+@csrf_exempt
+def view_get_user_disliked_posts(request):
+    if request.method == "GET":
+        db_instance = DB()
+        posts = db_instance.select_downvotes(cache.get("auth0_id"))
+        serialized_posts = [custom_serializer(post) for post in posts]
+        return JsonResponse(serialized_posts, status=200, safe=False)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)

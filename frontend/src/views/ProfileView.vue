@@ -1,83 +1,51 @@
 <script setup>
-import UserIconBig from "@/components/User/UserIconBig.vue";
-import { useRouter } from "vue-router";
-import { onMounted, ref } from "vue";
-import { useUserStore } from "@/stores/user.js";
-import PostRead from "@/components/PostRead.vue";
+import UserIconBig from '@/components/User/UserIconBig.vue'
+import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import PostRead from '@/components/PostRead.vue'
+import axios from 'axios'
 
-const user = useUserStore().userUuid;
-const likedP = ref([]);
-const dislikedP = ref([]);
-const ownP = ref([]);
+const likedP = ref([])
+const dislikedP = ref([])
+const ownP = ref([])
 const states = {
   own: 0,
   like: 1,
-  dislike: 2,
-};
-
-const state = ref(states.own);
-
-const router = useRouter();
-
-function backToPostView() {
-  router.push({ name: "landing" });
+  dislike: 2
 }
 
-const posts = ref([]);
-const sv_posts = ref([]);
+const state = ref(states.own)
 
-const fetchPosts = async () => {
-  try {
-    const responsePosts = await fetch("http://localhost:8000/api/posts/get");
-    if (!responsePosts.ok) {
-      throw new Error("Network response was not ok");
-    }
-    posts.value = await responsePosts.json();
+const router = useRouter()
 
-    const responseSvPosts = await fetch("http://localhost:8000/api/posts_sv/get");
-    if (!responseSvPosts.ok) {
-      throw new Error("Network response was not ok");
-    }
-    sv_posts.value = await responseSvPosts.json();
+function backToPostView() {
+  router.push({ name: 'landing' })
+}
 
-    categorisePosts();
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-  }
-};
+const toggleownPosts = async () => {
+  const response = await axios.get('http://localhost:8000/api/posts/get/user/')
+  console.log(response.data)
+  ownP.value = response.data
+  state.value = states.own
+}
 
-function categorisePosts() {
-  for (let post of posts.value) {
-    if (post.fk_author === user) {
-      ownP.value.push(post);
-    }
-    if (post.upvotes.includes(user)) {
-      likedP.value.push(post);
-    }
-    if (post.downvotes.includes(user)) {
-      dislikedP.value.push(post);
-    }
-  }
-  console.log(ownP.value);
-  console.log(likedP.value);
-  console.log(dislikedP.value);
+const togglelikedPosts = async () => {
+  const response = await axios.get('http://localhost:8000/api/posts/get/user/upvoted/')
+  console.log(response.data)
+  likedP.value = response.data
+  state.value = states.like
+}
+
+const toggledislikedPosts = async () => {
+  const response = await axios.get('http://localhost:8000/api/posts/get/user/downvoted/')
+  console.log(response.data)
+  dislikedP.value = response.data
+  state.value = states.dislike
 }
 
 onMounted(() => {
-  fetchPosts();
-});
-
-const toggleownPosts = () => {
-  state.value = states.own;
-};
-
-const togglelikedPosts = () => {
-  state.value = states.like;
-};
-
-const toggledislikedPosts = () => {
-  state.value = states.dislike;
-};
+  toggleownPosts()
+})
 </script>
 
 <template>
@@ -216,6 +184,7 @@ const toggledislikedPosts = () => {
 .posts-container {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   margin-top: 55px;
   min-height: calc(100vh - 80px - 55px);
 }
