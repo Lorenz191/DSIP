@@ -1,10 +1,10 @@
 <script setup>
 
 import UserIconBig from "@/components/User/UserIconBig.vue";
-import {useRouter} from "vue-router";
 import {onMounted, onUnmounted, ref} from "vue";
 import {useUserStore} from "@/stores/user.js";
 import PostRead from "@/components/PostRead.vue";
+import LandingNav from "@/components/LandingNav.vue";
 
 const user = useUserStore().userUuid;
 const likedP = [];
@@ -36,11 +36,7 @@ onUnmounted(() => {
 });
 
 
-const router = useRouter();
 
-function backToPostView(){
-  router.push({name: 'landing'})
-}
 
 const posts = ref([])
 const sv_posts = ref([])
@@ -66,11 +62,11 @@ const fetchPosts = async () => {
   .catch(error => {
     console.error('There was a problem with the fetch operation:', error);
   });
-    categorisePosts()
   } catch (error) {
-    console.error('Error fetching posts:', error)
+    console.error('Error fetching posts:', error);
   } finally {
-    loading.value = false
+    categorisePosts();
+    loading.value = false;
   }
 }
 
@@ -78,7 +74,7 @@ const fetchPosts = async () => {
 
 
 function categorisePosts(){
-
+if (!posts.value || posts.value.length === 0) return;
   for (let post of posts.value){
         if(post.fk_author === user){
           ownP.push(post)
@@ -110,18 +106,14 @@ const toggledislikedPosts = () => {
 </script>
 
 <template>
-<div id="header">
-  <div id="backArrow-container" @click="backToPostView">
-    <img src="../components/icons/Arrow_back.svg" alt="arrow_back">
-  </div>
 
-</div>
+<LandingNav arrow ></LandingNav>
 
   <div id="icon-container">
     <UserIconBig></UserIconBig>
   </div>
 
-    <div :class="[{'nav-container' : screenWidth>700}, {'small-nav-container' : screenWidth<700}]" >
+    <div :class="[{'profile-nav-container' : screenWidth>700}, {'profile-small-nav-container' : screenWidth<700}]" >
     <div
       class="ownPosts-container"
       @click="toggleownPosts"
@@ -153,20 +145,20 @@ const toggledislikedPosts = () => {
       </div>
 
      <div v-if="state === 0">
-          <div class="post-container" v-for="post in ownP" :key="post.id">
+          <div class="post-container" v-for="post in ownP.values()" :key="post.id">
             <PostRead :post="post"></PostRead>
           </div>
       </div>
 
 
       <div v-if="state === 1">
-           <div class="post-container" v-for="post in likedP" :key="post.id">
+           <div class="post-container" v-for="post in likedP.values()" :key="post.id">
             <PostRead :post="post"></PostRead>
            </div>
       </div>
 
       <div v-if="state === 2">
-           <div class="post-container" v-for="post in dislikedP" :key="post.id">
+           <div class="post-container" v-for="post in dislikedP.values()" :key="post.id">
             <PostRead :post="post"></PostRead>
            </div>
       </div>
@@ -181,10 +173,6 @@ const toggledislikedPosts = () => {
   width: 100%;
   background: #2EDB7B;
   height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 15px;
 }
 
 #icon-container {
@@ -193,13 +181,7 @@ const toggledislikedPosts = () => {
   justify-content: center;
 }
 
-#backArrow-container {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.nav-container {
+.profile-nav-container {
   max-width: 750px;
   display: flex;
   justify-content: space-around;
@@ -328,7 +310,7 @@ const toggledislikedPosts = () => {
 }
 
 
-.small-nav-container {
+.profile-small-nav-container {
   max-width: 600px;
   display: flex;
   justify-content: space-evenly;
@@ -343,5 +325,4 @@ const toggledislikedPosts = () => {
     font-weight: bold;
   }
 }
-
 </style>

@@ -84,7 +84,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <LandingNav logout searchbar ></LandingNav>
+  <LandingNav logout searchbar profile-icon ></LandingNav>
+
   <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
 
     <div v-if="screenWidth>700" class="aside-container">
