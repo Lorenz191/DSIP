@@ -22,6 +22,7 @@ const fetchPost = async () => {
 onMounted(() => {
   fetchPost()
 })
+
 </script>
 
 
