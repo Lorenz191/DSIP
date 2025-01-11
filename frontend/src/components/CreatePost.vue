@@ -1,10 +1,4 @@
 <script setup>
-import LandingNav from '@/components/LandingNav.vue'
-import { ref } from 'vue'
-import axios from 'axios'
-import router from '@/router/index.js'
-
-
 import LandingNav from "@/components/LandingNav.vue";
 import {onMounted, onUnmounted, ref} from "vue";
 import axios from "axios";
