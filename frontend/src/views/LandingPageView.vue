@@ -224,39 +224,43 @@ input::placeholder{
   font-weight: bolder;
   color: red;
 }
-.small-posts-container{
-  height:calc(100vh - 80px);
+
+.small-posts-container {
+  height: calc(100vh - 80px);
   width: auto;
   display: grid;
   grid-template-areas:
   'posts'
   'posts'
-  'aside'
-;
-  .posts-wrapper {
-  height: 75vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  overflow: scroll;
-}
+  'aside';
 
-.aside-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 75vh - 80px);
-  grid-area: aside;
-}
-  .posts-wrapper{
+  .posts-wrapper {
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    overflow: scroll;
+  }
+
+  .aside-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 75vh - 80px);
+    grid-area: aside;
+  }
+
+  .posts-wrapper {
     grid-area: posts;
     overflow-x: hidden;
   }
-.post-container{
-  width: 90vw;
+
+  .post-container {
+    width: 90vw;
+  }
 }
-}
+
 </style>

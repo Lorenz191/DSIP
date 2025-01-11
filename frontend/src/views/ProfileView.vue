@@ -2,7 +2,7 @@
 
 import UserIconBig from "@/components/User/UserIconBig.vue";
 import {useRouter} from "vue-router";
-import {onMounted, ref} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
 import {useUserStore} from "@/stores/user.js";
 import PostRead from "@/components/PostRead.vue";
 
@@ -16,9 +16,24 @@ const states = {
   "dislike": 2
 };
 
+const loading = ref(true);
+
+
 let state = ref(states.own);
 
+const screenWidth = ref(window.innerWidth);
 
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
 
 
 const router = useRouter();
@@ -51,12 +66,11 @@ const fetchPosts = async () => {
   .catch(error => {
     console.error('There was a problem with the fetch operation:', error);
   });
-
-    //console.log(posts.value[0])
-    //console.log(sv_posts)
     categorisePosts()
   } catch (error) {
     console.error('Error fetching posts:', error)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -74,14 +88,10 @@ function categorisePosts(){
           dislikedP.push(post)
         }
   }
-  console.log(ownP);
-  console.log(likedP);
-  console.log(dislikedP);
 }
 
 onMounted(() => {
   fetchPosts()
-
 })
 
 
@@ -102,7 +112,7 @@ const toggledislikedPosts = () => {
 <template>
 <div id="header">
   <div id="backArrow-container" @click="backToPostView">
-    <img src="../components/icons/arrow_back.svg" alt="arrow_back">
+    <img src="../components/icons/Arrow_back.svg" alt="arrow_back">
   </div>
 
 </div>
@@ -111,8 +121,7 @@ const toggledislikedPosts = () => {
     <UserIconBig></UserIconBig>
   </div>
 
-  <div id="nav-container">
-    <div class="nav-container">
+    <div :class="[{'nav-container' : screenWidth>700}, {'small-nav-container' : screenWidth<700}]" >
     <div
       class="ownPosts-container"
       @click="toggleownPosts"
@@ -135,27 +144,33 @@ const toggledislikedPosts = () => {
       <p>Gefällt mir nicht</p>
     </div>
   </div>
-  </div>
 
-  <div class="posts-container">
+  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
     <div class="posts-wrapper">
-     <template v-if="state === 0">
-     <div class="post-container" v-for="post in ownP" :key="post.id">
-            <PostRead :post="post"></PostRead>
-        </div>
-      </template>
 
-      <template v-else-if="state === 1">
+       <div v-if="loading" class="loading-container">
+        <span class="loader"> </span>
+      </div>
+
+     <div v-if="state === 0">
+          <div class="post-container" v-for="post in ownP" :key="post.id">
+            <PostRead :post="post"></PostRead>
+          </div>
+      </div>
+
+
+      <div v-if="state === 1">
            <div class="post-container" v-for="post in likedP" :key="post.id">
             <PostRead :post="post"></PostRead>
-        </div>
-      </template>
+           </div>
+      </div>
 
-      <template v-else-if="state === 2">
+      <div v-if="state === 2">
            <div class="post-container" v-for="post in dislikedP" :key="post.id">
             <PostRead :post="post"></PostRead>
-        </div>
-      </template>
+           </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -163,6 +178,7 @@ const toggledislikedPosts = () => {
 <style scoped>
 
 #header {
+  width: 100%;
   background: #2EDB7B;
   height: 80px;
   display: flex;
@@ -184,7 +200,7 @@ const toggledislikedPosts = () => {
 }
 
 .nav-container {
-  width: 750px;
+  max-width: 750px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -223,25 +239,109 @@ const toggledislikedPosts = () => {
 }
 
 .posts-wrapper {
-  width: 60vw;
   height: 80vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   gap: 16px;
-  overflow-y: auto;
+  overflow: scroll;
   padding: 16px;
 }
 
 
 
-
-.posts-container {
+.loading-container {
+  height: 90vh;
   display: flex;
-  flex-direction: row;
-  margin-top: 55px;
-  min-height: calc(100vh - 80px - 55px);
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loader:before, .loader:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #2EDB7B;
+  transform: translate(-50%, 100%) scale(0);
+  animation: push 2s infinite ease-in;
+}
+
+.loader:after {
+  animation-delay: 1s;
+}
+
+
+@keyframes push {
+  0% {
+    transform: translate(-50%, 100%) scale(1);
+  }
+  15%, 25% {
+    transform: translate(-50%, 50%) scale(1);
+  }
+  50%, 75% {
+    transform: translate(-50%, -30%) scale(0.5);
+  }
+  80%, 100% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
+.small-posts-container {
+  height: calc(100vh - 80px);
+  width: auto;
+  display: grid;
+  grid-template-areas:
+  'nav'
+  'posts'
+  'posts';
+
+  .posts-wrapper {
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    overflow: scroll;
+  }
+
+  .posts-wrapper {
+    grid-area: posts;
+    overflow-x: hidden;
+  }
+
+  .post-container {
+    width: 90vw;
+  }
+}
+
+
+.small-nav-container {
+  max-width: 600px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 0 auto;
+  font-weight: normal;;
+
+  .ownPosts-container p,
+  .likedPosts-container p,
+  .dislikedPosts-container p {
+    font-size: 17px;
+    font-weight: bold;
+  }
 }
 
 </style>
