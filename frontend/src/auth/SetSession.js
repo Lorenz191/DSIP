@@ -38,7 +38,6 @@ export const setSession = async () => {
 
 
   } catch (error) {
-    console.error('Error during session setup:', error)
     logout({
       logoutParams: {
         target: '/'
