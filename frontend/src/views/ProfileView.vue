@@ -14,6 +14,24 @@ const states = {
   dislike: 2
 }
 
+
+let state = ref(states.own);
+
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
+
 const state = ref(states.own)
 
 const router = useRouter()
@@ -49,73 +67,74 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="header">
-    <div id="backArrow-container" @click="backToPostView">
-      <img src="../components/icons/arrow_back.svg" alt="arrow_back" />
-    </div>
-  </div>
+
+
+<LandingNav arrow ></LandingNav>
 
   <div id="icon-container">
     <UserIconBig></UserIconBig>
   </div>
 
-  <div id="nav-container">
-    <div class="nav-container">
-      <div
-        class="ownPosts-container"
-        @click="toggleownPosts"
-        :class="{ active: state === states.own }"
-      >
-        <p>Meine Beiträge</p>
-      </div>
-      <div
-        class="likedPosts-container"
-        @click="togglelikedPosts"
-        :class="{ active: state === states.like }"
-      >
-        <p>Gefällt mir</p>
-      </div>
-      <div
-        class="dislikedPosts-container"
-        @click="toggledislikedPosts"
-        :class="{ active: state === states.dislike }"
-      >
-        <p>Gefällt mir nicht</p>
-      </div>
+
+    <div :class="[{'profile-nav-container' : screenWidth>700}, {'profile-small-nav-container' : screenWidth<700}]" >
+    <div
+      class="ownPosts-container"
+      @click="toggleownPosts"
+      :class="{ active: (state === 0)}"
+    >
+      <p>Meine Beiträge</p>
+    </div>
+    <div
+      class="likedPosts-container"
+      @click="togglelikedPosts"
+      :class="{ active: (state === 1)}"
+    >
+      <p>Gefällt mir</p>
+    </div>
+    <div
+      class="dislikedPosts-container"
+      @click="toggledislikedPosts"
+      :class="{ active: state === 2}"
+    >
+      <p>Gefällt mir nicht</p>
     </div>
   </div>
 
-  <div class="posts-container">
+  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
     <div class="posts-wrapper">
-      <template v-if="state === states.own">
-        <div class="post-container" v-for="post in ownP" :key="post.id">
-          <PostRead :post="post"></PostRead>
-        </div>
-      </template>
 
-      <template v-else-if="state === states.like">
-        <div class="post-container" v-for="post in likedP" :key="post.id">
-          <PostRead :post="post"></PostRead>
-        </div>
-      </template>
+       <div v-if="loading" class="loading-container">
+        <span class="loader"> </span>
+      </div>
 
-      <template v-else-if="state === states.dislike">
-        <div class="post-container" v-for="post in dislikedP" :key="post.id">
-          <PostRead :post="post"></PostRead>
-        </div>
-      </template>
+     <div v-if="state === 0">
+          <div class="post-container" v-for="post in ownP.values()" :key="post.id">
+            <PostRead :post="post"></PostRead>
+          </div>
+      </div>
+
+
+      <div v-if="state === 1">
+           <div class="post-container" v-for="post in likedP.values()" :key="post.id">
+            <PostRead :post="post"></PostRead>
+           </div>
+      </div>
+
+      <div v-if="state === 2">
+           <div class="post-container" v-for="post in dislikedP.values()" :key="post.id">
+            <PostRead :post="post"></PostRead>
+           </div>
+      </div>
+
     </div>
   </div>
 </template>
 
 <style scoped>
 #header {
-  background: #2edb7b;
+  width: 100%;
+  background: #2EDB7B;
   height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 15px;
 }
 
 #icon-container {
@@ -124,14 +143,8 @@ onMounted(() => {
   justify-content: center;
 }
 
-#backArrow-container {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.nav-container {
-  width: 750px;
+.profile-nav-container {
+  max-width: 750px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -170,22 +183,108 @@ onMounted(() => {
 }
 
 .posts-wrapper {
-  width: 60vw;
   height: 80vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   gap: 16px;
-  overflow-y: auto;
+  overflow: scroll;
   padding: 16px;
 }
 
-.posts-container {
+
+
+.loading-container {
+  height: 90vh;
   display: flex;
-  flex-direction: row;
   justify-content: center;
-  margin-top: 55px;
-  min-height: calc(100vh - 80px - 55px);
+  align-items: center;
+}
+
+.loader {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loader:before, .loader:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #2EDB7B;
+  transform: translate(-50%, 100%) scale(0);
+  animation: push 2s infinite ease-in;
+}
+
+.loader:after {
+  animation-delay: 1s;
+}
+
+
+@keyframes push {
+  0% {
+    transform: translate(-50%, 100%) scale(1);
+  }
+  15%, 25% {
+    transform: translate(-50%, 50%) scale(1);
+  }
+  50%, 75% {
+    transform: translate(-50%, -30%) scale(0.5);
+  }
+  80%, 100% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
+.small-posts-container {
+  height: calc(100vh - 80px);
+  width: auto;
+  display: grid;
+  grid-template-areas:
+  'nav'
+  'posts'
+  'posts';
+
+  .posts-wrapper {
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    overflow: scroll;
+  }
+
+  .posts-wrapper {
+    grid-area: posts;
+    overflow-x: hidden;
+  }
+
+  .post-container {
+    width: 90vw;
+  }
+}
+
+
+.profile-small-nav-container {
+  max-width: 600px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 0 auto;
+  font-weight: normal;;
+
+  .ownPosts-container p,
+  .likedPosts-container p,
+  .dislikedPosts-container p {
+    font-size: 17px;
+    font-weight: bold;
+  }
 }
 </style>

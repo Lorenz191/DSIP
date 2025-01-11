@@ -1,12 +1,8 @@
 <script setup>
+import AuthService from '@/auth/AuthService.js'
 import {onMounted, onUnmounted, ref} from "vue";
-import LogoutButton from '@/components/Buttons/logout-button.vue'
-import { useAuth0 } from '@auth0/auth0-vue'
-import { useRouter } from 'vue-router'
+import {useRouter} from "vue-router";
 import UserIconSmall from "@/components/User/UserIconSmall.vue";
-
-const {isAuthenticated} = useAuth0()
-
 const props = defineProps({
   arrow: {
     type: Boolean,
@@ -18,21 +14,25 @@ const props = defineProps({
   },
   searchbar:{
     type: Boolean,
-    required: true
+    required: false
+  },
+  profileIcon:{
+    type:Boolean,
+    required:false
   }
 })
+const router = useRouter();
+const auth = new AuthService()
 
-const router = useRouter()
+const logOut = () => {
+  auth.logout()
+}
 
 const screenWidth = ref(window.innerWidth);
 
 const updateScreenWidth = () => {
   screenWidth.value = window.innerWidth;
 };
-
-const back = () => {
-  router.push("/landing")
-}
 
 onMounted(() => {
   window.addEventListener('resize', updateScreenWidth);
@@ -42,19 +42,20 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateScreenWidth);
 });
 
-
+const backToLanding = () => {
+    router.push({name: 'landing'});
+}
 </script>
 
 <template>
   <div :class="[{'nav-container' : screenWidth>700}, {'small-nav-container' : screenWidth<700}]">
-    <div v-if="props.newPostBut">
 
+    <div class="back-arrow-container icon">
+      <img src="../components/icons/Arrow_back.svg" alt="arrow_back" v-if="props.arrow" @click="backToLanding" >
+      <button @click="logOut" v-if="props.logout">Abmelden</button>
     </div>
-    <div class="back-arrow-container">
-      <img v-if="arrow" src="./icons/Arrow_Back.svg" class="icon" alt="arrow-back" style="height: 25px" @click="back">
-      <LogoutButton v-if="isAuthenticated & logout" ></LogoutButton>
-    </div>
-    <div class="search-bar-container" v-if="searchbar">
+
+    <div class="search-bar-container" v-if="props.searchbar">
       <div class="search-container">
         <input class="searchbar" placeholder="nach Begriff suchen...">
       </div>
@@ -67,7 +68,7 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div class="user-profile-container">
+    <div class="user-profile-container" v-if="props.profileIcon">
       <UserIconSmall></UserIconSmall>
     </div>
   </div>
@@ -79,13 +80,15 @@ onUnmounted(() => {
   height: 80px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
-.arrow-back{
-  font-size: 20px;
-  color: white;
-  font-weight: 500;
+
+.back-arrow-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 25px;
 }
 
 .search-bar-container {
@@ -93,7 +96,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: row;
   background: white;
-  width: 800px;
+  width: 70vw;
   justify-content: space-between;
   align-items: center;
   border-radius: 10px;
@@ -117,24 +120,32 @@ onUnmounted(() => {
 .icon:hover {
   cursor: pointer;
 }
-.small-nav-container{
+
+.user-profile-container {
+  padding-right: 25px;
+}
+
+.small-nav-container {
   background: #2EDB7B;
   height: 80px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  .search-bar-container {
-  height: 34px;
-  display: flex;
-  flex-direction: row;
-  background: white;
-  width: 70vw;
   justify-content: space-between;
-  align-items: center;
-  border-radius: 10px;
-  padding-left: 6px;
-  padding-right: 6px;
 }
 
+.small-nav-container .search-bar-container {
+  width: 70vw;
 }
+
+
+button{
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+button:hover{
+  text-decoration: underline;
+}
+
 </style>

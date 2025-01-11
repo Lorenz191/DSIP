@@ -1,8 +1,30 @@
 <script setup>
-import {ref, onMounted, onUnmounted} from 'vue'
+import {ref, onMounted, watch, onUnmounted} from 'vue'
 
+const loginUrl = ref('');
 const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
-import LoginButton from '@/components/Buttons/login-button.vue'
+import AuthService from '../auth/AuthService'
+import { useRouter } from 'vue-router'
+
+const auth = new AuthService()
+
+const router = useRouter()
+
+const authenticated = ref(false)
+const message = ref('')
+const userProfile = ref(null)
+
+const handleAuthentication = () => {
+  auth.handleAuthentication()
+}
+
+const login = () => {
+router.push('/landing')
+}
+
+const logout = () => {
+  auth.logout()
+}
 
 const screenWidth = ref(window.innerWidth);
 
@@ -19,6 +41,30 @@ onUnmounted(() => {
 });
 
 
+
+onMounted(() => {
+  handleAuthentication()
+
+  auth.authNotifier.on('authChange', (authState) => {
+    authenticated.value = authState.authenticated
+    if (authState.authenticated) {
+      userProfile.value = auth.getUserProfile()
+    } else {
+      userProfile.value = null
+      message.value = ''
+    }
+  })
+})
+
+watch(
+  () => authenticated.value,
+  (newVal) => {
+    if (newVal) {
+      router.push({name: 'landing'})
+    }
+  }
+)
+
 </script>
 
 <template>
@@ -34,7 +80,9 @@ onUnmounted(() => {
         <h1>Digitales Schülerparlament</h1>
       </div>
       <div class="login-container">
-        <LoginButton></LoginButton>
+        <button class="btn btn-primary btn-margin login-button" v-if="!authenticated" @click="login" type="submit">
+          <p>Anmelden</p>
+        </button>
       </div>
     </div>
      <div v-if="screenWidth<700" class="left-section">
