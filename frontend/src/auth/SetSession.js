@@ -32,7 +32,7 @@ export const setSession = async () => {
     console.log('Session successfully set on backend:', response.data)
 
     const userStore = useUserStore()
-    userStore.setUserUuid(user.value.sub)
+    userStore.setUserUuid(user.value.sub.split('|')[1])
 
     return  user.value["/roles"].includes('is_admin')
 

@@ -1,111 +1,91 @@
 <script setup>
-
 import UserIconBig from "@/components/User/UserIconBig.vue";
-import {useRouter} from "vue-router";
-import {onMounted, ref} from "vue";
-import {useUserStore} from "@/stores/user.js";
+import { useRouter } from "vue-router";
+import { onMounted, ref } from "vue";
+import { useUserStore } from "@/stores/user.js";
 import PostRead from "@/components/PostRead.vue";
 
 const user = useUserStore().userUuid;
-const likedP = [];
-const dislikedP = [];
-const ownP = [];
+const likedP = ref([]);
+const dislikedP = ref([]);
+const ownP = ref([]);
 const states = {
-  "own": 0,
-  "like": 1,
-  "dislike": 2
+  own: 0,
+  like: 1,
+  dislike: 2,
 };
 
-let state = ref(states.own);
-
-
-
+const state = ref(states.own);
 
 const router = useRouter();
 
-function backToPostView(){
-  router.push({name: 'landing'})
+function backToPostView() {
+  router.push({ name: "landing" });
 }
 
-const posts = ref([])
-const sv_posts = ref([])
+const posts = ref([]);
+const sv_posts = ref([]);
 
 const fetchPosts = async () => {
   try {
-    const responsePosts = await fetch('http://localhost:8000/api/posts/get');
+    const responsePosts = await fetch("http://localhost:8000/api/posts/get");
     if (!responsePosts.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
     }
     posts.value = await responsePosts.json();
 
-    fetch('http://localhost:8000/api/posts_sv/get')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+    const responseSvPosts = await fetch("http://localhost:8000/api/posts_sv/get");
+    if (!responseSvPosts.ok) {
+      throw new Error("Network response was not ok");
     }
-    return response.json();
-  })
-  .then(data => {
-    sv_posts.value = data;
-  })
-  .catch(error => {
-    console.error('There was a problem with the fetch operation:', error);
-  });
+    sv_posts.value = await responseSvPosts.json();
 
-    //console.log(posts.value[0])
-    //console.log(sv_posts)
-    categorisePosts()
+    categorisePosts();
   } catch (error) {
-    console.error('Error fetching posts:', error)
+    console.error("Error fetching posts:", error);
   }
-}
+};
 
-
-
-
-function categorisePosts(){
-
-  for (let post of posts.value){
-        if(post.fk_author === user){
-          ownP.push(post)
-        }else if(post.upvotes.includes(user)){
-          likedP.push(post)
-        }else if(post.downvotes.includes(user)){
-          dislikedP.push(post)
-        }
+function categorisePosts() {
+  for (let post of posts.value) {
+    if (post.fk_author === user) {
+      ownP.value.push(post);
+    }
+    if (post.upvotes.includes(user)) {
+      likedP.value.push(post);
+    }
+    if (post.downvotes.includes(user)) {
+      dislikedP.value.push(post);
+    }
   }
-  console.log(ownP);
-  console.log(likedP);
-  console.log(dislikedP);
+  console.log(ownP.value);
+  console.log(likedP.value);
+  console.log(dislikedP.value);
 }
 
 onMounted(() => {
-  fetchPosts()
-
-})
-
+  fetchPosts();
+});
 
 const toggleownPosts = () => {
-  state.value = states.own
+  state.value = states.own;
 };
 
 const togglelikedPosts = () => {
-    state.value = states.like
+  state.value = states.like;
 };
 
 const toggledislikedPosts = () => {
-  state.value = states.dislike
-}
-
+  state.value = states.dislike;
+};
 </script>
 
 <template>
-<div id="header">
-  <div id="backArrow-container" @click="backToPostView">
-    <img src="../components/icons/arrow_back.svg" alt="arrow_back">
+  <div id="header">
+    <div id="backArrow-container" @click="backToPostView">
+      <img src="../components/icons/arrow_back.svg" alt="arrow_back" />
+    </div>
   </div>
-
-</div>
 
   <div id="icon-container">
     <UserIconBig></UserIconBig>
@@ -113,47 +93,47 @@ const toggledislikedPosts = () => {
 
   <div id="nav-container">
     <div class="nav-container">
-    <div
-      class="ownPosts-container"
-      @click="toggleownPosts"
-      :class="{ active: (state === 0)}"
-    >
-      <p>Meine Beiträge</p>
+      <div
+        class="ownPosts-container"
+        @click="toggleownPosts"
+        :class="{ active: state === states.own }"
+      >
+        <p>Meine Beiträge</p>
+      </div>
+      <div
+        class="likedPosts-container"
+        @click="togglelikedPosts"
+        :class="{ active: state === states.like }"
+      >
+        <p>Gefällt mir</p>
+      </div>
+      <div
+        class="dislikedPosts-container"
+        @click="toggledislikedPosts"
+        :class="{ active: state === states.dislike }"
+      >
+        <p>Gefällt mir nicht</p>
+      </div>
     </div>
-    <div
-      class="likedPosts-container"
-      @click="togglelikedPosts"
-      :class="{ active: (state === 1)}"
-    >
-      <p>Gefällt mir</p>
-    </div>
-    <div
-      class="dislikedPosts-container"
-      @click="toggledislikedPosts"
-      :class="{ active: state === 2}"
-    >
-      <p>Gefällt mir nicht</p>
-    </div>
-  </div>
   </div>
 
   <div class="posts-container">
     <div class="posts-wrapper">
-     <template v-if="state === 0">
-     <div class="post-container" v-for="post in ownP" :key="post.id">
-            <PostRead :post="post"></PostRead>
+      <template v-if="state === states.own">
+        <div class="post-container" v-for="post in ownP" :key="post.id">
+          <PostRead :post="post"></PostRead>
         </div>
       </template>
 
-      <template v-else-if="state === 1">
-           <div class="post-container" v-for="post in likedP" :key="post.id">
-            <PostRead :post="post"></PostRead>
+      <template v-else-if="state === states.like">
+        <div class="post-container" v-for="post in likedP" :key="post.id">
+          <PostRead :post="post"></PostRead>
         </div>
       </template>
 
-      <template v-else-if="state === 2">
-           <div class="post-container" v-for="post in dislikedP" :key="post.id">
-            <PostRead :post="post"></PostRead>
+      <template v-else-if="state === states.dislike">
+        <div class="post-container" v-for="post in dislikedP" :key="post.id">
+          <PostRead :post="post"></PostRead>
         </div>
       </template>
     </div>
@@ -161,9 +141,8 @@ const toggledislikedPosts = () => {
 </template>
 
 <style scoped>
-
 #header {
-  background: #2EDB7B;
+  background: #2edb7b;
   height: 80px;
   display: flex;
   align-items: center;
@@ -213,12 +192,12 @@ const toggledislikedPosts = () => {
 .ownPosts-container:hover,
 .likedPosts-container:hover,
 .dislikedPosts-container:hover {
-  color: #2EDB7B;
+  color: #2edb7b;
   text-decoration: underline;
 }
 
-.active{
-  color: #2EDB7B;
+.active {
+  color: #2edb7b;
   text-decoration: underline;
 }
 
@@ -234,14 +213,10 @@ const toggledislikedPosts = () => {
   padding: 16px;
 }
 
-
-
-
 .posts-container {
   display: flex;
   flex-direction: row;
   margin-top: 55px;
   min-height: calc(100vh - 80px - 55px);
 }
-
 </style>
