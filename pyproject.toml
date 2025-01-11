@@ -38,6 +38,7 @@ websockets = "^14.1"
 daphne = "^4.1.2"
 pymemcache = "^4.0.0"
 dnspython = "^2.7.0"
+django-sslserver = "^0.22"
 
 
 [build-system]

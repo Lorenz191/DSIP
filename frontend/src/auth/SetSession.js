@@ -8,15 +8,17 @@ export const setSession = async () => {
   try {
     // Get access token and user profile
     const accessToken = await getAccessTokenSilently()
-    const profile = user.value
+
+    console.log(user.value)
+    console.log(user.value['/roles'])
 
     // Set session on the backend
     const response = await axios.post(
       'http://localhost:8000/api/set-session/',
       {
-        auth0Id: profile.sub.split('|')[1],
+        auth0Id: user.value.sub.split('|')[1],
         accessToken: accessToken,
-        roles: profile['/roles'] || []
+        roles: user.value['/roles'] || []
       },
       {
         headers: {
@@ -29,14 +31,10 @@ export const setSession = async () => {
 
     console.log('Session successfully set on backend:', response.data)
 
-    // Only proceed to get user data if session was set successfully
     const userStore = useUserStore()
-    userStore.setUserUuid(response.data.uuid)
+    userStore.setUserUuid(user.value.sub)
 
-    const userResponse = await axios.get('http://localhost:8000/api/user/get/')
-    console.log(userResponse.data)
-
-    return  userResponse.data.roles.includes('is_admin')
+    return  user.value["/roles"].includes('is_admin')
 
 
   } catch (error) {

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "rest_framework_jwt",
     "corsheaders",
     "channels",
+    "sslserver",
 ]
 
 MIDDLEWARE = [
@@ -86,14 +87,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8080",
-    "http://localhost:8000",
-]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_HEADERS = ["Authorization", "Content-Type", "X-CSRFToken", "withcredentials"]
 
 TEMPLATES = [
     {
@@ -131,7 +127,11 @@ CACHES = {
     }
 }
 SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
+
 
 CORS_ORIGIN_WHITELIST = ("http://localhost:8080",)
 
@@ -190,36 +190,3 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN")
-AUTH0_CLIENT_ID = os.environ.get("AUTH0_CLIENT_ID")
-AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET")
-API_IDENTIFIER = os.environ.get("API_IDENTIFIER")
-PUBLIC_KEY = None
-JWT_ISSUER = None
-
-if AUTH0_DOMAIN:
-    jsonurl = request.urlopen("https://" + AUTH0_DOMAIN + "/.well-known/jwks.json")
-    jwks = json.loads(jsonurl.read().decode("utf-8"))
-    cert = (
-        "-----BEGIN CERTIFICATE-----\n"
-        + jwks["keys"][0]["x5c"][0]
-        + "\n-----END CERTIFICATE-----"
-    )
-    certificate = load_pem_x509_certificate(cert.encode("utf-8"), default_backend())
-    PUBLIC_KEY = certificate.public_key()
-    JWT_ISSUER = "https://" + AUTH0_DOMAIN + "/"
-
-
-def jwt_get_username_from_payload_handler(payload):
-    return "auth0user"
-
-
-JWT_AUTH = {
-    "JWT_PAYLOAD_GET_USERNAME_HANDLER": jwt_get_username_from_payload_handler,
-    "JWT_PUBLIC_KEY": PUBLIC_KEY,
-    "JWT_ALGORITHM": "RS256",
-    "JWT_AUDIENCE": API_IDENTIFIER,
-    "JWT_ISSUER": JWT_ISSUER,
-    "JWT_AUTH_HEADER_PREFIX": "Bearer",
-}

@@ -1,9 +1,11 @@
-function getCookie(name) {
-    const cookieValue = document.cookie
-        .split('; ')
-        .find(row => row.startsWith(name + '='))
-        ?.split('=')[1];
-    return cookieValue || null;
-}
+import axios from 'axios';
 
-export { getCookie };
+export async function getCSRFToken() {
+  try {
+    const response = await axios.get("http://localhost:8000/api/csrf/", { withCredentials: true });
+    return response.data.csrftoken;
+  } catch (error) {
+    console.error('Error fetching CSRF token:', error);
+    return null;
+  }
+}
