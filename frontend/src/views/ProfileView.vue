@@ -31,9 +31,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateScreenWidth);
 });
 
-
-const state = ref(states.own)
-
 const router = useRouter()
 
 function backToPostView() {
