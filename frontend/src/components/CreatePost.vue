@@ -1,7 +1,7 @@
 <script setup>
 
 import LandingNav from "@/components/LandingNav.vue";
-import {ref} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
 import axios from "axios";
 import router from "@/router/index.js";
 const postTitle = ref('')
@@ -25,15 +25,31 @@ const createPost = async() => {
   }
 }
 
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
+
 </script>
 
 <template>
-  <LandingNav :arrow="true" :searchbar="false"></LandingNav>
+  <LandingNav arrow ></LandingNav>
   <div v-if="loading" class="loading-container">
       <span class="loader"> </span>
   </div>
   <div v-else class="content">
-    <form @submit.prevent="createPost">
+
+    <form @submit.prevent="createPost" :class="[{'small-form' : screenWidth<700}]">
       <div class="header">
         <h1>Neuen Beitrag erstellen</h1>
       </div>
@@ -45,6 +61,7 @@ const createPost = async() => {
         </button>
       </div>
     </form>
+
   </div>
 </template>
 
@@ -57,10 +74,10 @@ const createPost = async() => {
     width: 100vw;
   }
 form{
-  width: 40vw;
   display: flex;
   justify-content: flex-end;
   flex-direction: column;
+  width: 50vw;
 }
   .titel{
     margin-top: 30px;
@@ -69,9 +86,7 @@ form{
     width: 100%;
     height: 5vh;
   }
-h1{
-  float: left;
-}
+
   .header{
     width: 100%;
     margin-top: 50px;
@@ -80,17 +95,16 @@ h1{
     float: left;
   }
   .textarea{
-    margin-top: 30px;
+    margin-top: 20px;
     border: 1px grey solid;
     border-radius: 10px;
     width: 100%;
     height: 20vh;
-    min-height: 20vh;
-    max-height: 500px;
+    min-height: 25vh;
+    max-height: 600px;
     overflow: scroll;
   }
   .create-button{
-    float: right;
     margin-top: 15px;
     background: #D9D9D9;
     font-size: 24px;
@@ -101,7 +115,9 @@ h1{
     font-family: Futura;
   }
   .buttonDiv{
-    float: right;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
   }
   input{
   text-indent: 10px;
@@ -154,5 +170,61 @@ h1{
   80%, 100% {
     transform: translate(-50%, -50%) scale(0);
   }
+}
+
+
+.small-form{
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  width: 75vw;
+
+  .titel{
+    margin-top: 30px;
+    border: 1px grey solid;
+    border-radius: 10px;
+    width: 100%;
+    height: 5vh;
+  }
+
+  .header{
+    width: 100%;
+    margin-top: 50px;
+    font-size: 30px;
+    font-weight: bolder;
+    float: left;
+  }
+  .textarea{
+    margin-top: 30px;
+    border: 1px grey solid;
+    border-radius: 10px;
+    width: 100%;
+    height: 20vh;
+    min-height: 20vh;
+    max-height: 500px;
+    overflow: scroll;
+  }
+  .create-button{
+    margin-top: 15px;
+    background: #D9D9D9;
+    font-size: 22px;
+    width: 230px;
+    height: 40px;
+    align-self: center;
+    border-radius: 5px;
+    margin-bottom: 60px;
+    font-family: Futura;
+  }
+  .buttonDiv{
+    float: right;
+  }
+  input{
+  text-indent: 10px;
+  }
+  textarea{
+  text-indent: 10px;
+  }
+
+
 }
 </style>
