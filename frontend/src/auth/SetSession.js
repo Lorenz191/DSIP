@@ -29,8 +29,6 @@ export const setSession = async () => {
       }
     )
 
-    console.log('Session successfully set on backend:', response.data)
-
     const userStore = useUserStore()
     userStore.setUserUuid(user.value.sub.split('|')[1])
 
@@ -38,7 +36,6 @@ export const setSession = async () => {
 
 
   } catch (error) {
-    console.error('Error during session setup:', error)
     logout({
       logoutParams: {
         target: '/'
