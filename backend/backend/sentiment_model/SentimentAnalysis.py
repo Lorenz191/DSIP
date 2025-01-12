@@ -1,22 +1,30 @@
-from transformers import pipeline
+import logging
 
-pipe = pipeline(
-    "text-classification", model="oliverguhr/german-sentiment-bert", device="cpu"
-)
+import deepl
+import os
+import requests
+
+auth_key = os.getenv("DEEPL_KEY")
 
 
 class SeAn:
 
     def __init__(self):
-        self.model = pipe
+        pass
 
-    def get_sentiment(self, title, content):
-        title_sentiment = self.model(title)[0]
-        content_sentiment = self.model(content)[0]
+    def contains_swearwords(self, title, content):
+        translator = deepl.Translator(auth_key)
+        combined_text = translator.translate_text(
+            f"{title}\n{content}", target_lang="EN-GB"
+        ).text
+        logging.info(f"Combined text: {combined_text}")
+        response = requests.post(
+            "https://vector.profanity.dev", json={"message": combined_text}
+        )
+        response_data = response.json()
+        logging.info(f"Response: {response_data}")
+        flagged = response_data["isProfanity"]
 
-        if (
-            title_sentiment["label"] == "negative"
-            or content_sentiment["label"] == "negative"
-        ):
-            return True, title_sentiment, content_sentiment
-        return False, title_sentiment, content_sentiment
+        if flagged:
+            return True, "Profanity or inappropriate content detected."
+        return False, "Content is clean."

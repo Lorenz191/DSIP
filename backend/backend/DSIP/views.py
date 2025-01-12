@@ -153,14 +153,16 @@ def view_create_post(request):
             post_data = json.loads(request.body)
             logging.info(post_data)
 
-            sentiment = SeAn().get_sentiment(
+            sentiment = SeAn().contains_swearwords(
                 post_data.get("title"), post_data.get("content")
             )
 
-            ##if sentiment[0]:
-            ##  return JsonResponse(
-            ##    {"error": "Post contains negative sentiment."}, status=400
-            ##)
+            logging.info(sentiment)
+
+            if sentiment[0]:
+                return JsonResponse(
+                    {"error": "Post contains negative sentiment."}, status=400
+                )
             if not cache.get("sv"):
                 post_document = {
                     "fk_author": cache.get("auth0_id"),

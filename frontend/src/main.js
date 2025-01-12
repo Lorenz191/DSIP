@@ -1,11 +1,11 @@
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import './assets/tailwind.css'
 import './style.css'
+import 'vue-toastification/dist/index.css';
 import PrimeVue from 'primevue/config'
 import VueNativeSock from 'vue-native-websocket-vue3'
-
+import Toast from "vue-toastification";
 
 import App from './App.vue'
 import router from './router'
@@ -35,5 +35,11 @@ app.use(
       },
   })
 )
+
+app.use(Toast, {
+  transition: "Vue-Toastification__fade",
+  maxToasts: 20,
+  newestOnTop: true,
+})
 
 app.mount('#app')
