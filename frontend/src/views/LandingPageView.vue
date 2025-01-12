@@ -45,7 +45,8 @@ const fetchPosts = async () => {
   try {
     const response = await axios.get('http://localhost:8000/api/posts/get', { timeout: 10000 })
     const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get', { timeout: 10000 })
-    posts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length)
+    allPosts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length);
+    posts.value = allPosts.value;
     sv_posts.value = sv_response.data
   } catch (error) {
     console.error('Error fetching posts:', error.message)
