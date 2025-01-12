@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, onUnmounted, ref} from "vue";
+import {onMounted, onUnmounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import UserIconSmall from "@/components/User/UserIconSmall.vue";
 import LogoutButton from '@/components/Buttons/logout-button.vue'
@@ -22,7 +22,7 @@ const props = defineProps({
   }
 })
 const router = useRouter();
-
+const emit = defineEmits(['update:searchQuery'])
 const screenWidth = ref(window.innerWidth);
 
 const updateScreenWidth = () => {
@@ -37,9 +37,21 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateScreenWidth);
 });
 
+const searchInput = ref('')
+
+const onInput = (event) => {
+  searchInput.value = event.target.value
+  emit('update:searchQuery', searchInput.value)
+}
+
+
 const backToLanding = () => {
     router.push({name: 'landing'});
 }
+
+watch(() => props.modelValue, (newVal) => {
+  searchInput.value = newVal
+})
 </script>
 
 <template>
@@ -52,7 +64,7 @@ const backToLanding = () => {
 
     <div class="search-bar-container" v-if="props.searchbar">
       <div class="search-container">
-        <input class="searchbar" placeholder="nach Begriff suchen...">
+        <input @input="onInput" :value="searchInput" class="searchbar" placeholder="nach Begriff suchen...">
       </div>
       <div class="icon-container">
         <div class="search-icon-container">

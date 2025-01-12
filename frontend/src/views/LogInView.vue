@@ -1,8 +1,8 @@
 <script setup>
 import {ref, onMounted, onUnmounted} from 'vue'
 
-const easynameUrl = ref('https://www.easyname.at/de/unternehmen/presse\n')
 import LoginButton from '@/components/Buttons/login-button.vue'
+import EasySponsor from "@/components/easySponsor.vue";
 
 const screenWidth = ref(window.innerWidth);
 
@@ -42,9 +42,7 @@ onUnmounted(() => {
     </div>
   </div>
   </div>
-  <div class="sponsor">
-    <p>Powered by <a :href="easynameUrl" target="_blank"><img src="https://static.easyname.com/images/svg/singles/logos/easyname/easyname_logo_default.svg?v=2" height="40" alt=""></a></p>
-  </div>
+  <easy-sponsor></easy-sponsor>
 </template>
 
 <style scoped>
@@ -140,10 +138,5 @@ h1{
   z-index: -1;
   rotate: 180deg;
   scale: 120%;
-}
-.sponsor {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
 }
 </style>
