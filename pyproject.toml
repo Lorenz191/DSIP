@@ -39,6 +39,10 @@ daphne = "^4.1.2"
 pymemcache = "^4.0.0"
 dnspython = "^2.7.0"
 django-sslserver = "^0.22"
+openai = "^1.59.6"
+goslate = "^1.5.4"
+deep-translator = "^1.11.4"
+deepl = "^1.20.0"
 
 
 [build-system]

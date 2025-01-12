@@ -23,11 +23,18 @@ const props = defineProps({
 })
 const router = useRouter();
 const emit = defineEmits(['update:searchQuery'])
+
 const screenWidth = ref(window.innerWidth);
 
 const updateScreenWidth = () => {
   screenWidth.value = window.innerWidth;
 };
+
+const search = () => {
+  searchInput.value = searchInput.value.toString().toLowerCase();
+  emit("search", searchInput.value)
+}
+
 
 onMounted(() => {
   window.addEventListener('resize', updateScreenWidth);
@@ -65,10 +72,11 @@ watch(() => props.modelValue, (newVal) => {
     <div class="search-bar-container" v-if="props.searchbar">
       <div class="search-container">
         <input @input="onInput" :value="searchInput" class="searchbar" placeholder="nach Begriff suchen...">
+ 
       </div>
       <div class="icon-container">
         <div class="search-icon-container">
-          <img src="./icons/SearchIcon2.svg" class="icon" alt="search-icon" style="height: 25px;">
+          <img src="./icons/SearchIcon2.svg" class="icon" alt="search-icon" style="height: 25px;" @click="search">
         </div>
         <div class="filter-icon-container">
           <img src="./icons/Filter.svg" class="icon" alt="filter-icon" style="background: transparent; height: 25px;">
@@ -114,6 +122,10 @@ watch(() => props.modelValue, (newVal) => {
 .icon-container {
   display: flex;
   flex-direction: row;
+  width: 5%;
+}
+.search-container {
+  width: 95%;
 }
 
 .searchbar {
