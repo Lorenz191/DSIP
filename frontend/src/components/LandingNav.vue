@@ -1,6 +1,6 @@
 <script setup>
 import AuthService from '@/auth/AuthService.js'
-import {onMounted, onUnmounted, ref} from "vue";
+import {onMounted, onUnmounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import UserIconSmall from "@/components/User/UserIconSmall.vue";
 const props = defineProps({
@@ -27,12 +27,20 @@ const auth = new AuthService()
 const logOut = () => {
   auth.logout()
 }
+const emit = defineEmits(['update:searchQuery'])
 
 const screenWidth = ref(window.innerWidth);
 
 const updateScreenWidth = () => {
   screenWidth.value = window.innerWidth;
 };
+
+const searchInput = ref('')
+
+const onInput = (event) => {
+  searchInput.value = event.target.value
+  emit('update:searchQuery', searchInput.value)
+}
 
 onMounted(() => {
   window.addEventListener('resize', updateScreenWidth);
@@ -45,6 +53,10 @@ onUnmounted(() => {
 const backToLanding = () => {
     router.push({name: 'landing'});
 }
+
+watch(() => props.modelValue, (newVal) => {
+  searchInput.value = newVal
+})
 </script>
 
 <template>
@@ -57,7 +69,7 @@ const backToLanding = () => {
 
     <div class="search-bar-container" v-if="props.searchbar">
       <div class="search-container">
-        <input class="searchbar" placeholder="nach Begriff suchen...">
+        <input @input="onInput" :value="searchInput" class="searchbar" placeholder="nach Begriff suchen...">
       </div>
       <div class="icon-container">
         <div class="search-icon-container">

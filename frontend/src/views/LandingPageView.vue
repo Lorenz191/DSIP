@@ -9,10 +9,13 @@ import AdminAsideInformation from '@/components/Admin/AdminAsideInformation.vue'
 import SVDashboardView from '@/views/SV-DashboardView.vue'
 
 const posts = ref([]);
+const allPosts = ref([]);
 const sv_posts = ref([]);
 const toDisplay = ref(1)
 const loading = ref(true);
 const admin = ref(true);
+const searchQuery = ref('');
+
 
 const fetchUserInfo = async () => {
   try {
@@ -31,7 +34,8 @@ const fetchPosts = async () => {
   try {
     const response = await axios.get('http://localhost:8000/api/posts/get');
     const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get');
-    posts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length);
+    allPosts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length);
+    posts.value = allPosts.value;
     sv_posts.value = sv_response.data;
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -41,6 +45,8 @@ const fetchPosts = async () => {
 };
 
 let socket;
+
+
 
 onMounted(() => {
   socket = new WebSocket('ws://localhost:8000/ws/posts/');
@@ -67,6 +73,16 @@ onMounted(() => {
   fetchUserInfo()
 });
 
+const onSearchQueryUpdated = (newValue) => {
+  searchQuery.value = newValue;
+  if (newValue.trim() === '') {
+    posts.value = allPosts.value;
+  } else {
+    posts.value = allPosts.value.filter(post =>
+      post.body.title.toLowerCase().includes(newValue.toLowerCase())
+    );
+  }
+};
 const screenWidth = ref(window.innerWidth);
 
 const updateScreenWidth = () => {
@@ -80,11 +96,10 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateScreenWidth);
 });
-
 </script>
 
 <template>
-  <LandingNav logout searchbar profile-icon ></LandingNav>
+  <LandingNav @update:searchQuery="onSearchQueryUpdated" logout searchbar profile-icon ></LandingNav>
 
   <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
 
@@ -114,7 +129,14 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div class="new-post-container"  v-if="!svPosts&screenWidth>700" >
+    <div class="new-post-container-small" v-if="!svPosts&screenWidth<700&toDisplay === 1">
+      <RouterLink :to="`/create`">
+      <button class="new-post-button new-post-button-small">
+      +
+      </button>
+      </RouterLink>
+    </div>
+    <div class="new-post-container"  v-if="!svPosts&screenWidth>700&toDisplay===1" >
       <RouterLink :to="`/create`">
       <button class="new-post-button">
         Neuer Beitrag
@@ -125,6 +147,28 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.new-post-container-small {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+.new-post-button-small{
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+.new-post-container-small .new-post-button-small {
+  background-color: #fff;
+  border: 2px solid rgba(221, 221, 221, 0.87);
+  color: #000;
+  width: 75px;
+  height: 75px;
+  font-size: 2rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 125px;
+}
 
 .posts-container {
   display: grid;

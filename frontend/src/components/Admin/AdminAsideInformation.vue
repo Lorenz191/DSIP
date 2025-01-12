@@ -273,6 +273,7 @@ const toggleSvPosts = () => {
   height: 100px;
   display: flex;
   flex-direction: row;
+  z-index: 999;
   .top-container, .bottom-container, .admin-container {
   width: 120px;
   height: 100px;

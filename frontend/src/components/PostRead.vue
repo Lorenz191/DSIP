@@ -126,15 +126,31 @@ onMounted(() => {
   }
 })
 
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
+
 onUnmounted(() => {
   if (socket) {
     socket.close()
   }
 })
+
 </script>
 
 <template>
-  <div class="main-container">
+  <div :class="[{'main-container' : screenWidth>700}, {'main-container-small' : screenWidth<700}]">
     <div class="post-container">
       <div class="date-container">
         <p class="date">Veröffentlicht am {{ date }}</p>
@@ -239,6 +255,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+
 .main-container{
   padding:10px;
 }
@@ -339,4 +356,23 @@ img:hover {
 .del-symbol:hover {
   cursor: pointer;
 }
+.main-container-small{
+  padding: 10px;
+  .title-container{
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .voting-container-container {
+  padding-left: 10px;
+  }
+  .text-container{
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .seperation-line-container {
+    padding-left: 10px;
+  }
+
+}
+
 </style>

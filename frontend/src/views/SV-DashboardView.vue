@@ -1,5 +1,6 @@
 <script setup>
 import PostRead from '@/components/PostRead.vue'
+import {onMounted, onUnmounted, ref} from "vue";
 
 const props = defineProps({
   posts: {
@@ -20,10 +21,22 @@ const bestPosts = props.posts.sort((a,b) => b.upvotes.length - a.upvotes.length)
 
 const worstPosts = props.posts.sort((a,b) => b.downvotes.length - a.downvotes.length).slice(0, 5)
 
+const screenWidth = ref(window.innerWidth)
+function updateScreenWidth() {
+  screenWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenWidth)
+})
 </script>
 
 <template>
-  <div class="count-container">
+  <div :class="[{ 'count-container': screenWidth > 700 }, { 'count-container-small': screenWidth <= 700 }]">
     <div class="total-count-container">
       <p class="count">{{ totalPostCount }}</p>
       <p class="description">Posts veröffentlicht</p>
@@ -33,7 +46,7 @@ const worstPosts = props.posts.sort((a,b) => b.downvotes.length - a.downvotes.le
       <p class="description">Posts diesen Monat veröffentlicht</p>
     </div>
   </div>
-  <div class="post-container">
+  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
     <div class="best-post-container">
       <div class="post-container" v-for="post in bestPosts">
         <PostRead :post="post" :admin-view="true"></PostRead>
@@ -46,6 +59,9 @@ const worstPosts = props.posts.sort((a,b) => b.downvotes.length - a.downvotes.le
 </template>
 
 <style scoped>
+.small-posts-container{
+  width: 90vw;
+}
 .count-container{
   display: flex;
   flex-direction: column;
@@ -53,7 +69,16 @@ const worstPosts = props.posts.sort((a,b) => b.downvotes.length - a.downvotes.le
   gap: 10vh;
   margin-bottom: 10vh;
 }
-
+.count-container-small {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4vh;
+  margin-bottom: 5vh;
+  .description{
+    text-align: center;
+  }
+}
 .total-count-container, .monthly-count-container {
   display: flex;
   flex-direction: column;
@@ -81,7 +106,7 @@ p {
 }
 
 .best-post-container, .worst-post-container {
-  max-height: 50vh;
+  max-height: 35vh;
   width: 100%;
   overflow-y: auto;
   display: flex;
