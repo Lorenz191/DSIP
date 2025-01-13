@@ -100,6 +100,7 @@ def view_delete_post(request):
             post_document.get("fk_author") != cache.get("auth0_id")
             and cache.get("admin") != True
             and cache.get("sv") != True
+            and cache.get("auth0_id") != post_document.get("fk_author")
         ):
             return JsonResponse(
                 {"error": "You are not authorized to delete this post."}, status=403

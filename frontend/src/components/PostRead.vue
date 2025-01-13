@@ -169,7 +169,7 @@ onUnmounted(() => {
       <div class="date-container">
         <p class="date">Veröffentlicht am {{ date }}</p>
         <div class="status-del-div">
-          <p class="del-symbol" v-if="adminView" @click="showDeletionModal = true">&#x1F5D1;</p>
+          <p class="del-symbol" v-if="adminView || currentUser === post.fk_author" @click="showDeletionModal = true">&#x1F5D1;</p>
           <p class="status">{{ status }}</p>
         </div>
       </div>

@@ -25,6 +25,7 @@ const router = useRouter();
 const emit = defineEmits(['update:searchQuery'])
 
 const screenWidth = ref(window.innerWidth);
+const small = ref(screenWidth.value < 700);
 
 const updateScreenWidth = () => {
   screenWidth.value = window.innerWidth;
@@ -59,6 +60,8 @@ const backToLanding = () => {
 watch(() => props.modelValue, (newVal) => {
   searchInput.value = newVal
 })
+
+
 </script>
 
 <template>
@@ -66,21 +69,13 @@ watch(() => props.modelValue, (newVal) => {
 
     <div class="back-arrow-container icon">
       <img src="../components/icons/Arrow_back.svg" alt="arrow_back" v-if="props.arrow" @click="backToLanding" >
-      <logout-button v-if="logout"></logout-button>
+      <logout-button v-if="logout" :small="small"></logout-button>
     </div>
 
     <div class="search-bar-container" v-if="props.searchbar">
       <div class="search-container">
         <input @input="onInput" :value="searchInput" class="searchbar" placeholder="nach Begriff suchen...">
- 
-      </div>
-      <div class="icon-container">
-        <div class="search-icon-container">
-          <img src="./icons/SearchIcon2.svg" class="icon" alt="search-icon" style="height: 25px;" @click="search">
-        </div>
-        <div class="filter-icon-container">
-          <img src="./icons/Filter.svg" class="icon" alt="filter-icon" style="background: transparent; height: 25px;">
-        </div>
+
       </div>
     </div>
     <div class="user-profile-container" v-if="props.profileIcon">
@@ -119,11 +114,6 @@ watch(() => props.modelValue, (newVal) => {
   padding-right: 6px;
 }
 
-.icon-container {
-  display: flex;
-  flex-direction: row;
-  width: 5%;
-}
 .search-container {
   width: 95%;
 }
@@ -147,6 +137,7 @@ watch(() => props.modelValue, (newVal) => {
 .small-nav-container {
   background: #2EDB7B;
   height: 80px;
+  gap: 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -158,7 +149,7 @@ watch(() => props.modelValue, (newVal) => {
 
 
 button{
-  font-size: 20px;
+  font-size: 15px;
   font-weight: bold;
   color: white;
 }
