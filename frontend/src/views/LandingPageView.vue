@@ -79,10 +79,11 @@ onMounted(async () => {
   }
 
   socket.onmessage = (event) => {
-    if (JSON.parse(event.data)['message'] === 'post_delete') {
-      fetchPosts()
+    const messageData = JSON.parse(event.data);
+    if (messageData['message'] === 'post_delete' || messageData['message'] === 'post_update') {
+      fetchPosts();
     }
-  }
+  };
 
   socket.onerror = (error) => {
     console.error('Postocket error:', error)

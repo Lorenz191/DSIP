@@ -20,6 +20,7 @@ const createPost = async () => {
     if (response.status === 201) {
       toast.success('Post wurde erfolgreich erstellt!')
       console.log('Post created successfully:', response.data)
+
       router.push({ name: 'landing' })
     }
   } catch (error) {

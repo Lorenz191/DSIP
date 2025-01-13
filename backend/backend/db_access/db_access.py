@@ -95,7 +95,7 @@ class DB:
             return []
 
     # Update Post Body
-    def update_post_body(self, post_id, body):
+    def update_post_body(self, post_id, title, content):
         try:
             post_id = ObjectId(post_id)
             post_collection = self.db["Post"]
@@ -103,8 +103,8 @@ class DB:
                 {"_id": post_id},
                 {
                     "$set": {
-                        "body.title": body.get("title"),
-                        "body.content": body.get("content"),
+                        "body.title": title,
+                        "body.content": content,
                     }
                 },
             )

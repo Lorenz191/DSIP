@@ -26,20 +26,15 @@ async def watch_votes():
                     document_id = change["documentKey"]["_id"]
                     document = post_collection.find_one({"_id": document_id})
                     if document:
-                        channel_layer = get_channel_layer()
-                        await channel_layer.group_send(
-                            "votes",
-                            {
-                                "type": "vote_update",
-                                "message": json.dumps(
-                                    {
-                                        "post_id": str(document["_id"]),
-                                        "upvotes": document.get("upvotes", []),
-                                        "downvotes": document.get("downvotes", []),
-                                    }
-                                ),
-                            },
-                        )
+                        if "updateDescription" in change and any(
+                            key.startswith("body.")
+                            for key in change["updateDescription"][
+                                "updatedFields"
+                            ].keys()
+                        ):
+                            await notify_post_update(document)
+                        else:
+                            await notify_vote_update(document)
                 elif change["operationType"] == "delete":
                     channel_layer = get_channel_layer()
                     await channel_layer.group_send(
@@ -50,6 +45,33 @@ async def watch_votes():
                     )
     except PyMongoError as e:
         print(f"Error watching change stream: {e}")
+
+
+async def notify_vote_update(document):
+    channel_layer = get_channel_layer()
+    await channel_layer.group_send(
+        "votes",
+        {
+            "type": "vote_update",
+            "message": json.dumps(
+                {
+                    "post_id": str(document["_id"]),
+                    "upvotes": document.get("upvotes", []),
+                    "downvotes": document.get("downvotes", []),
+                }
+            ),
+        },
+    )
+
+
+async def notify_post_update(document):
+    channel_layer = get_channel_layer()
+    await channel_layer.group_send(
+        "posts",
+        {
+            "type": "post_update",
+        },
+    )
 
 
 if __name__ == "__main__":
