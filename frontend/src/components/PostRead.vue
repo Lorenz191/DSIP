@@ -10,7 +10,10 @@ import ArrowUpGreen from './icons/Arrow_Up_Green.svg'
 import ArrowUpGreenFilled from './icons/Arrow_Up_Green_Filled.svg'
 import axios from 'axios'
 import DeletionModal from '@/components/modals/DeletionModal.vue'
+import EditingModal from '@/components/modals/EditingModal.vue'
+import { useToast } from 'vue-toastification'
 
+const toast = useToast()
 const currentUser = useUserStore().userUuid
 
 const props = defineProps({
@@ -43,6 +46,7 @@ const hover_up = ref(false)
 const hover_down = ref(false)
 
 const showDeletionModal = ref(false)
+const showEditingModal = ref(false)
 
 const handleUpvote = () => {
   if (upvoted.value || downvoted.value) {
@@ -101,6 +105,30 @@ const deletePost = () => {
   }
 }
 
+const changePost = (newPost) => {
+  const newTitle = newPost.title
+  const newContent = newPost.content
+
+  try {
+    axios
+      .post('http://localhost:8000/api/post/update/body/', {
+        post_id: props.post._id,
+        title: newTitle,
+        content: newContent
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success('Post wurde erfolgreich bearbeitet!')
+        } else {
+          toast.error('Fehler beim Bearbeiten des Posts!')
+        }
+        showEditingModal.value = false
+      })
+  } catch (error) {
+    console.error('Error editing post:', error)
+  }
+}
+
 let socket
 
 onMounted(() => {
@@ -135,41 +163,70 @@ onUnmounted(() => {
   }
 })
 
-const screenWidth = ref(window.innerWidth);
+const screenWidth = ref(window.innerWidth)
 
 const updateScreenWidth = () => {
-  screenWidth.value = window.innerWidth;
-};
+  screenWidth.value = window.innerWidth
+}
 
 onMounted(() => {
-  window.addEventListener('resize', updateScreenWidth);
-});
+  window.addEventListener('resize', updateScreenWidth)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateScreenWidth);
-});
-
+  window.removeEventListener('resize', updateScreenWidth)
+})
 
 onUnmounted(() => {
   if (socket) {
     socket.close()
   }
 })
-
 </script>
 
 <template>
-  <div :class="[{'main-container' : screenWidth>700}, {'main-container-small' : screenWidth<700}]">
+  <div
+    :class="[
+      { 'main-container': screenWidth > 700 },
+      { 'main-container-small': screenWidth < 700 }
+    ]"
+  >
     <DeletionModal
       v-if="showDeletionModal"
-      @confirm="() => { deletePost(); showDeletionModal = false; }"
+      @confirm="
+        () => {
+          deletePost()
+          showDeletionModal = false
+        }
+      "
       @cancel="showDeletionModal = false"
     ></DeletionModal>
+    <EditingModal
+      v-if="showEditingModal"
+      @close="showEditingModal = false"
+      :title="props.post.body.title"
+      :content="props.post.body.content"
+      @save="changePost"
+    >
+    </EditingModal>
     <div class="post-container">
       <div class="date-container">
         <p class="date">Veröffentlicht am {{ date }}</p>
         <div class="status-del-div">
-          <p class="del-symbol" v-if="adminView || currentUser === post.fk_author" @click="showDeletionModal = true">&#x1F5D1;</p>
+          <p
+            class="editing-symbol"
+            v-if="currentUser === post.fk_author"
+            @click="showEditingModal = true"
+          >
+            ✏️
+          </p>
+          <p
+            class="del-symbol"
+            v-if="adminView || currentUser === post.fk_author"
+            @click="showDeletionModal = true"
+          >
+            &#x1F5D1;
+          </p>
           <p class="status">{{ status }}</p>
         </div>
       </div>
@@ -269,8 +326,8 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.main-container{
-  padding:10px;
+.main-container {
+  padding: 10px;
 }
 
 .post-container {
@@ -369,23 +426,30 @@ img:hover {
 .del-symbol:hover {
   cursor: pointer;
 }
-.main-container-small{
+
+.main-container-small {
   padding: 10px;
-  .title-container{
+
+  .title-container {
     padding-left: 10px;
     padding-right: 10px;
   }
+
   .voting-container-container {
-  padding-left: 10px;
+    padding-left: 10px;
   }
-  .text-container{
+
+  .text-container {
     padding-left: 10px;
     padding-right: 10px;
   }
+
   .seperation-line-container {
     padding-left: 10px;
   }
-
 }
 
+.editing-symbol:hover {
+  cursor: pointer;
+}
 </style>

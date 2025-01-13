@@ -25,3 +25,6 @@ class PostConsumer(AsyncWebsocketConsumer):
 
     async def post_delete(self, event):
         await self.send(text_data=json.dumps({"message": "post_delete"}))
+
+    async def post_update(self, event):
+        await self.send(text_data=json.dumps({"message": "post_update"}))
