@@ -17,7 +17,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <button class="button__login" @click="handleLogin">Log In</button>
+  <button class="button__login" @click="handleLogin">Anmelden</button>
 </template>
 
 <style scoped>

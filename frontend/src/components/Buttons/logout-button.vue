@@ -12,7 +12,7 @@
 </script>
 
 <template>
-  <button class="button__logout" @click="handleLogOut">Log Out</button>
+  <button class="button__logout" @click="handleLogOut">Abmelden</button>
 </template>
 
 <style scoped>
