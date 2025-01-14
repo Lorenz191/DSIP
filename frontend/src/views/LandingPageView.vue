@@ -178,6 +178,7 @@ const handleSearch = (searchInput) => {
 }
 .new-post-button-small{
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
 }
 .new-post-container-small .new-post-button-small {
   background-color: #fff;
@@ -191,7 +192,7 @@ const handleSearch = (searchInput) => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-bottom: 125px;
+  margin-bottom: 100px;
 }
 
 .posts-container {
@@ -241,7 +242,7 @@ const handleSearch = (searchInput) => {
   width: 230px;
   height: 40px;
   border-radius: 5px;
-  margin-bottom: 60px;
+  margin-bottom: 25px;
   margin-right: 3vw;
 }
 

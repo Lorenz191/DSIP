@@ -20,10 +20,12 @@ export default {
 
 <style scoped>
 * {
+
   font-family: 'Futura';
 }
 
 .modal-overlay {
+   z-index: 1000;
   position: fixed;
   top: 0;
   left: 0;

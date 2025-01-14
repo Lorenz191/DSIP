@@ -31,7 +31,7 @@ const save = () => {
     <div class="modal-content">
       <div class="header">
         <h1>Post bearbeiten:</h1>
-        <button class="exit" @click="close">X</button>
+        <button class="exit" @click="close">&#10006;</button>
       </div>
       <div class="title-container">
         <input placeholder="Titel" class="titel" v-model="editableTitle"/>
@@ -49,6 +49,7 @@ const save = () => {
 <style scoped>
 
 .modal-overlay {
+  z-index: 1000;
   font-family: Futura, sans-serif;
   position: fixed;
   top: 0;
