@@ -165,7 +165,7 @@ def view_create_post(request):
                 return JsonResponse(
                     {"error": "Post contains negative sentiment."}, status=400
                 )
-            if not cache.get("sv") or not cache.get("admin"):
+            if not cache.get("sv") and not cache.get("admin"):
                 if cache.get("auth0_id") is not None:
                     post_document = {
                         "fk_author": cache.get("auth0_id"),
