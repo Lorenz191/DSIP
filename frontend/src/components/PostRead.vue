@@ -239,7 +239,7 @@ onUnmounted(() => {
             xmlns="http://www.w3.org/2000/svg"
             width="720"
             height="4"
-            viewBox="0 0 720 4"
+            viewBox="0 0 700 4"
             fill="none"
           >
             <path
@@ -262,7 +262,7 @@ onUnmounted(() => {
           xmlns="http://www.w3.org/2000/svg"
           width="720"
           height="4"
-          viewBox="0 0 720 4"
+          viewBox="0 0 700 4"
           fill="none"
         >
           <path

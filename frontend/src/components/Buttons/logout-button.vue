@@ -25,19 +25,11 @@ const handleLogOut = async () => {
   }
 }
 
-const props = defineProps({
-  small: {
-    type: Boolean,
-    required: false,
-    default: false
-  }
-})
 </script>
 
 <template>
-  <button v-if="!props.small" class="button__logout" @click="handleLogOut">Abmelden</button>
-  <button v-if="props.small" class="button__logout" @click="handleLogOut"><img class="logout-icon"
-                                                                               src="../icons/logout-svgrepo-com.svg">
+  <button class="button__logout" @click="handleLogOut">
+    <img class="logout-icon" alt="Abmelden" src="../icons/logout-svgrepo-com.svg">
   </button>
 </template>
 

@@ -2,7 +2,7 @@
   <div class="modal-overlay">
     <div class="modal-content">
       <div class="warning-container">
-        <span>&#9888; Willst du diesen Post wirklich löschen?</span>
+        <p>&#9888;</p><span> Willst du diesen Post wirklich löschen?</span>
       </div>
       <div class="modal-actions">
         <button @click="$emit('confirm')">Ja</button>
@@ -29,7 +29,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -37,7 +37,7 @@ export default {
 
 .modal-content {
   background-color: white;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
   text-align: center;
 }
@@ -53,6 +53,8 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 100px;
+  font-weight: bold;
 }
 
 button:hover {
@@ -62,7 +64,7 @@ button:hover {
 span {
   display: inline-block;
   width: auto;
-  color: orange;
+  color: red;
   font-size: 1em;
   font-weight: bold;
   border-radius: 20%;
@@ -71,9 +73,15 @@ span {
 .warning-container {
   padding: 5px;
   margin-top: 1vh;
-  background-color: rgba(255, 165, 0, 0.24);
+  background-color: rgba(255, 0, 0, 0.25);
   width: 100%;
   border-radius: 0.3vw;
-  border: 2px solid orange;
+  border: 2px solid red;
+}
+
+p{
+  font-size: 35px;
+  color: red;
+  padding: 0;
 }
 </style>
