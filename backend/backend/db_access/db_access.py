@@ -25,7 +25,6 @@ class DB:
     def __init__(self):
         self.client = MongoClient(
             f"mongodb+srv://{os.getenv('MONGO_UN')}:{os.getenv('MONGO_KEY')}@cluster0.ze7ad.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-            server_api=ServerApi("1"),
             tls=True,
             tlsAllowInvalidCertificates=True,
         )

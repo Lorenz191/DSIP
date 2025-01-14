@@ -3,14 +3,19 @@ import LandingNav from '@/components/LandingNav.vue'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
+import { useSessionStore } from '@/stores/session.js'
 
 const post = ref(null)
 const loading = ref(true)
 const route = useRoute()
+const admin = useSessionStore().isAdmin
+const interactionButtons = ref(false)
 
 const fetchPost = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/api/post/get/', { 'post_id': route.params.id })
+    const response = await axios.post('http://localhost:8000/api/post/get/', {
+      post_id: route.params.id
+    })
     post.value = response.data
   } catch (error) {
     console.error('Error fetching posts:', error)
@@ -19,12 +24,12 @@ const fetchPost = async () => {
   }
 }
 
+
 onMounted(() => {
   fetchPost()
 })
 
 </script>
-
 
 <template>
   <LandingNav :arrow="true"></LandingNav>
@@ -45,6 +50,18 @@ onMounted(() => {
         <p class="post-content">
           {{ post.body.content }}
         </p>
+      </div>
+    </div>
+    <div class="comment-container">
+      <div v-if="admin" class="comment-input-container">
+        <input placeholder="Kommentieren" class="comment-input" @click="interactionButtons = true" />
+        <div class="comment-buttons-container" v-if="interactionButtons">
+          <button class="cancel-button" @click="interactionButtons = false">Abbrechen</button>
+          <button class="submit-button">Kommentieren</button>
+        </div>
+      </div>
+      <div class="comments">
+        <h1 class="comments-title">Kommentare:</h1>
       </div>
     </div>
   </div>
@@ -90,11 +107,11 @@ onMounted(() => {
   margin-top: 90px;
 }
 
-.post-container{
+.post-container {
   width: 50vw;
 }
 
-.title-container{
+.title-container {
   margin-bottom: 5px;
 }
 
@@ -112,15 +129,16 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.loader:before, .loader:after {
-  content: "";
+.loader:before,
+.loader:after {
+  content: '';
   position: absolute;
   left: 50%;
   bottom: 0;
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #2EDB7B;
+  background: #2edb7b;
   transform: translate(-50%, 100%) scale(0);
   animation: push 2s infinite ease-in;
 }
@@ -133,15 +151,69 @@ onMounted(() => {
   0% {
     transform: translate(-50%, 100%) scale(1);
   }
-  15%, 25% {
+  15%,
+  25% {
     transform: translate(-50%, 50%) scale(1);
   }
-  50%, 75% {
+  50%,
+  75% {
     transform: translate(-50%, -30%) scale(0.5);
   }
-  80%, 100% {
+  80%,
+  100% {
     transform: translate(-50%, -50%) scale(0);
   }
 }
 
+.comment-container {
+  width: 50vw;
+}
+
+.comment-input-container {
+  margin-top: 40px;
+  border: 1px grey solid;
+  height: max-content;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.comment-input {
+  width: 100%;
+}
+
+.comment-input:focus{
+  border: none;
+  outline: none;
+}
+
+.comments-title {
+  margin-top: 40px;
+}
+
+.comment-buttons-container{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.submit-button{
+  background-color: #2edb7b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.cancel-button:hover, .submit-button:hover{
+  cursor: pointer;
+}
 </style>
