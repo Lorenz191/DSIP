@@ -196,3 +196,21 @@ class DB:
         except Exception as e:
             print(f"Error updating post: {e}")
             return False
+
+    from datetime import datetime
+
+    def delete_comment(self, post_id, _id):
+        try:
+            post_collection = self.db["Post"]
+
+            post_id = ObjectId(post_id)
+            _id = ObjectId(_id)
+
+            result = post_collection.update_one(
+                {"_id": post_id}, {"$pull": {"comments": {"_id": _id}}}
+            )
+            return result.modified_count > 0
+
+        except Exception as e:
+            print(f"Error updating post: {e}")
+            return False

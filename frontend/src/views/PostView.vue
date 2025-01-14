@@ -48,6 +48,25 @@ const postComment = async () => {
   }
 }
 
+const deleteComment = async (event) => {
+  try {
+    const response = await axios.post('http://localhost:8000/api/post/delete/comment/', {
+      post_id: route.params.id,
+      _id: event._id
+    })
+
+    console.log(response)
+
+    fetchPost()
+
+    if (response.status === 200) {
+      toast.success('Kommentar erfolgreich gelöscht!')
+    }
+  } catch (error) {
+    console.error('Error posting comment:', error)
+  }
+}
+
 onMounted(() => {
   fetchPost()
 })
@@ -91,7 +110,7 @@ onMounted(() => {
         <h1 class="comments-title">Kommentare:</h1>
         <div class="comments-container">
           <div v-for="comment in comments" :key="comment.id">
-            <Comment :comment="comment"></Comment>
+            <Comment :comment="comment" @delete="deleteComment"></Comment>
           </div>
         </div>
       </div>

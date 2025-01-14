@@ -1,4 +1,8 @@
 <script setup>
+import { useSessionStore } from '@/stores/session.js'
+import { ref } from 'vue'
+import axios from 'axios'
+
 const props = defineProps({
   comment: {
     type: Object,
@@ -7,13 +11,28 @@ const props = defineProps({
 })
 
 const date = new Date(props.comment.created_at).toLocaleDateString()
+const admin = ref(useSessionStore().isAdmin)
+const emits = defineEmits(['delete'])
+
+
+const deleteComment = async () => {
+  try {
+    emits('delete', {"_id": props.comment._id})
+  } catch (error) {
+    console.error('Error deleting comment:', error)
+  }
+}
+
 </script>
 
 <template>
   <div class="content-container">
     <div class="metadata-container">
       <p>{{ comment.author }}</p>
-      <p>{{ date }}</p>
+      <div class="deletion-date-container">
+        <button v-if="admin" @click="deleteComment">&#x1F5D1;</button>
+        <p>{{ date }}</p>
+      </div>
     </div>
     <div class="data-container">
       <p class="comment-content">{{ comment.comment }}</p>
@@ -35,5 +54,14 @@ const date = new Date(props.comment.created_at).toLocaleDateString()
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.deletion-date-container{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.deletion-date-container:hover{
+  cursor: pointer;
 }
 </style>

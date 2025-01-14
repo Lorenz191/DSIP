@@ -391,10 +391,12 @@ def view_add_comment(request):
         try:
             body = json.loads(request.body)
             post_id = body.get("post_id")
-            comment = body.get("comment")
+            comment_text = body.get("comment")
+
             comment = {
+                "_id": ObjectId(),
                 "author": "SV/Admin",
-                "comment": comment,
+                "comment": comment_text,
                 "author_id": cache.get("auth0_id"),
                 "created_at": datetime.now(),
             }
@@ -406,6 +408,28 @@ def view_add_comment(request):
             else:
                 db_instance = DB()
                 result = db_instance.post_comment(post_id, comment)
+                return JsonResponse({"success": result}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+
+@csrf_exempt
+def view_delete_comment(request):
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            post_id = body.get("post_id")
+            _id = body.get("_id")
+
+            if cache.get("sv") is None or cache.get("admin") is None:
+                return JsonResponse(
+                    {"error": "Unauthorized: auth0_id not set in session"}, status=403
+                )
+            else:
+                db_instance = DB()
+                result = db_instance.delete_comment(post_id, _id)
                 return JsonResponse({"success": result}, status=200)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
