@@ -177,6 +177,7 @@ def view_create_post(request):
                         "upvotes": [],
                         "downvotes": [],
                         "status": "published",
+                        "sv_post": False,
                         "created_at": datetime.now(),
                     }
                 else:

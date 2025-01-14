@@ -16,6 +16,7 @@ const sessionStore = useSessionStore()
 const posts = ref([])
 const allPosts = ref([]);
 const sv_posts = ref([])
+const allSvPosts = ref([])
 const toDisplay = ref(1)
 const loading = ref(true)
 const searchQuery = ref('');
@@ -47,7 +48,8 @@ const fetchPosts = async () => {
     const sv_response = await axios.get('http://localhost:8000/api/posts_sv/get', { timeout: 10000 })
     allPosts.value = response.data.sort((a, b) => b.upvotes.length - a.upvotes.length);
     posts.value = allPosts.value;
-    sv_posts.value = sv_response.data
+    allSvPosts.value = sv_response.data;
+    sv_posts.value = allSvPosts.value;
   } catch (error) {
     console.error('Error fetching posts:', error.message)
   } finally {
@@ -59,12 +61,22 @@ let socket
 
 const onSearchQueryUpdated = (newValue) => {
   searchQuery.value = newValue;
-  if (newValue.trim() === '') {
-    posts.value = allPosts.value;
+  if (toDisplay.value === 3){
+    if (newValue.trim() === '') {
+      sv_posts.value = allSvPosts.value;
+    } else {
+      sv_posts.value = allSvPosts.value.filter(post =>
+          post.body.title.toLowerCase().includes(newValue.toLowerCase())
+      );
+    }
   } else {
-    posts.value = allPosts.value.filter(post =>
-      post.body.title.toLowerCase().includes(newValue.toLowerCase())
-    );
+    if (newValue.trim() === '') {
+      posts.value = allPosts.value;
+    } else {
+      posts.value = allPosts.value.filter(post =>
+          post.body.title.toLowerCase().includes(newValue.toLowerCase())
+      );
+    }
   }
 };
 

@@ -5,6 +5,7 @@ from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 import os
 from dotenv import load_dotenv
+from sympy import false
 
 load_dotenv()  # Load environment variables
 
@@ -48,7 +49,7 @@ class DB:
     # Select all Posts
     def select_posts(self):
         post_collection = self.db["Post"]
-        posts = post_collection.find()
+        posts = post_collection.find({"sv_post": False})
         return list(posts) if posts else []
 
     # Select all SV Posts
