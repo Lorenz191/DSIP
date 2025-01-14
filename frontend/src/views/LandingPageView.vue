@@ -119,9 +119,9 @@ const handleSearch = (searchInput) => {
 <template>
   <LandingNav @update:searchQuery="onSearchQueryUpdated" logout searchbar profile-icon></LandingNav>
 
-  <div :class="[{'posts-container' : screenWidth > 700}, {'small-posts-container' : screenWidth < 700}]">
+  <div :class="[{'posts-container' : screenWidth >= 850}, {'small-posts-container' : screenWidth < 850}]">
 
-    <div v-if="screenWidth > 700" class="aside-container">
+    <div v-if="screenWidth >= 850" class="aside-container">
       <AdminAsideInformation v-if="sessionStore.isAdmin"
                              @update:displayChange="toDisplay = $event"></AdminAsideInformation>
       <AsideInformation v-else @update:displayChange="toDisplay = $event"></AsideInformation>
@@ -155,14 +155,14 @@ const handleSearch = (searchInput) => {
         </div>
       </div>
     </div>
-    <div class="new-post-container-small" v-if="!svPosts&screenWidth<700&toDisplay === 1">
+    <div class="new-post-container-small" v-if="!svPosts&screenWidth<850&toDisplay === 1">
       <RouterLink :to="`/create`">
       <button class="new-post-button new-post-button-small">
       +
       </button>
       </RouterLink>
     </div>
-    <div class="new-post-container" v-if="!sv_posts.length && screenWidth > 700">
+    <div class="new-post-container" v-if="!sv_posts.length && screenWidth >= 850">
       <RouterLink :to="`/create`">
         <button class="new-post-button">Neuer Beitrag</button>
       </RouterLink>
@@ -191,7 +191,7 @@ const handleSearch = (searchInput) => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-bottom: 125px;
+  margin-bottom: calc(100vh - 77vh - 70px);
 }
 
 .posts-container {
@@ -200,7 +200,6 @@ const handleSearch = (searchInput) => {
   column-gap: 20px;
   margin-top: 55px;
   min-height: calc(100vh - 80px - 55px);
-  width: auto;
 }
 
 .posts-wrapper {
@@ -212,8 +211,13 @@ const handleSearch = (searchInput) => {
   gap: 16px;
   overflow: scroll;
   padding: 16px;
+  width: auto;
 }
 
+.post-container{
+  width: 55vw;
+  max-width: 766px;
+}
 .aside-container {
   display: flex;
   flex-direction: column;
@@ -319,7 +323,7 @@ input::placeholder {
     overflow: scroll;
   }
 
-  .aside-container {
+  .aside-container-small {
     display: flex;
     flex-direction: row;
     align-items: center;

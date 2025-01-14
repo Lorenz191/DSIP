@@ -35,7 +35,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div :class="[{ 'count-container': screenWidth > 700 }, { 'count-container-small': screenWidth <= 700 }]">
+  <div :class="[{ 'count-container': screenWidth >= 850 }, { 'count-container-small': screenWidth < 850 }]">
     <div class="total-count-container">
       <p class="count">{{ totalPostCount }}</p>
       <p class="description">Posts veröffentlicht</p>
@@ -45,7 +45,7 @@ onUnmounted(() => {
       <p class="description">Posts diesen Monat veröffentlicht</p>
     </div>
   </div>
-  <div :class="[{'posts-container' : screenWidth>700}, {'small-posts-container' : screenWidth<700}]">
+  <div :class="[{'posts-container' : screenWidth>=850}, {'small-posts-container' : screenWidth<850}]">
     <div class="best-post-container">
       <div class="post-container" v-for="post in bestPosts">
         <PostRead :post="post" :admin-view="true"></PostRead>

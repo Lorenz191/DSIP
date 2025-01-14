@@ -25,7 +25,7 @@ const router = useRouter();
 const emit = defineEmits(['update:searchQuery'])
 
 const screenWidth = ref(window.innerWidth);
-const small = ref(screenWidth.value < 700);
+const small = ref(screenWidth.value < 850);
 
 const updateScreenWidth = () => {
   screenWidth.value = window.innerWidth;
@@ -65,7 +65,7 @@ watch(() => props.modelValue, (newVal) => {
 </script>
 
 <template>
-  <div :class="[{'nav-container' : screenWidth>700}, {'small-nav-container' : screenWidth<700}]">
+  <div :class="[{'nav-container' : screenWidth>=850}, {'small-nav-container' : screenWidth<850}]">
 
     <div class="back-arrow-container icon">
       <img src="../components/icons/Arrow_back.svg" alt="arrow_back" v-if="props.arrow" @click="backToLanding" >

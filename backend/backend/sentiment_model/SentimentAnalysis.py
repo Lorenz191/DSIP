@@ -1,10 +1,17 @@
 import logging
 
+from pathlib import Path
+from dotenv import load_dotenv
 import deepl
 import os
 import requests
 
+
 auth_key = os.getenv("DEEPL_KEY")
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(Path(BASE_DIR).parent / ".env")
 
 
 class SeAn:

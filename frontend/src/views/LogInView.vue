@@ -23,9 +23,9 @@ onUnmounted(() => {
 
 <template>
   <div class="all">
-  <div :class="[{'container' : screenWidth>700}, {'container-small': screenWidth<700}]">
+  <div :class="[{'container' : screenWidth>=850}, {'container-small': screenWidth<850}]">
     <div class="left-section">
-      <img v-if="screenWidth>700" src="../components/icons/Title_Picture.svg" alt="Picture" class="title-image" />
+      <img v-if="screenWidth>=850" src="../components/icons/Title_Picture.svg" alt="Picture" class="title-image" />
       <img v-else style="scale: 120%" src="../components/icons/Parliament_Small.svg" alt="Picture" class="title-image"/>
     </div>
 
@@ -37,7 +37,7 @@ onUnmounted(() => {
         <LoginButton></LoginButton>
       </div>
     </div>
-     <div v-if="screenWidth<700" class="left-section">
+     <div v-if="screenWidth<850" class="left-section">
       <img src="../components/icons/Parliament_Small.svg" alt="Picture" class="title-image smallUnder"/>
     </div>
   </div>
