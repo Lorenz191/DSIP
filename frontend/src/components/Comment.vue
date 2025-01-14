@@ -28,10 +28,10 @@ const deleteComment = async () => {
 <template>
   <div class="content-container">
     <div class="metadata-container">
-      <p>{{ comment.author }}</p>
+      <p class="author">{{ comment.author }}</p>
       <div class="deletion-date-container">
         <button v-if="admin" @click="deleteComment">&#x1F5D1;</button>
-        <p>{{ date }}</p>
+        <p class="date">{{ date }}</p>
       </div>
     </div>
     <div class="data-container">
@@ -41,6 +41,10 @@ const deleteComment = async () => {
 </template>
 
 <style scoped>
+p, h1 {
+  font-family: Futura;
+}
+
 .content-container {
   display: flex;
   flex-direction: column;
@@ -63,5 +67,17 @@ const deleteComment = async () => {
 }
 .deletion-date-container:hover{
   cursor: pointer;
+}
+
+.date{
+  color: grey;
+}
+
+.data-container {
+  padding: 10px 0;
+}
+
+.author{
+  color: #2edb7b;
 }
 </style>
