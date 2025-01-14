@@ -25,7 +25,6 @@ class DB:
     def __init__(self):
         self.client = MongoClient(
             f"mongodb+srv://{os.getenv('MONGO_UN')}:{os.getenv('MONGO_KEY')}@cluster0.ze7ad.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-            server_api=ServerApi("1"),
             tls=True,
             tlsAllowInvalidCertificates=True,
         )
@@ -182,3 +181,36 @@ class DB:
         post_collection = self.db["Post"]
         posts = post_collection.find({"downvotes": user_id})
         return list(posts) if posts else []
+
+    def post_comment(self, post_id, comment):
+        try:
+            post_collection = self.db["Post"]
+
+            post_id = ObjectId(post_id)
+
+            result = post_collection.update_one(
+                {"_id": post_id}, {"$push": {"comments": comment}}
+            )
+            return result.modified_count > 0
+
+        except Exception as e:
+            print(f"Error updating post: {e}")
+            return False
+
+    from datetime import datetime
+
+    def delete_comment(self, post_id, _id):
+        try:
+            post_collection = self.db["Post"]
+
+            post_id = ObjectId(post_id)
+            _id = ObjectId(_id)
+
+            result = post_collection.update_one(
+                {"_id": post_id}, {"$pull": {"comments": {"_id": _id}}}
+            )
+            return result.modified_count > 0
+
+        except Exception as e:
+            print(f"Error updating post: {e}")
+            return False

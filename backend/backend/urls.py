@@ -18,4 +18,6 @@ urlpatterns = [
     path("api/posts/get/user/downvoted/", views.view_get_user_disliked_posts),
     path("api/posts/get/user/", views.view_get_user_posts),
     path("api/user/clear/", views.clear_session_cache),
+    path("api/post/create/comment/", views.view_add_comment),
+    path("api/post/delete/comment/", views.view_delete_comment),
 ]

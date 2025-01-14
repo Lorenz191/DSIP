@@ -15,6 +15,7 @@ import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 const currentUser = useUserStore().userUuid
+const commentCount = ref(0)
 
 const props = defineProps({
   post: {
@@ -36,6 +37,8 @@ const votes = reactive({
 
 const upvotesCount = computed(() => votes.upvotes.length)
 const downvotesCount = computed(() => votes.downvotes.length)
+
+
 
 const date = new Date(props.post.created_at).toLocaleDateString()
 
@@ -132,6 +135,10 @@ const changePost = (newPost) => {
 let socket
 
 onMounted(() => {
+  if (props.post.comments) {
+    commentCount.value = props.post.comments.length
+  }
+
   socket = new WebSocket('ws://localhost:8000/ws/votes/')
 
   socket.onopen = () => {
@@ -274,51 +281,63 @@ onUnmounted(() => {
           />
         </svg>
       </div>
-      <div class="voting-container-container">
-        <div class="voting-container">
-          <div class="upvote">
-            <p>
-              {{ upvotesCount }}
-            </p>
-            <img
-              :src="upvoted ? ArrowUpGreenFilled : hover_up ? ArrowUpGreen : ArrowUpBlack"
-              alt="upvote"
-              style="height: 36px"
-              @click="handleUpvote"
-              @mouseover="hover_up = true"
-              @mouseleave="hover_up = false"
-            />
-          </div>
-          <div class="vertical-seperation-line">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="2"
-              height="36"
-              viewBox="0 0 2 36"
-              fill="none"
-            >
-              <path
-                d="M1 1V34.5"
-                stroke="#D9D9D9"
-                stroke-opacity="0.5"
-                stroke-width="1.5"
-                stroke-linecap="round"
+      <div class="interaction-container">
+        <div class="voting-container-container">
+          <div class="voting-container">
+            <div class="upvote">
+              <p>
+                {{ upvotesCount }}
+              </p>
+              <img
+                :src="upvoted ? ArrowUpGreenFilled : hover_up ? ArrowUpGreen : ArrowUpBlack"
+                alt="upvote"
+                style="height: 36px"
+                @click="handleUpvote"
+                @mouseover="hover_up = true"
+                @mouseleave="hover_up = false"
               />
-            </svg>
+            </div>
+            <div class="vertical-seperation-line">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="2"
+                height="36"
+                viewBox="0 0 2 36"
+                fill="none"
+              >
+                <path
+                  d="M1 1V34.5"
+                  stroke="#D9D9D9"
+                  stroke-opacity="0.5"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <div class="downvote">
+              <p>
+                {{ downvotesCount }}
+              </p>
+              <img
+                :src="downvoted ? ArrowDownBlueFilled : hover_down ? ArrowDownBlue : ArrowDownBlack"
+                alt="upvote"
+                style="height: 36px"
+                @click="handleDownvote"
+                @mouseover="hover_down = true"
+                @mouseleave="hover_down = false"
+              />
+            </div>
           </div>
-          <div class="downvote">
-            <p>
-              {{ downvotesCount }}
-            </p>
-            <img
-              :src="downvoted ? ArrowDownBlueFilled : hover_down ? ArrowDownBlue : ArrowDownBlack"
-              alt="upvote"
-              style="height: 36px"
-              @click="handleDownvote"
-              @mouseover="hover_down = true"
-              @mouseleave="hover_down = false"
-            />
-          </div>
+        </div>
+        <div class="comment-container">
+          <RouterLink :to="`/post/${props.post._id}`">
+            <div class="comment-icon-container">
+              <img src="./icons/chat-bubble.svg" class="chat-bubble" style="height: 36px" />
+              <p>
+                {{ commentCount }}
+              </p>
+            </div>
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -389,11 +408,18 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
+.interaction-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
 .voting-container-container {
   padding-left: 40px;
 }
 
-.voting-container {
+.voting-container,
+.comment-container {
   margin-top: 20px;
   display: flex;
   flex-direction: row;
@@ -403,6 +429,13 @@ onUnmounted(() => {
   border: solid rgba(217, 217, 217, 0.5) 1.5px;
   width: fit-content;
   padding: 5px;
+}
+
+.comment-icon-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
 }
 
 img:hover {

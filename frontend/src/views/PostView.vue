@@ -3,15 +3,26 @@ import LandingNav from '@/components/LandingNav.vue'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
+import { useSessionStore } from '@/stores/session.js'
+import Comment from '@/components/Comment.vue'
+import { useToast } from 'vue-toastification'
 
 const post = ref(null)
 const loading = ref(true)
 const route = useRoute()
+const admin = useSessionStore().isAdmin
+const interactionButtons = ref(false)
+const comment = ref('')
+const comments = ref(null)
+const toast = useToast()
 
 const fetchPost = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/api/post/get/', { 'post_id': route.params.id })
+    const response = await axios.post('http://localhost:8000/api/post/get/', {
+      post_id: route.params.id
+    })
     post.value = response.data
+    comments.value = post.value.comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   } catch (error) {
     console.error('Error fetching posts:', error)
   } finally {
@@ -19,12 +30,47 @@ const fetchPost = async () => {
   }
 }
 
+const postComment = async () => {
+  try {
+    const response = await axios.post('http://localhost:8000/api/post/create/comment/', {
+      post_id: route.params.id,
+      comment: comment.value
+    })
+    interactionButtons.value = false
+    comment.value = ''
+    fetchPost()
+
+    if (response.status === 200) {
+      toast.success('Kommentar erfolgreich erstellt!')
+    }
+  } catch (error) {
+    console.error('Error posting comment:', error)
+  }
+}
+
+const deleteComment = async (event) => {
+  try {
+    const response = await axios.post('http://localhost:8000/api/post/delete/comment/', {
+      post_id: route.params.id,
+      _id: event._id
+    })
+
+    console.log(response)
+
+    fetchPost()
+
+    if (response.status === 200) {
+      toast.success('Kommentar erfolgreich gelöscht!')
+    }
+  } catch (error) {
+    console.error('Error posting comment:', error)
+  }
+}
+
 onMounted(() => {
   fetchPost()
 })
-
 </script>
-
 
 <template>
   <LandingNav :arrow="true"></LandingNav>
@@ -45,6 +91,28 @@ onMounted(() => {
         <p class="post-content">
           {{ post.body.content }}
         </p>
+      </div>
+    </div>
+    <div class="comment-container">
+      <div v-if="admin" class="comment-input-container">
+        <input
+          placeholder="Kommentieren"
+          class="comment-input"
+          @click="interactionButtons = true"
+          v-model="comment"
+        />
+        <div class="comment-buttons-container" v-if="interactionButtons">
+          <button class="cancel-button" @click="interactionButtons = false">Abbrechen</button>
+          <button class="submit-button" @click="postComment">Kommentieren</button>
+        </div>
+      </div>
+      <div class="comments">
+        <h1 class="comments-title">Kommentare:</h1>
+        <div class="comments-container">
+          <div v-for="comment in comments" :key="comment.id">
+            <Comment :comment="comment" @delete="deleteComment"></Comment>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -90,11 +158,11 @@ onMounted(() => {
   margin-top: 90px;
 }
 
-.post-container{
+.post-container {
   width: 50vw;
 }
 
-.title-container{
+.title-container {
   margin-bottom: 5px;
 }
 
@@ -112,15 +180,16 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.loader:before, .loader:after {
-  content: "";
+.loader:before,
+.loader:after {
+  content: '';
   position: absolute;
   left: 50%;
   bottom: 0;
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #2EDB7B;
+  background: #2edb7b;
   transform: translate(-50%, 100%) scale(0);
   animation: push 2s infinite ease-in;
 }
@@ -133,15 +202,77 @@ onMounted(() => {
   0% {
     transform: translate(-50%, 100%) scale(1);
   }
-  15%, 25% {
+  15%,
+  25% {
     transform: translate(-50%, 50%) scale(1);
   }
-  50%, 75% {
+  50%,
+  75% {
     transform: translate(-50%, -30%) scale(0.5);
   }
-  80%, 100% {
+  80%,
+  100% {
     transform: translate(-50%, -50%) scale(0);
   }
 }
 
+.comment-container {
+  width: 50vw;
+}
+
+.comment-input-container {
+  margin-top: 40px;
+  border: 1px grey solid;
+  height: max-content;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.comment-input {
+  width: 100%;
+}
+
+.comment-input:focus {
+  border: none;
+  outline: none;
+}
+
+.comments-title {
+  margin-top: 40px;
+}
+
+.comment-buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.submit-button {
+  background-color: #2edb7b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.cancel-button:hover,
+.submit-button:hover {
+  cursor: pointer;
+}
+
+.comments-container{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5vh;
+}
 </style>
