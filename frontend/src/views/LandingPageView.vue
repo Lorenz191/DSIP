@@ -160,21 +160,21 @@ const handleSearch = (searchInput) => {
         <div v-if="toDisplay === 2 && sessionStore.isAdmin">
           <SVDashboardView :posts="posts"></SVDashboardView>
         </div>
-        <div v-if="toDisplay === 3">
+        <div v-if="toDisplay === 3 || (toDisplay === 2 && !sessionStore.isAdmin)">
           <div class="post-container" v-for="post in sv_posts" :key="post.id">
             <PostRead :post="post"></PostRead>
           </div>
         </div>
       </div>
     </div>
-    <div class="new-post-container-small" v-if="!svPosts&screenWidth<850&(toDisplay === 1||toDisplay === 3)">
+    <div class="new-post-container-small" v-if="screenWidth<850&(toDisplay === 1||toDisplay === 3)">
       <RouterLink :to="`/create`">
       <button class="new-post-button new-post-button-small">
       +
       </button>
       </RouterLink>
     </div>
-    <div class="new-post-container" v-if="!svPosts & screenWidth >= 850&(toDisplay === 1||toDisplay === 3)">
+    <div class="new-post-container" v-if="screenWidth >= 850&(toDisplay === 1||toDisplay === 3)">
       <RouterLink :to="`/create`">
         <button class="new-post-button">Neuer Beitrag</button>
       </RouterLink>
