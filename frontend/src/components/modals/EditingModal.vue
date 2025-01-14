@@ -31,7 +31,7 @@ const save = () => {
     <div class="modal-content">
       <div class="header">
         <h1>Post bearbeiten:</h1>
-        <p class="exit" @click="close">X</p>
+        <button class="exit" @click="close">&#10006;</button>
       </div>
       <div class="title-container">
         <input placeholder="Titel" class="titel" v-model="editableTitle"/>
@@ -48,7 +48,9 @@ const save = () => {
 
 <style scoped>
 .modal-overlay {
+  font-family: Futura, sans-serif;
   position: fixed;
+  z-index: 1000;
   top: 0;
   left: 0;
   width: 100%;
@@ -59,12 +61,16 @@ const save = () => {
   align-items: center;
 }
 
+h1{
+  font-weight: bold;
+}
+
 .modal-content {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
-  width: 20vw;
+  width: 320px;
 }
 
 .header{
@@ -75,15 +81,16 @@ const save = () => {
 
 .titel {
   margin-top: 30px;
-  padding: 20px;
+  text-indent: 10px;
   border: 1px grey solid;
   border-radius: 10px;
   width: 100%;
-  height: 4vh;
+  height: 5vh;
 }
 
 .textarea {
-  padding: 20px;
+  resize: none;
+  text-indent: 10px;
   margin-top: 20px;
   border: 1px grey solid;
   border-radius: 10px;
@@ -103,10 +110,11 @@ const save = () => {
 }
 
 .save{
-  padding: 5px;
+  padding: 7px;
   background: #2edb7b;
   color: white;
-  border-radius: 10px;
+  border-radius: 5px;
+  margin:5px;
 }
 
 .save:hover{

@@ -177,6 +177,7 @@ const handleSearch = (searchInput) => {
   right: 20px;
 }
 .new-post-button-small{
+  font-weight: bold;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 .new-post-container-small .new-post-button-small {
@@ -200,6 +201,7 @@ const handleSearch = (searchInput) => {
   column-gap: 20px;
   margin-top: 55px;
   min-height: calc(100vh - 80px - 55px);
+  margin-bottom: 25px;
 }
 
 .posts-wrapper {
