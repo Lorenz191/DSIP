@@ -214,17 +214,25 @@ def view_update_post_body(request):
             post_title = body.get("title")
             post_content = body.get("content")
 
-            db_instance = DB()
-            post_document = db_instance.select_post_by_id(post_id)
+            sentiment = SeAn().contains_swearwords(post_title, post_content)
 
-            if post_document.get("fk_author") != cache.get("auth0_id"):
+            if sentiment[0]:
                 return JsonResponse(
-                    {"error": "You are not authorized to update this post."}, status=403
+                    {"error": "Post contains negative sentiment."}, status=400
                 )
+            else:
+                db_instance = DB()
+                post_document = db_instance.select_post_by_id(post_id)
 
-            result = db_instance.update_post_body(post_id, post_title, post_content)
+                if post_document.get("fk_author") != cache.get("auth0_id"):
+                    return JsonResponse(
+                        {"error": "You are not authorized to update this post."},
+                        status=403,
+                    )
 
-            return JsonResponse({"success": result}, status=200)
+                result = db_instance.update_post_body(post_id, post_title, post_content)
+
+                return JsonResponse({"success": result}, status=200)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)

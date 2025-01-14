@@ -38,8 +38,6 @@ const votes = reactive({
 const upvotesCount = computed(() => votes.upvotes.length)
 const downvotesCount = computed(() => votes.downvotes.length)
 
-
-
 const date = new Date(props.post.created_at).toLocaleDateString()
 
 const upvoted = ref(votes.upvotes.includes(currentUser))
@@ -122,13 +120,22 @@ const changePost = (newPost) => {
       .then((response) => {
         if (response.status === 200) {
           toast.success('Post wurde erfolgreich bearbeitet!')
-        } else {
-          toast.error('Fehler beim Bearbeiten des Posts!')
+          showEditingModal.value = false
         }
-        showEditingModal.value = false
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 400) {
+          toast.warning('Dein Post enthält unangebrachte Wörter/Äußerungen, bitte entferne diese!')
+          console.log('Error creating post:', error.response.data)
+        } else {
+          toast.error('Fehler beim Erstellen des Posts!')
+          console.log('Error creating post:', error)
+        }
       })
   } catch (error) {
-    console.error('Error editing post:', error)
+    console.error('Unexpected error:', error)
+    toast.error('Unerwarteter Fehler beim Bearbeiten des Posts!')
+    showEditingModal.value = false
   }
 }
 
