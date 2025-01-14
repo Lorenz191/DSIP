@@ -165,7 +165,7 @@ def view_create_post(request):
                 return JsonResponse(
                     {"error": "Post contains negative sentiment."}, status=400
                 )
-            if not cache.get("sv"):
+            if not cache.get("sv") or not cache.get("admin"):
                 if cache.get("auth0_id") is not None:
                     post_document = {
                         "fk_author": cache.get("auth0_id"),
@@ -181,7 +181,7 @@ def view_create_post(request):
                     }
                 else:
                     return JsonResponse(status=403)
-            elif cache.get("sv"):
+            elif cache.get("sv") or cache.get("admin"):
                 post_document = {
                     "fk_author": cache.get("auth0_id"),
                     "body": {

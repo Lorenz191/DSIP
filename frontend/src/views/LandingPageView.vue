@@ -155,14 +155,14 @@ const handleSearch = (searchInput) => {
         </div>
       </div>
     </div>
-    <div class="new-post-container-small" v-if="!svPosts&screenWidth<850&toDisplay === 1">
+    <div class="new-post-container-small" v-if="!svPosts&screenWidth<850&(toDisplay === 1||toDisplay === 3)">
       <RouterLink :to="`/create`">
       <button class="new-post-button new-post-button-small">
       +
       </button>
       </RouterLink>
     </div>
-    <div class="new-post-container" v-if="!sv_posts.length && screenWidth >= 850">
+    <div class="new-post-container" v-if="!sv_posts.length && screenWidth >= 850&(toDisplay === 1||toDisplay === 3)">
       <RouterLink :to="`/create`">
         <button class="new-post-button">Neuer Beitrag</button>
       </RouterLink>
