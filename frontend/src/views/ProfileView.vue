@@ -160,7 +160,7 @@ onMounted(() => {
 .dislikedPosts-container p {
   margin: 0;
   font-size: 20px;
-  font-weight: bold;
+  font-weight: bolder;
 }
 
 .ownPosts-container:hover,
@@ -176,7 +176,7 @@ onMounted(() => {
 }
 
 .posts-wrapper {
-  height: 80vh;
+  height: 50vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -237,16 +237,17 @@ onMounted(() => {
 }
 
 .small-posts-container {
-  height: calc(100vh - 80px);
+  height:45vh;
   width: auto;
   display: grid;
+  overflow: hidden;
   grid-template-areas:
     'nav'
     'posts'
     'posts';
 
   .posts-wrapper {
-    height: 75vh;
+    height: 50vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -277,7 +278,8 @@ onMounted(() => {
   .likedPosts-container p,
   .dislikedPosts-container p {
     font-size: 17px;
-    font-weight: bold;
+    font-weight: bolder;
+    text-align: center;
   }
 }
 </style>

@@ -201,8 +201,8 @@ onUnmounted(() => {
 <template>
   <div
     :class="[
-      { 'main-container': screenWidth > 700 },
-      { 'main-container-small': screenWidth < 700 }
+      { 'main-container': screenWidth >= 850 },
+      { 'main-container-small': screenWidth < 850 }
     ]"
   >
     <DeletionModal
@@ -400,6 +400,8 @@ onUnmounted(() => {
 .seperation-line-container {
   display: flex;
   justify-content: center;
+  padding-left: 20px;
+
 }
 
 .text-container {
