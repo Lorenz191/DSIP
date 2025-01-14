@@ -181,3 +181,18 @@ class DB:
         post_collection = self.db["Post"]
         posts = post_collection.find({"downvotes": user_id})
         return list(posts) if posts else []
+
+    def post_comment(self, post_id, comment):
+        try:
+            post_collection = self.db["Post"]
+
+            post_id = ObjectId(post_id)
+
+            result = post_collection.update_one(
+                {"_id": post_id}, {"$push": {"comments": comment}}
+            )
+            return result.modified_count > 0
+
+        except Exception as e:
+            print(f"Error updating post: {e}")
+            return False

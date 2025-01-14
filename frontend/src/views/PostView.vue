@@ -4,12 +4,17 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
 import { useSessionStore } from '@/stores/session.js'
+import Comment from '@/components/Comment.vue'
+import { useToast } from 'vue-toastification'
 
 const post = ref(null)
 const loading = ref(true)
 const route = useRoute()
 const admin = useSessionStore().isAdmin
 const interactionButtons = ref(false)
+const comment = ref('')
+const comments = ref(null)
+const toast = useToast()
 
 const fetchPost = async () => {
   try {
@@ -17,6 +22,7 @@ const fetchPost = async () => {
       post_id: route.params.id
     })
     post.value = response.data
+    comments.value = post.value.comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   } catch (error) {
     console.error('Error fetching posts:', error)
   } finally {
@@ -24,11 +30,27 @@ const fetchPost = async () => {
   }
 }
 
+const postComment = async () => {
+  try {
+    const response = await axios.post('http://localhost:8000/api/post/create/comment/', {
+      post_id: route.params.id,
+      comment: comment.value
+    })
+    interactionButtons.value = false
+    comment.value = ''
+    fetchPost()
+
+    if (response.status === 200) {
+      toast.success('Kommentar erfolgreich erstellt!')
+    }
+  } catch (error) {
+    console.error('Error posting comment:', error)
+  }
+}
 
 onMounted(() => {
   fetchPost()
 })
-
 </script>
 
 <template>
@@ -54,14 +76,24 @@ onMounted(() => {
     </div>
     <div class="comment-container">
       <div v-if="admin" class="comment-input-container">
-        <input placeholder="Kommentieren" class="comment-input" @click="interactionButtons = true" />
+        <input
+          placeholder="Kommentieren"
+          class="comment-input"
+          @click="interactionButtons = true"
+          v-model="comment"
+        />
         <div class="comment-buttons-container" v-if="interactionButtons">
           <button class="cancel-button" @click="interactionButtons = false">Abbrechen</button>
-          <button class="submit-button">Kommentieren</button>
+          <button class="submit-button" @click="postComment">Kommentieren</button>
         </div>
       </div>
       <div class="comments">
         <h1 class="comments-title">Kommentare:</h1>
+        <div class="comments-container">
+          <div v-for="comment in comments" :key="comment.id">
+            <Comment :comment="comment"></Comment>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -181,7 +213,7 @@ onMounted(() => {
   width: 100%;
 }
 
-.comment-input:focus{
+.comment-input:focus {
   border: none;
   outline: none;
 }
@@ -190,7 +222,7 @@ onMounted(() => {
   margin-top: 40px;
 }
 
-.comment-buttons-container{
+.comment-buttons-container {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
@@ -205,7 +237,7 @@ onMounted(() => {
   margin-right: 10px;
 }
 
-.submit-button{
+.submit-button {
   background-color: #2edb7b;
   color: white;
   border: none;
@@ -213,7 +245,15 @@ onMounted(() => {
   padding: 5px;
 }
 
-.cancel-button:hover, .submit-button:hover{
+.cancel-button:hover,
+.submit-button:hover {
   cursor: pointer;
+}
+
+.comments-container{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5vh;
 }
 </style>

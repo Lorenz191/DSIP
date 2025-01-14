@@ -15,6 +15,7 @@ import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 const currentUser = useUserStore().userUuid
+const commentCount = ref(0)
 
 const props = defineProps({
   post: {
@@ -37,11 +38,7 @@ const votes = reactive({
 const upvotesCount = computed(() => votes.upvotes.length)
 const downvotesCount = computed(() => votes.downvotes.length)
 
-const commentCount = computed(() => 0)
 
-if(props.post.comments !== undefined) {
-  commentCount.value = props.post.comments.length
-}
 
 const date = new Date(props.post.created_at).toLocaleDateString()
 
@@ -138,6 +135,10 @@ const changePost = (newPost) => {
 let socket
 
 onMounted(() => {
+  if (props.post.comments) {
+    commentCount.value = props.post.comments.length
+  }
+
   socket = new WebSocket('ws://localhost:8000/ws/votes/')
 
   socket.onopen = () => {
@@ -407,7 +408,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.interaction-container{
+.interaction-container {
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -417,7 +418,8 @@ onUnmounted(() => {
   padding-left: 40px;
 }
 
-.voting-container, .comment-container {
+.voting-container,
+.comment-container {
   margin-top: 20px;
   display: flex;
   flex-direction: row;
@@ -429,7 +431,7 @@ onUnmounted(() => {
   padding: 5px;
 }
 
-.comment-icon-container{
+.comment-icon-container {
   display: flex;
   flex-direction: row;
   align-items: center;
